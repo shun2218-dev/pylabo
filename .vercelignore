@@ -1,0 +1,4 @@
+# ソースとして送る必要がないもの（public/pyodide はビルド時に生成される）
+public/pyodide
+dist
+docs

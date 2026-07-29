@@ -70,6 +70,7 @@ const exists = async (p) => {
 const targets = resolveAll(WANTED);
 let downloaded = 0;
 let skipped = 0;
+const failures = [];
 
 for (const pkg of targets) {
   const out = path.join(dir, pkg.file_name);
@@ -85,17 +86,25 @@ for (const pkg of targets) {
   const url = BASE + pkg.file_name;
   process.stdout.write(`[fetch-packages] ${pkg.name} ${pkg.version} を取得中… `);
 
-  const res = await fetch(url);
+  let res;
+  try {
+    res = await fetch(url);
+  } catch (e) {
+    console.log("失敗（通信エラー）");
+    failures.push(`${pkg.name}: ${e.message}`);
+    continue;
+  }
+
   if (!res.ok) {
     console.log(`失敗 (HTTP ${res.status})`);
-    console.warn(`  → ${url} を取得できませんでした。ネットワークを確認して npm run fetch:packages を再実行してください。`);
+    failures.push(`${pkg.name}: ${url} が HTTP ${res.status}`);
     continue;
   }
 
   const buf = Buffer.from(await res.arrayBuffer());
   if (sha256(buf) !== pkg.sha256) {
     console.log("失敗（ハッシュ不一致）");
-    console.warn("  → ファイルが壊れている可能性があります。保存しませんでした。");
+    failures.push(`${pkg.name}: sha256 が一致しないため保存しませんでした`);
     continue;
   }
 
@@ -107,3 +116,12 @@ for (const pkg of targets) {
 console.log(
   `[fetch-packages] 準備完了：新規 ${downloaded} 件 / 既存 ${skipped} 件（合計 ${targets.length} 件）`
 );
+
+/* 1 つでも欠けると、データ分析コースが実行時に「パッケージが見つからない」で
+   壊れる。気づかないまま本番へ出さないよう、ここで失敗させる。 */
+if (failures.length > 0) {
+  console.error("\n[fetch-packages] 取得できなかったパッケージがあります:");
+  failures.forEach((f) => console.error(`  - ${f}`));
+  console.error("\nネットワークを確認して `npm run fetch:packages` を実行し直してください。");
+  process.exit(1);
+}
