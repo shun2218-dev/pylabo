@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { IMAGE_MARKER } from "../lib/protocol";
-import { splitOutputSegments } from "../components/OutputPanel";
+import { splitOutputSegments } from "../lib/output";
 
 describe("splitOutputSegments", () => {
   it("ただのテキストは 1 かたまりになる", () => {
@@ -31,7 +31,7 @@ describe("splitOutputSegments", () => {
     ]);
   });
 
-  it("行の途中に目印があってもテキストのまま扱う", () => {
+  it("行の途中にある目印は図として扱わない（ワーカーは必ず行頭に置く）", () => {
     const text = `x ${IMAGE_MARKER}AAAA\n`;
     expect(splitOutputSegments(text)).toEqual([
       { kind: "text", value: `x ${IMAGE_MARKER}AAAA` },

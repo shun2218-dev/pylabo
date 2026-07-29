@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { draft, progress, theme } from "../lib/storage";
 
@@ -58,8 +58,21 @@ describe("theme", () => {
     expect(document.documentElement.dataset.theme).toBe("light");
   });
 
-  it("不正な値が入っていたら OS の設定にフォールバックする", () => {
+  it("不正な値なら OS がライト設定のときライトになる", () => {
     localStorage.setItem("pylab.theme.v1", "rainbow");
-    expect(["dark", "light"]).toContain(theme.get());
+    vi.stubGlobal("matchMedia", (query: string) => ({ matches: query.includes("light") }));
+    expect(theme.get()).toBe("light");
+  });
+
+  it("不正な値で OS がダーク設定ならダークになる", () => {
+    localStorage.setItem("pylab.theme.v1", "rainbow");
+    vi.stubGlobal("matchMedia", () => ({ matches: false }));
+    expect(theme.get()).toBe("dark");
+  });
+
+  it("matchMedia が無い環境ではダークになる", () => {
+    localStorage.removeItem("pylab.theme.v1");
+    vi.stubGlobal("matchMedia", undefined);
+    expect(theme.get()).toBe("dark");
   });
 });

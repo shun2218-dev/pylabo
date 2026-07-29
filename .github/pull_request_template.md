@@ -20,4 +20,4 @@
 
 ---
 
-観点は [docs/コードレビュー観点.md](../docs/コードレビュー観点.md) を参照してください。
+観点は [docs/コードレビュー観点.md](https://github.com/shun2218-dev/pylabo/blob/develop/docs/%E3%82%B3%E3%83%BC%E3%83%89%E3%83%AC%E3%83%93%E3%83%A5%E3%83%BC%E8%A6%B3%E7%82%B9.md) を参照してください。
