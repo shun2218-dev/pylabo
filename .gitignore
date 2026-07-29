@@ -10,3 +10,9 @@ public/pyodide/
 .claude/settings.local.json
 .vscode/
 .idea/
+
+# 各自のローカル設定（公開 URL など）
+.env
+.env.local
+.env.*.local
+.env.production

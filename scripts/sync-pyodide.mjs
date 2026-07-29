@@ -31,11 +31,23 @@ if (!src) {
   process.exit(0);
 }
 
+/* 配信しないファイル。
+   ・console.html / console-v2.html … Pyodide 付属の REPL。外部 CDN から
+     jQuery や xterm を読み込むため、自分のドメインに置きたくない
+   ・*.d.ts / *.map … 型定義とソースマップ。配信する必要がない */
+const isExcluded = (name) =>
+  name.endsWith(".html") || name.endsWith(".d.ts") || name.endsWith(".map");
+
+/* コピー対象の決め方を変えたら、この番号を上げること。
+   同じ Pyodide バージョンのままでも public/pyodide を作り直す。 */
+const LAYOUT_REVISION = 2;
+
 const pkg = JSON.parse(await readFile(path.join(src, "package.json"), "utf8"));
+const stamp = `${pkg.version}+layout${LAYOUT_REVISION}`;
 const stampPath = path.join(dest, ".version");
 const currentStamp = existsSync(stampPath) ? (await readFile(stampPath, "utf8")).trim() : "";
 
-if (currentStamp === pkg.version) {
+if (currentStamp === stamp) {
   console.log(`[sync-pyodide] public/pyodide は最新です (v${pkg.version})`);
   process.exit(0);
 }
@@ -55,9 +67,10 @@ for (const name of await readdir(src)) {
   const from = path.join(src, name);
   if ((await stat(from)).isDirectory()) continue;
   if (name === "package.json" || name === "README.md" || name === "LICENSE") continue;
+  if (isExcluded(name)) continue;
   await cp(from, path.join(dest, name));
   copied += 1;
 }
 
-await writeFile(stampPath, pkg.version, "utf8");
+await writeFile(stampPath, stamp, "utf8");
 console.log(`[sync-pyodide] pyodide v${pkg.version} を public/pyodide へコピーしました（${copied} ファイル）`);
