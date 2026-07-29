@@ -1,5 +1,5 @@
 {
-  "name": "python-tutorial",
+  "name": "pylabo",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -9,9 +9,12 @@
     "sync:pyodide": "node scripts/sync-pyodide.mjs",
     "fetch:packages": "node scripts/fetch-pyodide-packages.mjs",
     "dev": "npm run sync:pyodide && vite",
-    "build": "npm run sync:pyodide && tsc -b && vite build",
+    "build": "npm run sync:pyodide && tsc -b && vite build && node scripts/generate-seo.mjs",
     "preview": "vite preview",
-    "typecheck": "tsc -b"
+    "typecheck": "tsc -b",
+    "verify:exercises": "node scripts/verify-exercises.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@codemirror/lang-python": "^6.2.1",
@@ -32,8 +35,13 @@
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "@vitejs/plugin-react": "^5.1.0",
+    "jsdom": "^26.1.0",
     "sass": "^1.94.0",
     "typescript": "^5.9.3",
-    "vite": "^7.2.2"
+    "vite": "^7.2.2",
+    "vitest": "^3.2.7"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

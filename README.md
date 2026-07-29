@@ -1,12 +1,14 @@
-# Python ラボ
+# Pylabo（パイラボ）
 
-ブラウザだけで動く Python 学習アプリです。解説を読み、その場でコードを書いて実行し、自動採点で理解を確かめながら進められます。
+**ブラウザだけで動く Python 学習アプリ**です。解説を読み、その場でコードを書いて実行し、自動採点で理解を確かめながら進められます。
+
+名前は *Python Laboratory* から。読み・書き・実行を一か所で試せる「実験室」を目指しています。
 
 Python は [Pyodide](https://pyodide.org/)（CPython を WebAssembly に移植したもの）をアプリに同梱して動かしています。**学習者側に Python のインストールは不要**で、実行時に外部 CDN へ取りに行くこともありません。
 
 ## できること
 
-- **目的別のコース制** — 現在 4 コース / 全 39 レッスン。追加予定のコースも一覧に表示されます
+- **目的別のコース制** — 現在 4 コース / 全 40 レッスン。追加予定のコースも一覧に表示されます
 - **その場で実行** — 解説中のコードはすべて編集して実行できる
 - **自動採点** — 演習を書いて「採点する」を押すと、チェック項目ごとに合否が出る
 - **pandas / matplotlib が動く** — グラフはそのままページ内に表示される
@@ -19,7 +21,7 @@ Python は [Pyodide](https://pyodide.org/)（CPython を WebAssembly に移植�
 
 | コース | レベル | 内容 |
 |---|---|---|
-| Python の基本文法 | 入門 | 変数・条件分岐・リスト・辞書・関数・内包表記・例外・クラス（16 レッスン） |
+| Python の基本文法 | 入門 | 変数・条件分岐・リスト・辞書・関数・短く書く記法・内包表記・例外・クラス（17 レッスン） |
 | データ分析・集計 | 中級 | 素の Python での集計 → pandas → groupby と可視化 → 売上レポート（10 レッスン） |
 | Web/API・自動化 | 中級 | pathlib・CSV/JSON・正規表現・日時・HTTP → ログ集計ツール（7 レッスン） |
 | アプリ開発（FastAPI） | 実践 | ルーティングと検証を自作 → FastAPI で書き直す → TODO API（6 レッスン） |
@@ -31,6 +33,8 @@ Python は [Pyodide](https://pyodide.org/)（CPython を WebAssembly に移植�
 テストと品質（pytest）／型ヒントと静的解析（mypy・ruff）／データベースと SQL／非同期処理と並行実行／環境とパッケージング／CLI ツール開発
 
 追加予定のコースはホーム画面に非活性の状態で並び、収録予定の内容が確認できます。公開時は `src/courses/registry.ts` の 1 エントリを差し替えるだけで選択可能になります。
+
+優先順位と未採用の候補は [docs/コースロードマップ.md](docs/コースロードマップ.md) にまとめています。
 
 ## 動かす
 
@@ -44,7 +48,7 @@ npm run dev
 
 `http://localhost:5173` を開いてください。
 
-> `npm install` の後処理で、Pyodide 本体（約 13MB）を `node_modules` から `public/pyodide/` へコピーし、pandas / matplotlib などの wheel（約 17MB）を Pyodide 公式配布物から取得します。**初回のみネットワークが必要で、以降はすべてローカルから配信されます。** 取得したファイルは sha256 で検証しています。
+> `npm install` の後処理で、Pyodide 本体（約 12MB）を `node_modules` から `public/pyodide/` へコピーし、pandas / matplotlib などの wheel（約 17MB）を Pyodide 公式配布物から取得します。**初回のみネットワークが必要で、以降はすべてローカルから配信されます。** 取得したファイルは sha256 で検証しています。
 
 ### そのほかのコマンド
 
@@ -59,6 +63,18 @@ npm run preview
 ```bash
 npm run typecheck
 ```
+
+```bash
+npm test
+```
+
+```bash
+npm run verify:exercises
+```
+
+`test` は Vitest によるユニットテストです（ルーティング、進捗の保存、出力の解析、コースデータの整合性など）。
+
+`verify:exercises` は、**すべての演習について「解答例をそのまま実行したら採点を通るか」**を手元の python3 で確かめます。期待値の書き間違いや、解答例だけでは動かない（前提の変数が抜けている）不備を検出できます。pandas などが手元に無い場合、その演習は読み飛ばされます。
 
 wheel の取得だけをやり直したいときは `npm run fetch:packages`、Pyodide 本体のコピーだけなら `npm run sync:pyodide` です。
 
@@ -86,7 +102,13 @@ wheel の取得だけをやり直したいときは `npm run fetch:packages`、P
 | `vendor-editor` / `vendor-markdown` | CodeMirror / markdown-it | コースを開いたとき |
 | `basics` / `data-analysis` / … | 各コースの本文 | そのコースを開いたとき |
 
-コースカードにポインタが乗った時点で本文の先読みを始めるため、実際にはクリック後の待ちはほとんどありません。Pyodide（約 13MB）もホーム画面では読み込まず、コースを開いた時点で起動を始めます。
+コースカードにポインタが乗った時点で本文の先読みを始めるため、実際にはクリック後の待ちはほとんどありません。Pyodide（約 12MB）もホーム画面では読み込まず、コースを開いた時点で起動を始めます。
+
+#### エディタのチャンクをこれ以上削らない理由
+
+`vendor-editor`（CodeMirror）は圧縮後 159KB あり、チャンクの中では最大です。ただしこれはコース画面でのみ読み込まれ、**同じ画面が同時に取得する Pyodide ランタイム（約 12MB）の約 1.3%** にすぎません。実測でも、コースを開いてからエディタが出るまで 0.34 秒、Python が使えるようになるまで 1.66 秒（localhost）で、体感を決めているのは後者です。
+
+軽量なエディタに置き換えれば 150KB ほど減りますが、行番号・Python の構文ハイライト・自動インデントを失います。学習アプリの中心がコードを書く体験である以上、割に合わないと判断しています。
 
 ## ディレクトリ構成
 
@@ -109,8 +131,13 @@ src/
 │   └── basics.ts など        ★ 各コースの本文
 └── styles/                   SCSS
 scripts/
-├── sync-pyodide.mjs          Pyodide 本体を public/ へコピー
-└── fetch-pyodide-packages.mjs  wheel を取得（sha256 検証つき）
+├── sync-pyodide.mjs            Pyodide 本体を public/ へコピー
+├── fetch-pyodide-packages.mjs  wheel を取得（sha256 検証つき）
+├── pyodide-packages.mjs        同梱する追加パッケージの一覧
+├── pyodide-versions.mjs        Pyodide 側の Python / パッケージ版を出力（CI 用）
+├── site-url.mjs                公開 URL の決定ロジック
+├── generate-seo.mjs            robots.txt と sitemap.xml を生成
+└── verify-exercises.mjs        全演習の解答例が採点を通るか検証
 ```
 
 ## 設計上のポイント
@@ -123,9 +150,19 @@ scripts/
 
 **採点は Python 側で行う。** 各演習の `tests` は、学習者のコードと同じ名前空間で実行される Python コードです。`check(条件, "説明")` を並べて書くと、そのままチェック項目の一覧として表示されます。
 
+## 変更履歴
+
+[CHANGELOG.md](CHANGELOG.md) を参照してください。
+
 ## コースを追加する
 
 [docs/コースの追加方法.md](docs/コースの追加方法.md) を参照してください。追加予定として告知してから公開に切り替える手順もここにあります。
+
+## デプロイ
+
+完全な静的サイトなので、`npm run build` が出力する `dist/` を配信するだけで動きます。Vercel 向けの設定（`vercel.json`）は同梱済みで、リポジトリをインポートすれば追加設定なしでデプロイできます。
+
+ハッシュルーティングを使っているため **リライト設定は不要** です。ただし Pyodide のランタイムを自前配信している都合上、学習者 1 人あたりの転送量が 15〜30MB になります。帯域の見積もり、ホスティング先ごとの制限の違い、サブパス配信の設定は [docs/デプロイ.md](docs/デプロイ.md) を参照してください。
 
 ## ブランチ運用
 
@@ -140,6 +177,8 @@ Git Flow に沿っています。
 | `hotfix/*` | 緊急修正。`main` から切って `main` と `develop` へ |
 
 `feature` / `release` のマージは履歴を残すため `--no-ff` で行います。
+
+**`main` と `develop` への直接コミットは行いません。** すべて Pull Request 経由でマージし、レビュー観点は [docs/コードレビュー観点.md](docs/コードレビュー観点.md) に定義しています。PR では GitHub Actions（[.github/workflows/ci.yml](.github/workflows/ci.yml)）が型チェック・テスト・ビルド・演習の検証を実行します。
 
 ## ブラウザで動かない Python について
 

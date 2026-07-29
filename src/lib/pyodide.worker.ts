@@ -78,6 +78,13 @@ def show():
     plt.close("all")
 
     _shown_images.append(True)
+
+    # 目印は必ず行頭に置く。print(..., end="") の直後だと行の途中になり、
+    # 画面側が図として認識できずに base64 がそのまま出てしまうため。
+    written = _tee.buf.getvalue()
+    if written and not written.endswith("\\n"):
+        print()
+
     print(${JSON.stringify(IMAGE_MARKER)} + base64.b64encode(buf.getvalue()).decode())
 
 

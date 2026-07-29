@@ -24,7 +24,7 @@ export function TopBar() {
         title="コース一覧へ"
       >
         <Terminal aria-hidden />
-        <span>Python ラボ</span>
+        <span>Pylabo</span>
       </button>
 
       <div className="topbar__spacer" />
