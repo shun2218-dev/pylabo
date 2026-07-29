@@ -1,0 +1,220 @@
+/* ============================================================
+   コードブロック（エディタ・出力・採点結果）
+   ============================================================ */
+
+.block {
+  margin: 0 0 22px;
+  overflow: hidden;
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+
+  &__head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    font-size: 12.5px;
+    color: var(--fg-dim);
+    background: var(--bg-inset);
+    border-bottom: 1px solid var(--line);
+  }
+
+  &__caption {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-weight: 600;
+    color: var(--fg);
+
+    svg {
+      width: 14px;
+      height: 14px;
+      color: var(--fg-faint);
+    }
+  }
+
+  &__tag {
+    padding: 0 7px;
+    font-size: 11px;
+    color: var(--fg-faint);
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    white-space: nowrap;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 7px;
+    margin-left: auto;
+  }
+
+  &--solved {
+    border-color: color-mix(in srgb, var(--ok) 45%, var(--line));
+  }
+}
+
+/* ---------- CodeMirror ---------- */
+
+.editor {
+  .cm-editor {
+    background: var(--bg-inset);
+    font-size: 13px;
+  }
+
+  .cm-editor.cm-focused {
+    outline: none;
+  }
+
+  .cm-scroller {
+    font-family: var(--mono);
+    line-height: 1.65;
+  }
+
+  .cm-gutters {
+    background: var(--bg-inset);
+    border-right: 1px solid var(--line-soft);
+    color: var(--fg-faint);
+  }
+
+  .cm-activeLine,
+  .cm-activeLineGutter {
+    background: color-mix(in srgb, var(--accent) 7%, transparent);
+  }
+
+  .cm-content {
+    padding: 10px 0;
+  }
+}
+
+/* ---------- 出力 ---------- */
+
+.output {
+  margin: 0;
+  padding: 11px 14px;
+  max-height: 360px;
+  overflow: auto;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: var(--bg-inset);
+  border-top: 1px solid var(--line);
+
+  &__error {
+    color: var(--err);
+  }
+
+  &__hint {
+    color: var(--fg-faint);
+    font-style: italic;
+  }
+
+  &__image {
+    display: block;
+    max-width: 100%;
+    margin: 8px 0;
+    background: #fff;
+    border-radius: var(--radius-sm);
+  }
+}
+
+/* ---------- 採点結果 ---------- */
+
+.checks {
+  margin: 0;
+  padding: 12px 14px;
+  list-style: none;
+  font-size: 13px;
+  border-top: 1px solid var(--line);
+
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    padding: 3px 0;
+    line-height: 1.65;
+  }
+
+  svg {
+    width: 15px;
+    height: 15px;
+    margin-top: 4px;
+    flex: 0 0 auto;
+  }
+
+  .is-pass svg {
+    color: var(--ok);
+  }
+
+  .is-fail {
+    color: var(--fg-dim);
+
+    svg {
+      color: var(--err);
+    }
+  }
+}
+
+.verdict {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 14px;
+  font-size: 13.5px;
+  font-weight: 600;
+  border-top: 1px solid var(--line);
+
+  svg {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 auto;
+  }
+
+  &--ok {
+    color: var(--ok);
+    background: color-mix(in srgb, var(--ok) 12%, transparent);
+  }
+
+  &--ng {
+    color: var(--warn);
+    background: color-mix(in srgb, var(--warn) 12%, transparent);
+  }
+}
+
+/* ---------- ヒント・解答例 ---------- */
+
+.reveal {
+  border-top: 1px solid var(--line);
+
+  > summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 14px;
+    font-size: 12.5px;
+    color: var(--fg-dim);
+    cursor: pointer;
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    &:hover {
+      color: var(--fg);
+    }
+  }
+
+  &__body {
+    padding: 0 14px 14px;
+    font-size: 13.5px;
+    color: var(--fg-dim);
+  }
+}

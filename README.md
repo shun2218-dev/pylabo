@@ -1,0 +1,146 @@
+# Python ラボ
+
+ブラウザだけで動く Python 学習アプリです。解説を読み、その場でコードを書いて実行し、自動採点で理解を確かめながら進められます。
+
+Python は [Pyodide](https://pyodide.org/)（CPython を WebAssembly に移植したもの）をアプリに同梱して動かしています。**学習者側に Python のインストールは不要**で、実行時に外部 CDN へ取りに行くこともありません。
+
+## できること
+
+- **目的別のコース制** — 現在 4 コース / 全 39 レッスン。追加予定のコースも一覧に表示されます
+- **その場で実行** — 解説中のコードはすべて編集して実行できる
+- **自動採点** — 演習を書いて「採点する」を押すと、チェック項目ごとに合否が出る
+- **pandas / matplotlib が動く** — グラフはそのままページ内に表示される
+- **進捗と書きかけコードの自動保存** — localStorage に保存され、次に開いたとき続きから戻れる
+- **ダーク / ライトテーマ**
+
+## コース一覧
+
+### 公開中
+
+| コース | レベル | 内容 |
+|---|---|---|
+| Python の基本文法 | 入門 | 変数・条件分岐・リスト・辞書・関数・内包表記・例外・クラス（16 レッスン） |
+| データ分析・集計 | 中級 | 素の Python での集計 → pandas → groupby と可視化 → 売上レポート（10 レッスン） |
+| Web/API・自動化 | 中級 | pathlib・CSV/JSON・正規表現・日時・HTTP → ログ集計ツール（7 レッスン） |
+| アプリ開発（FastAPI） | 実践 | ルーティングと検証を自作 → FastAPI で書き直す → TODO API（6 レッスン） |
+
+コースは互いに独立しています。どこから始めても構いません。
+
+### 追加予定
+
+テストと品質（pytest）／型ヒントと静的解析（mypy・ruff）／データベースと SQL／非同期処理と並行実行／環境とパッケージング／CLI ツール開発
+
+追加予定のコースはホーム画面に非活性の状態で並び、収録予定の内容が確認できます。公開時は `src/courses/registry.ts` の 1 エントリを差し替えるだけで選択可能になります。
+
+## 動かす
+
+```bash
+npm install
+```
+
+```bash
+npm run dev
+```
+
+`http://localhost:5173` を開いてください。
+
+> `npm install` の後処理で、Pyodide 本体（約 13MB）を `node_modules` から `public/pyodide/` へコピーし、pandas / matplotlib などの wheel（約 17MB）を Pyodide 公式配布物から取得します。**初回のみネットワークが必要で、以降はすべてローカルから配信されます。** 取得したファイルは sha256 で検証しています。
+
+### そのほかのコマンド
+
+```bash
+npm run build
+```
+
+```bash
+npm run preview
+```
+
+```bash
+npm run typecheck
+```
+
+wheel の取得だけをやり直したいときは `npm run fetch:packages`、Pyodide 本体のコピーだけなら `npm run sync:pyodide` です。
+
+## 技術構成
+
+| 領域 | 使っているもの |
+|---|---|
+| ビルド | Vite 7 |
+| UI | React 19 + TypeScript（strict） |
+| スタイル | SCSS（`src/styles/`） |
+| エディタ | CodeMirror 6（`@uiw/react-codemirror` + `@codemirror/lang-python`） |
+| アイコン | lucide-react（すべて SVG。絵文字は使っていません） |
+| Markdown | markdown-it + highlight.js |
+| Python 実行 | Pyodide（Web Worker 上で実行） |
+
+依存はすべて npm 管理で、実行時に外部 CDN を参照しません。
+
+### 読み込みの分割
+
+初期表示に必要ないものは分けてあります。
+
+| チャンク | 内容 | 読み込まれるタイミング |
+|---|---|---|
+| `index` + `vendor-react` | ホーム画面 | 最初 |
+| `vendor-editor` / `vendor-markdown` | CodeMirror / markdown-it | コースを開いたとき |
+| `basics` / `data-analysis` / … | 各コースの本文 | そのコースを開いたとき |
+
+コースカードにポインタが乗った時点で本文の先読みを始めるため、実際にはクリック後の待ちはほとんどありません。Pyodide（約 13MB）もホーム画面では読み込まず、コースを開いた時点で起動を始めます。
+
+## ディレクトリ構成
+
+```
+src/
+├── main.tsx / App.tsx        アプリの入口とルーティング
+├── types.ts                  コースデータの型定義
+├── icons.tsx                 使用アイコンの集約
+├── components/               画面（ホーム・サイドバー・レッスン・コードブロック…）
+├── lib/
+│   ├── pyodide.worker.ts     Python を実行する Web Worker
+│   ├── runner.ts             ワーカーとのやりとりを Promise にまとめる
+│   ├── protocol.ts           ワーカーとのメッセージ定義
+│   ├── markdown.ts           本文のレンダリング
+│   ├── storage.ts            進捗・下書き・テーマの保存
+│   ├── route.ts              ハッシュルーター
+│   └── course-utils.ts       コースデータのヘルパー
+├── courses/
+│   ├── registry.ts           ★ コース一覧（公開済み／追加予定）
+│   └── basics.ts など        ★ 各コースの本文
+└── styles/                   SCSS
+scripts/
+├── sync-pyodide.mjs          Pyodide 本体を public/ へコピー
+└── fetch-pyodide-packages.mjs  wheel を取得（sha256 検証つき）
+```
+
+## 設計上のポイント
+
+**コンテンツはデータ、UI はその表示に徹する。** レッスンは `src/courses/*.ts` に型付きのオブジェクトとして書かれており、コンポーネント側はこの型しか知りません。コースを増やすときにコンポーネントを触る必要はありません。
+
+**一覧の情報と本文を分ける。** ホーム画面に必要なタイトル・説明・レッスン数は `registry.ts` に、本文は各コースファイルにあります。この分離がそのまま遅延読み込みと「追加予定」表示の土台になっています。
+
+**Python はワーカーで動かす。** 学習者が無限ループを書いても UI は固まりません。「停止」ボタンでワーカーを作り直して復帰できます。
+
+**採点は Python 側で行う。** 各演習の `tests` は、学習者のコードと同じ名前空間で実行される Python コードです。`check(条件, "説明")` を並べて書くと、そのままチェック項目の一覧として表示されます。
+
+## コースを追加する
+
+[docs/コースの追加方法.md](docs/コースの追加方法.md) を参照してください。追加予定として告知してから公開に切り替える手順もここにあります。
+
+## ブランチ運用
+
+Git Flow に沿っています。
+
+| ブランチ | 役割 |
+|---|---|
+| `main` | リリース済みの状態。タグを打つ |
+| `develop` | 次のリリースに向けた統合先 |
+| `feature/*` | 機能追加。`develop` から切って `develop` へマージ |
+| `release/*` | リリース準備。`main` と `develop` へマージ |
+| `hotfix/*` | 緊急修正。`main` から切って `main` と `develop` へ |
+
+`feature` / `release` のマージは履歴を残すため `--no-ff` で行います。
+
+## ブラウザで動かない Python について
+
+ブラウザ内の Python にはいくつか制約があります（ソケット通信ができない、サーバーを起動できないなど）。該当するコード（`requests` での通信、`fastapi dev` での起動など）は **「読むだけ」のブロック**として載せ、手元で動かす手順を添えています。仕組みの理解にあたる部分は、素の Python で自作して実際に動かす構成にしています。
