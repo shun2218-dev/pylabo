@@ -1,0 +1,181 @@
+/* ============================================================
+   解説文（Markdown の出力）
+   ============================================================ */
+
+.prose {
+  h2 {
+    margin: 32px 0 10px;
+    font-size: 18px;
+  }
+
+  h3 {
+    margin: 30px 0 8px;
+    font-size: 17px;
+  }
+
+  h4 {
+    margin: 24px 0 6px;
+    font-size: 14.5px;
+    color: var(--fg-dim);
+  }
+
+  p {
+    margin: 0 0 15px;
+  }
+
+  ul,
+  ol {
+    margin: 0 0 15px;
+    padding-left: 22px;
+  }
+
+  li {
+    margin-bottom: 5px;
+  }
+
+  hr {
+    margin: 28px 0;
+    border: 0;
+    border-top: 1px solid var(--line-soft);
+  }
+
+  strong {
+    color: var(--fg);
+    font-weight: 700;
+  }
+
+  blockquote {
+    margin: 0 0 15px;
+    padding: 10px 15px;
+    font-size: 13.5px;
+    color: var(--fg-dim);
+    background: var(--bg-card);
+    border-left: 3px solid var(--warn);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+
+    p:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  code {
+    padding: 1px 5px;
+    font-family: var(--mono);
+    font-size: 0.86em;
+    background: var(--bg-inset);
+    border: 1px solid var(--line-soft);
+    border-radius: 5px;
+  }
+
+  pre {
+    margin: 0 0 16px;
+    padding: 12px 14px;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.65;
+    background: var(--bg-inset);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius-sm);
+
+    code {
+      padding: 0;
+      font-size: inherit;
+      background: none;
+      border: 0;
+    }
+  }
+
+  table {
+    width: 100%;
+    margin: 0 0 18px;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    line-height: 1.6;
+    display: block;
+    overflow-x: auto;
+  }
+
+  th,
+  td {
+    padding: 7px 12px;
+    text-align: left;
+    border: 1px solid var(--line);
+    vertical-align: top;
+  }
+
+  th {
+    font-weight: 700;
+    background: var(--bg-inset);
+    white-space: nowrap;
+  }
+
+  > :last-child {
+    margin-bottom: 0;
+  }
+}
+
+/* ---------- highlight.js（テーマに合わせた最小限の配色） ---------- */
+
+.hljs-keyword,
+.hljs-literal,
+.hljs-selector-tag {
+  color: #ff7b9c;
+  font-weight: 600;
+}
+
+.hljs-string,
+.hljs-meta .hljs-string {
+  color: #a5e07a;
+}
+
+.hljs-number {
+  color: #f7ba6a;
+}
+
+.hljs-comment {
+  color: var(--fg-faint);
+  font-style: italic;
+}
+
+.hljs-title,
+.hljs-title.function_ {
+  color: #7cc7ff;
+}
+
+.hljs-built_in,
+.hljs-type,
+.hljs-params {
+  color: #d7a8ff;
+}
+
+.hljs-meta {
+  color: var(--warn);
+}
+
+:root[data-theme="light"] {
+  .hljs-keyword,
+  .hljs-literal,
+  .hljs-selector-tag {
+    color: #b8156b;
+  }
+
+  .hljs-string {
+    color: #1b7a38;
+  }
+
+  .hljs-number {
+    color: #9a5300;
+  }
+
+  .hljs-title,
+  .hljs-title.function_ {
+    color: #10609e;
+  }
+
+  .hljs-built_in,
+  .hljs-type,
+  .hljs-params {
+    color: #6f34ad;
+  }
+}

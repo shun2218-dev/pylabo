@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+
+# npm install（postinstall）で生成される Pyodide ランタイム一式
+public/pyodide/
+
+# 各自のローカル設定
+.claude/settings.local.json
+.vscode/
+.idea/

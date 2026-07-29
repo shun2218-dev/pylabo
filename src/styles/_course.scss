@@ -1,0 +1,258 @@
+/* ============================================================
+   コース画面（サイドバー + レッスン本文）
+   ============================================================ */
+
+.course {
+  flex: 1 1 auto;
+  display: flex;
+  min-height: 0;
+  width: 100%;
+}
+
+/* ---------- サイドバー ---------- */
+
+.sidebar {
+  flex: 0 0 var(--sidebar-w);
+  overflow-y: auto;
+  padding-bottom: 56px;
+  background: var(--bg-soft);
+  border-right: 1px solid var(--line);
+
+  &__head {
+    padding: 18px 18px 14px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0 0 10px;
+    font-size: 14.5px;
+    font-weight: 700;
+    line-height: 1.5;
+
+    svg {
+      width: 17px;
+      height: 17px;
+      flex: 0 0 auto;
+      color: var(--accent);
+    }
+  }
+
+  &__progress {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 11.5px;
+    color: var(--fg-faint);
+  }
+
+  &__chapter {
+    padding: 10px 0 2px;
+  }
+
+  &__chapter-title {
+    margin: 0;
+    padding: 6px 18px;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--fg-faint);
+  }
+}
+
+.lesson-link {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  width: 100%;
+  padding: 7px 18px 7px 16px;
+  text-align: left;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--fg-dim);
+  background: none;
+  border: 0;
+  border-left: 2px solid transparent;
+  cursor: pointer;
+
+  svg {
+    width: 13px;
+    height: 13px;
+    margin-top: 4px;
+    flex: 0 0 auto;
+    color: var(--fg-faint);
+  }
+
+  &:hover {
+    background: var(--bg-inset);
+    color: var(--fg);
+  }
+
+  &.is-done svg {
+    color: var(--ok);
+  }
+
+  &.is-active {
+    background: var(--bg-inset);
+    border-left-color: var(--accent);
+    color: var(--fg);
+    font-weight: 600;
+  }
+}
+
+/* ---------- レッスン本文 ---------- */
+
+.lesson-pane {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-y: auto;
+}
+
+.lesson {
+  max-width: 840px;
+  margin: 0 auto;
+  padding: 36px 32px 110px;
+
+  &__crumb {
+    margin: 0 0 6px;
+    font-size: 12px;
+    color: var(--fg-faint);
+  }
+
+  &__title {
+    margin: 0 0 14px;
+    font-size: 26px;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+  }
+
+  &__goal {
+    display: flex;
+    gap: 10px;
+    margin: 0 0 28px;
+    padding: 11px 15px;
+    font-size: 13.5px;
+    color: var(--fg-dim);
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius-sm);
+
+    svg {
+      width: 16px;
+      height: 16px;
+      margin-top: 4px;
+      flex: 0 0 auto;
+      color: var(--accent);
+    }
+
+    b {
+      color: var(--fg);
+    }
+
+    p {
+      margin: 0;
+    }
+  }
+}
+
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 38px 0 14px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--fg-faint);
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  &::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--line-soft);
+  }
+}
+
+/* ---------- 下部ナビ ---------- */
+
+.lesson-nav {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 44px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line-soft);
+
+  &__spacer {
+    flex: 1 1 auto;
+  }
+}
+
+.done-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  color: var(--fg-dim);
+  cursor: pointer;
+  user-select: none;
+
+  input {
+    accent-color: var(--ok);
+    width: 15px;
+    height: 15px;
+  }
+}
+
+.finale {
+  margin-top: 34px;
+  padding: 34px 24px;
+  text-align: center;
+  color: var(--fg-dim);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+
+  svg {
+    width: 26px;
+    height: 26px;
+    color: var(--ok);
+  }
+
+  h3 {
+    margin: 10px 0 6px;
+    color: var(--fg);
+    font-size: 17px;
+  }
+
+  p {
+    margin: 0 0 16px;
+    font-size: 13.5px;
+  }
+}
+
+/* ---------- 画面が狭いとき ---------- */
+
+@media (max-width: 900px) {
+  .course {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    flex: 0 0 auto;
+    max-height: 32vh;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .lesson {
+    padding: 26px 18px 90px;
+  }
+}
