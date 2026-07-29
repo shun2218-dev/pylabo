@@ -63,8 +63,14 @@ npm run typecheck
 ```
 
 ```bash
+npm test
+```
+
+```bash
 npm run verify:exercises
 ```
+
+`test` は Vitest によるユニットテストです（ルーティング、進捗の保存、出力の解析、コースデータの整合性など）。
 
 `verify:exercises` は、**すべての演習について「解答例をそのまま実行したら採点を通るか」**を手元の python3 で確かめます。期待値の書き間違いや、解答例だけでは動かない（前提の変数が抜けている）不備を検出できます。pandas などが手元に無い場合、その演習は読み飛ばされます。
 
@@ -160,6 +166,8 @@ Git Flow に沿っています。
 | `hotfix/*` | 緊急修正。`main` から切って `main` と `develop` へ |
 
 `feature` / `release` のマージは履歴を残すため `--no-ff` で行います。
+
+**`main` と `develop` への直接コミットは行いません。** すべて Pull Request 経由でマージし、レビュー観点は [docs/コードレビュー観点.md](docs/コードレビュー観点.md) に定義しています。PR では GitHub Actions（[.github/workflows/ci.yml](.github/workflows/ci.yml)）が型チェック・テスト・ビルド・演習の検証を実行します。
 
 ## ブラウザで動かない Python について
 

@@ -926,7 +926,7 @@ if callable(f):
     empty = f({"page": 1})
     check(empty.get("total") == 0 and empty.get("plans") == {}, "users が無くても落ちない")
 `,
-            hint: "`users = response.get(\"users\", [])` から始めると、キーが無い場合も安全に扱えます。",
+            hint: "`users` キーが無いレスポンスも来る前提で書きます。辞書から既定値つきで取り出す方法（基本文法コース 第2章の `get`）を使うと、キーが無いときも空のリストとして扱えて、以降の処理を分岐なしで書けます。",
             solution: `import json
 
 
