@@ -11,7 +11,8 @@
     "dev": "npm run sync:pyodide && vite",
     "build": "npm run sync:pyodide && tsc -b && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc -b"
+    "typecheck": "tsc -b",
+    "verify:exercises": "node scripts/verify-exercises.mjs"
   },
   "dependencies": {
     "@codemirror/lang-python": "^6.2.1",

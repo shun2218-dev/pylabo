@@ -451,8 +451,8 @@ if callable(f):
     check(len(f({"name": "", "age": "x"})) == 2, "問題が 2 つならエラーも 2 件")
 `,
             hint: `
-\`age\` の判定は \`isinstance(age, int) and not isinstance(age, bool)\` とすると \`True\` を弾けます。
-\`plan\` は \`data.get("plan", "free")\` で既定値を入れてから、集合に含まれるか確かめます。
+\`age\` は「整数であること」だけでは足りません。本文の注記のとおり \`bool\` も \`int\` の一種なので、もう 1 つ判定を足して \`True\` を弾きます。
+\`plan\` は省略可なので、\`get\` で既定値を入れてから、許可されている値の集合に含まれるか確かめます。
 `,
             solution: `PLANS = {"free", "pro", "team"}
 
@@ -515,6 +515,11 @@ fastapi dev main.py
 起動したら \`http://127.0.0.1:8000/docs\` を開いてください。**型ヒントから API ドキュメントが自動生成され、その場で実行できます。** 別途ドキュメントを書く必要がなく、しかも実装とずれません。これが FastAPI が広く使われる理由の 1 つです。
 
 > このブラウザ内ではサーバーを起動できないため、以下は読むだけのコードです。手元にコピーして動かしてみてください。
+
+### もっと詳しく
+
+- [FastAPI チュートリアル（公式・日本語）](https://fastapi.tiangolo.com/ja/tutorial/)
+- [仮想環境の作り方（公式）](https://docs.python.org/ja/3/library/venv.html)
 `,
           examples: [
             {
@@ -606,6 +611,12 @@ def get_todo(todo_id: int, verbose: bool = False):
 ### レスポンスの形も型で決める
 
 \`response_model\` を指定すると、返す形が保証され、ドキュメントにも反映されます。パスワードなど**返してはいけない項目を落とす**役割も果たします。
+
+### もっと詳しく
+
+- [パスパラメータ（FastAPI 公式・日本語）](https://fastapi.tiangolo.com/ja/tutorial/path-params/)
+- [クエリパラメータ（FastAPI 公式・日本語）](https://fastapi.tiangolo.com/ja/tutorial/query-params/)
+- [Pydantic モデル（公式・英語）](https://docs.pydantic.dev/latest/concepts/models/)
 `,
           examples: [
             {
@@ -725,9 +736,9 @@ if callable(f):
     check(raised, "変換できない値では ValueError になる")
 `,
             hint: `
-\`for name, (type_, default) in spec.items():\` で回します。
-\`bool\` のときだけ特別扱いが必要です（\`bool("false")\` は \`True\` になってしまうため）。
-それ以外は \`type_(値)\` を呼ぶだけで変換できます。
+\`spec\` の値は \`(型, 既定値)\` のタプルなので、ループの受け取り側で分解できます。
+\`bool\` だけは特別扱いが必要です。\`bool("false")\` は \`True\` になってしまうため、文字列を小文字にして真とみなす値の集合に含まれるか確かめます。
+それ以外の型は、受け取った型を関数として呼べばそのまま変換できます。
 `,
             solution: `TRUTHY = {"true", "1", "yes"}
 
@@ -934,10 +945,10 @@ if S is not None:
     check(raises(lambda: s.create("   "), ValueError), "空白だけの title は ValueError")
 `,
             hint: `
-- \`create\` … \`title.strip()\` が空なら \`raise ValueError(...)\`。保存後に \`self._next_id += 1\`
-- \`get\` … \`if todo_id not in self._items: raise TodoNotFound(todo_id)\`
-- \`list_todos\` … \`items = list(self._items.values())\` してから、\`done\` が \`None\` でなければ絞り込む
-- \`update\` … \`self.get(todo_id)\` で先に存在確認すると、404 の処理を 1 か所にまとめられます
+- \`create\` … 空白を取り除いた title が空なら \`raise\` します。保存したあとに次の ID を 1 進めるのを忘れずに
+- \`get\` … 辞書にキーがあるかを先に確かめ、無ければ \`TodoNotFound\` を送出します
+- \`list_todos\` … いったん値のリストにしてから、\`done\` が \`None\` でないときだけ絞り込みます
+- \`update\` / \`delete\` … 先頭で \`self.get(...)\` を呼んでおくと、存在チェックを 1 か所にまとめられます
 `,
             solution: `class TodoNotFound(Exception):
     """指定された ID のタスクが無いときに送出する。"""

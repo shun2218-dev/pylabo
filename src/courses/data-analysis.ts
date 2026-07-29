@@ -125,8 +125,14 @@ if isinstance(wa, list) and len(wa) == 3:
     check([r.get("amount") for r in wa] == [5760, 7600, 3100], "amount の値が正しい")
     check(all("amount" not in r for r in g["rows"]), "元の rows は変更していない")
 `,
-            hint: "内包表記で `{**r, \"amount\": r[\"quantity\"] * r[\"price\"]}` と書くと、元の辞書をコピーしつつキーを足せます。",
-            solution: `with_amount = [
+            hint: "本文の「辞書をコピーして項目を足す」を使います。内包表記（基本文法コース 第3章）で 1 行にまとめられます。",
+            solution: `rows = [
+    {"store": "渋谷", "item": "カフェラテ", "quantity": 12, "price": 480},
+    {"store": "新宿", "item": "ブレンド", "quantity": 20, "price": 380},
+    {"store": "渋谷", "item": "サンドイッチ", "quantity": 5, "price": 620},
+]
+
+with_amount = [
     {**r, "amount": r["quantity"] * r["price"]}
     for r in rows
 ]
@@ -240,6 +246,14 @@ if callable(f):
             hint: "グループごとに `合計` と `件数` を辞書に貯めてから、最後に `合計 / 件数` を計算します。",
             solution: `from collections import defaultdict
 
+rows = [
+    {"store": "渋谷", "category": "ドリンク", "amount": 5760},
+    {"store": "新宿", "category": "ドリンク", "amount": 7600},
+    {"store": "渋谷", "category": "フード", "amount": 3100},
+    {"store": "横浜", "category": "ドリンク", "amount": 4320},
+    {"store": "新宿", "category": "スイーツ", "amount": 6160},
+]
+
 
 def average_by(rows, key):
     totals = defaultdict(int)
@@ -323,7 +337,7 @@ g = globals()
 check(g.get("grand_total") == 169260, f"grand_total が 169,260 になっている（今は {g.get('grand_total')}）")
 check(isinstance(g.get("grand_total"), int), "整数になっている")
 `,
-            hint: "`sum(int(r[\"quantity\"]) * int(r[\"price\"]) for r in rows)` で一気に出せます。",
+            hint: "CSV から読んだ値は文字列なので、掛け算の前に整数へ変換が要ります。合計は `sum()` にジェネレータ式（内包表記のかっこ違い）を渡すと 1 行で書けます。",
             solution: `import csv
 
 with open("sales.csv", encoding="utf-8") as f:
@@ -452,8 +466,18 @@ if df is not None and "total" in df.columns:
     check(values == [6336, 8360, 3410], f"total の値が正しい（今は {values}）")
     check(str(df["total"].dtype).startswith("int"), "total が整数型になっている")
 `,
-            hint: "`(df[\"quantity\"] * df[\"price\"] * 1.1).round().astype(int)` を代入します。",
-            solution: `df["total"] = (df["quantity"] * df["price"] * 1.1).round().astype(int)
+            hint: "まず税込金額の Series を作り、そのあとに課題文で示した 2 つのメソッドを続けてつなげます（丸めてから型を変換する順番）。",
+            solution: `import pandas as pd
+
+df = pd.DataFrame(
+    {
+        "item": ["カフェラテ", "ブレンド", "サンドイッチ"],
+        "quantity": [12, 20, 5],
+        "price": [480, 380, 620],
+    }
+)
+
+df["total"] = (df["quantity"] * df["price"] * 1.1).round().astype(int)
 
 print(df)`,
           },
@@ -487,6 +511,11 @@ df = pd.read_csv("sales.csv")
 ### 日付を日付として読む
 
 \`parse_dates=["date"]\` を付けると、日付の列を \`datetime\` として読んでくれます。月ごとの集計などがぐっと楽になります。
+
+### もっと詳しく
+
+- [10 minutes to pandas（公式・英語）](https://pandas.pydata.org/docs/user_guide/10min.html)
+- [read_csv のオプション一覧（公式・英語）](https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html)
 `,
           examples: [
             {
@@ -553,7 +582,7 @@ if df is not None and "amount" in df.columns:
     check(int(df.loc[0, "amount"]) == 5760, "1 行目の amount が 5760")
 check(int(g.get("grand_total", 0)) == 169260, "grand_total が 169,260 になっている")
 `,
-            hint: "`df[\"amount\"] = df[\"quantity\"] * df[\"price\"]` のあと、`grand_total = int(df[\"amount\"].sum())`。",
+            hint: "新しい列は `df[\"列名\"] = 式` で作れます（前のレッスン）。合計は Series のメソッドで求まります。",
             solution: `import pandas as pd
 
 df = pd.read_csv("sales.csv", parse_dates=["date"])
@@ -670,8 +699,13 @@ if sd is not None and len(sd) == 5:
     check(set(sd["category"]) == {"ドリンク"}, "ドリンクだけになっている")
 check(int(g.get("shinjuku_drink_total", 0)) == 44560, "合計が 44,560 になっている")
 `,
-            hint: "`df[(df[\"store\"] == \"新宿\") & (df[\"category\"] == \"ドリンク\")]`。かっこと `&` を忘れずに。",
-            solution: `shinjuku_drink = df[(df["store"] == "新宿") & (df["category"] == "ドリンク")]
+            hint: "2 つの条件を組み合わせます。pandas では `and` ではない演算子を使い、条件それぞれをかっこで囲む必要があります（本文の注意書き）。",
+            solution: `import pandas as pd
+
+df = pd.read_csv("sales.csv", parse_dates=["date"])
+df["amount"] = df["quantity"] * df["price"]
+
+shinjuku_drink = df[(df["store"] == "新宿") & (df["category"] == "ドリンク")]
 shinjuku_drink_total = int(shinjuku_drink["amount"].sum())
 
 print(shinjuku_drink[["date", "item", "amount"]])
@@ -727,6 +761,11 @@ df.groupby(["store", "category"])["amount"].sum()
 ~~~
 df.pivot_table(index="store", columns="category", values="amount", aggfunc="sum")
 ~~~
+
+### もっと詳しく
+
+- [Group by: split-apply-combine（公式・英語）](https://pandas.pydata.org/docs/user_guide/groupby.html)
+- [pivot_table（公式・英語）](https://pandas.pydata.org/docs/reference/api/pandas.pivot_table.html)
 `,
           examples: [
             {
@@ -793,8 +832,13 @@ if s is not None and len(s) == 6:
     check(int(s.iloc[0]) == 61920, "1 位の売上が 61,920")
     check(list(s) == sorted(list(s), reverse=True), "降順に並んでいる")
 `,
-            hint: "`df.groupby(\"item\")[\"amount\"].sum().sort_values(ascending=False)`。",
-            solution: `item_sales = (
+            hint: "`groupby` で商品ごとの合計を出したあと、`sort_values` に「降順にする」オプションを渡します。",
+            solution: `import pandas as pd
+
+df = pd.read_csv("sales.csv", parse_dates=["date"])
+df["amount"] = df["quantity"] * df["price"]
+
+item_sales = (
     df.groupby("item")["amount"].sum().sort_values(ascending=False)
 )
 
@@ -908,8 +952,13 @@ if s is not None and len(s) == 3:
     check(int(s["売上"].sum()) == 169260, "売上の合計が全体と一致する")
     check(abs(float(s["構成比"].sum()) - 100.0) < 0.2, "構成比の合計がほぼ 100 になる")
 `,
-            hint: "まず `by_store = df.groupby(\"store\")[\"amount\"].sum().sort_values(ascending=False)`。次に `pd.DataFrame({\"売上\": by_store, \"構成比\": (by_store / by_store.sum() * 100).round(1)})`。",
-            solution: `by_store = df.groupby("store")["amount"].sum().sort_values(ascending=False)
+            hint: "先に店舗別合計の Series を作っておくと楽です。構成比はその Series を合計で割って 100 倍し、`.round(1)` で丸めます。最後に 2 つの Series を辞書にして `pd.DataFrame(...)` へ渡すと、列名つきの表になります。",
+            solution: `import pandas as pd
+
+df = pd.read_csv("sales.csv", parse_dates=["date"])
+df["amount"] = df["quantity"] * df["price"]
+
+by_store = df.groupby("store")["amount"].sum().sort_values(ascending=False)
 
 store_summary = pd.DataFrame(
     {
@@ -957,6 +1006,11 @@ show()
 - \`plt.grid(axis="y", alpha=.3)\` で薄い目盛り線を入れると読みやすい
 
 > 日本語のラベルは、フォントの都合で豆腐（□）になることがあります。ここでは英数字のラベルを使っています。
+
+### もっと詳しく
+
+- [Pyplot チュートリアル（公式・英語）](https://matplotlib.org/stable/tutorials/pyplot.html)
+- [グラフの種類一覧（公式・英語）](https://matplotlib.org/stable/plot_types/index.html)
 `,
           examples: [
             {
@@ -1041,8 +1095,14 @@ if cs is not None and len(cs) == 3:
     check(int(cs.get("ドリンク", 0)) == 115500, "ドリンクの売上が 115,500")
 check(_shown(), "show() でグラフを表示できている")
 `,
-            hint: "`category_sales = df.groupby(\"category\")[\"amount\"].sum()` を入れるだけで、あとは用意されたコードが動きます。",
-            solution: `category_sales = df.groupby("category")["amount"].sum()
+            hint: "前のレッスンの `groupby` で、カテゴリごとの amount 合計を出すだけです。あとは用意されたコードが動きます。",
+            solution: `import pandas as pd
+import matplotlib.pyplot as plt
+
+df = pd.read_csv("sales.csv", parse_dates=["date"])
+df["amount"] = df["quantity"] * df["price"]
+
+category_sales = df.groupby("category")["amount"].sum()
 
 labels = {"ドリンク": "Drink", "フード": "Food", "スイーツ": "Sweets"}
 names = [labels[c] for c in category_sales.index]
@@ -1172,8 +1232,15 @@ if r is not None:
 
 check(_shown(), "show() でグラフを表示できている")
 `,
-            hint: "`df.pivot_table(index=\"store\", columns=\"category\", values=\"amount\", aggfunc=\"sum\", fill_value=0)` を返します。",
-            solution: `def build_report(df):
+            hint: "第3章で出てきたクロス集計のメソッドを使います。行・列・値・集計方法をそれぞれ指定し、該当なしのセルを 0 で埋めるオプションも忘れずに。",
+            solution: `import pandas as pd
+import matplotlib.pyplot as plt
+
+df = pd.read_csv("sales.csv", parse_dates=["date"])
+df["amount"] = df["quantity"] * df["price"]
+
+
+def build_report(df):
     return df.pivot_table(
         index="store",
         columns="category",
@@ -1184,7 +1251,18 @@ check(_shown(), "show() でグラフを表示できている")
 
 
 report = build_report(df)
-print(report)`,
+print(report)
+
+en = {"渋谷": "Shibuya", "新宿": "Shinjuku", "横浜": "Yokohama",
+      "ドリンク": "Drink", "フード": "Food", "スイーツ": "Sweets"}
+chart = report.rename(index=en, columns=en)
+
+chart.plot(kind="bar", stacked=True, figsize=(7, 4), colormap="viridis")
+plt.title("Sales by store and category")
+plt.ylabel("amount (JPY)")
+plt.xticks(rotation=0)
+plt.grid(axis="y", alpha=0.3)
+show()`,
           },
         },
       ],
