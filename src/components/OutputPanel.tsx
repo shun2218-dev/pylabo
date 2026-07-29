@@ -10,12 +10,12 @@ interface Props {
   hasRun: boolean;
 }
 
-type Segment =
+export type Segment =
   | { kind: "text"; value: string }
   | { kind: "image"; value: string };
 
 /** stdout を、テキストと図に切り分ける。 */
-function splitSegments(text: string): Segment[] {
+export function splitOutputSegments(text: string): Segment[] {
   const segments: Segment[] = [];
   let buffer: string[] = [];
 
@@ -42,7 +42,7 @@ function splitSegments(text: string): Segment[] {
 }
 
 export function OutputPanel({ text, error, hasRun }: Props) {
-  const segments = useMemo(() => splitSegments(text), [text]);
+  const segments = useMemo(() => splitOutputSegments(text), [text]);
 
   if (!hasRun && segments.length === 0 && !error) return null;
 
