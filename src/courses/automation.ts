@@ -97,6 +97,10 @@ p = Path("data") / "sales.csv"
 \`read_text\` / \`write_text\` は、\`open\` を書かずに 1 行で済むのが気持ちいいところです。
 
 > **文字コードは必ず指定しましょう。** \`encoding="utf-8"\` を付けないと、環境によって文字化けします。
+
+### もっと詳しく
+
+- [pathlib（公式）](https://docs.python.org/ja/3/library/pathlib.html)
 `,
           examples: [
             {
@@ -167,7 +171,7 @@ if callable(f):
     check(str(f(Path("access.log"))) == "access_report.txt", "Path を渡しても動く")
     check(str(f("a/b/c.json")) == "a/b/c_report.txt", "深いパスでも親が保たれる")
 `,
-            hint: "`p = Path(path)` にしてから、`p.with_name(p.stem + \"_report\" + \".txt\")` あるいは `p.parent / f\"{p.stem}_report.txt\"`。",
+            hint: "まず受け取った値を `Path()` に通します。あとは本文の表にある「拡張子なしの名前」と「親ディレクトリ」を組み合わせて、新しいパスを組み立てます。",
             solution: `from pathlib import Path
 
 
@@ -290,7 +294,7 @@ check(isinstance(ok, list) and len(ok) == 14, "ok_lines が 14 件のリスト�
 if isinstance(ok, list) and ok:
     check(all(l.split()[-2] == "200" for l in ok), "すべて 200 の行になっている")
 `,
-            hint: "`line.split()` で空白区切りのリストになります。ステータスは後ろから 2 番目なので `parts[-2]`。",
+            hint: "`split()` で空白区切りのリストにできます。ステータスは後ろから数えたほうが確実です（負のインデックスが使えます）。",
             solution: `from pathlib import Path
 
 lines = [
@@ -344,6 +348,11 @@ json.dumps(data, ensure_ascii=False, indent=2)
 ~~~
 
 JSON は Python の辞書・リストとそのまま対応します（\`null\` ↔ \`None\`、\`true\` ↔ \`True\`）。
+
+### もっと詳しく
+
+- [csv（公式）](https://docs.python.org/ja/3/library/csv.html)
+- [json（公式）](https://docs.python.org/ja/3/library/json.html)
 `,
           examples: [
             {
@@ -438,7 +447,7 @@ if out.exists():
     check(json.loads(text) == {"pro": 2, "free": 2, "team": 1}, "書き出した JSON の中身が正しい")
     check("\\n" in text and "  " in text, "indent=2 で整形されている")
 `,
-            hint: "件数は `counts[plan] = counts.get(plan, 0) + 1`。書き出しは `Path(\"plan_counts.json\").write_text(json.dumps(plan_counts, ensure_ascii=False, indent=2), encoding=\"utf-8\")`。",
+            hint: "件数はプランをキーにして辞書に足し込みます（基本文法コース 第2章）。書き出しは、辞書を JSON 文字列にしてからファイルへ書く 2 段階です。日本語をそのまま出すオプションとインデントの指定は本文にあります。",
             solution: `import csv
 import json
 from pathlib import Path
@@ -505,6 +514,11 @@ if m:
 - \`re.match\` … **先頭からの**一致（\`search\` と混同しやすい）
 
 > 凝ったパターンは後から読めなくなります。**まず \`split\` で足りないか考え、それでも無理なときに使う**くらいがちょうどいいバランスです。
+
+### もっと詳しく
+
+- [正規表現 HOWTO（公式・日本語）](https://docs.python.org/ja/3/howto/regex.html)
+- [re（公式）](https://docs.python.org/ja/3/library/re.html)
 `,
           examples: [
             {
@@ -589,7 +603,7 @@ if isinstance(paths, list) and paths:
     check(paths[0] == "/", "1 件目のパスが / になっている")
     check(all(p.startswith("/") for p in paths), "すべて / から始まっている")
 `,
-            hint: "`line.split()` の 4 番目（インデックス 3）がパスです。重複除去は `sorted(set(paths))`。",
+            hint: "ログの 1 行を見て、空白で分割したとき何番目がパスか数えてみましょう（インデックスは 0 から）。重複除去は基本文法コース 第2章の集合が使えます。",
             solution: `from pathlib import Path
 
 lines = [
@@ -640,6 +654,11 @@ print(diff.days, diff.total_seconds())
 日単位でまとめたいなら \`dt.date()\`、月単位なら \`dt.strftime("%Y-%m")\` をキーにするのが手軽です。
 
 > **タイムゾーン** が絡む場合は \`datetime.now(timezone.utc)\` のように必ず指定しましょう。タイムゾーンなしの日時（naive）と付きの日時（aware）は比較できず、エラーになります。
+
+### もっと詳しく
+
+- [datetime（公式）](https://docs.python.org/ja/3/library/datetime.html)
+- [strftime の書式コード一覧（公式）](https://docs.python.org/ja/3/library/datetime.html#strftime-and-strptime-format-codes)
 `,
           examples: [
             {
@@ -717,7 +736,7 @@ if isinstance(ph, dict):
     check(ph.get(18) == 1, "18 時台が 1 件")
     check(11 in ph and 15 in ph, "11 時台・15 時台も数えられている")
 `,
-            hint: "`parts[1]` が時刻（`09:12:03`）です。`int(parts[1].split(\":\")[0])` でも、`datetime.strptime(...).hour` でも取れます。",
+            hint: "時刻は `09:12:03` の形です。`:` で区切って先頭を整数にする方法と、`datetime` に変換してから属性を見る方法のどちらでも構いません。",
             solution: `from datetime import datetime
 from pathlib import Path
 
@@ -778,6 +797,11 @@ Web API とのやりとりは、次の 2 つの往復でできています。
 実務では \`requests\`（または \`httpx\`）を使います。**このブラウザ内では外部通信ができない**ので、下のコードは読むだけの参考として載せます。手元で試すときは \`pip install requests\` してください。
 
 このレッスンの演習では、**返ってきた JSON を処理する側** を書きます。実際、API 連携の作業時間のほとんどはこちらです。
+
+### もっと詳しく
+
+- [requests クイックスタート（公式・日本語）](https://requests.readthedocs.io/projects/ja/latest/user/quickstart.html)
+- [HTTP ステータスコード一覧（MDN）](https://developer.mozilla.org/ja/docs/Web/HTTP/Status)
 `,
           examples: [
             {
@@ -879,14 +903,20 @@ def summarize(response):
 print(summarize(json.loads(raw)))
 `,
             tests: `
-import json
-
 g = globals()
 f = g.get("summarize")
 
 check(callable(f), "summarize という関数を定義できている")
 if callable(f):
-    data = json.loads(g["raw"])
+    data = {
+        "page": 1,
+        "users": [
+            {"id": 1, "name": "佐藤", "plan": "pro", "active": True},
+            {"id": 2, "name": "鈴木", "plan": "free", "active": False},
+            {"id": 3, "name": "高橋", "plan": "pro", "active": True},
+            {"id": 4, "name": "田中", "plan": "team", "active": True},
+        ],
+    }
     r = f(data)
     check(isinstance(r, dict), "辞書を返している")
     check(r.get("total") == 4, f"total が 4（今は {r.get('total')}）")
@@ -897,7 +927,10 @@ if callable(f):
     check(empty.get("total") == 0 and empty.get("plans") == {}, "users が無くても落ちない")
 `,
             hint: "`users = response.get(\"users\", [])` から始めると、キーが無い場合も安全に扱えます。",
-            solution: `def summarize(response) -> dict:
+            solution: `import json
+
+
+def summarize(response) -> dict:
     users = response.get("users", [])
 
     plans = {}
@@ -909,7 +942,22 @@ if callable(f):
         "total": len(users),
         "active": sum(1 for u in users if u.get("active")),
         "plans": plans,
-    }`,
+    }
+
+
+raw = """
+{
+  "page": 1,
+  "users": [
+    {"id": 1, "name": "佐藤", "plan": "pro",  "active": true},
+    {"id": 2, "name": "鈴木", "plan": "free", "active": false},
+    {"id": 3, "name": "高橋", "plan": "pro",  "active": true},
+    {"id": 4, "name": "田中", "plan": "team", "active": true}
+  ]
+}
+"""
+
+print(summarize(json.loads(raw)))`,
           },
         },
 
@@ -1076,10 +1124,10 @@ if callable(load):
         check(len(rep.get("top_paths", [])) == 3, "top_paths が 3 件")
 `,
             hint: `
-- \`load\` … \`line.split()\` の 6 つを分解代入し、\`status\` と \`ms\` だけ \`int()\` にします
-- \`analyze\` … \`Counter(r["status"] for r in records)\` と \`Counter(r["path"] ...).most_common(3)\`
-- エラー率 … \`sum(n for s, n in statuses.items() if s >= 400) / len(records) * 100\` を \`round(x, 1)\`
-- \`Counter\` は辞書ではないので、比較のため \`dict(...)\` に変換して返します
+- \`load\` … 1 行を \`split()\` すると 6 つに分かれます。まとめて分解代入できます（第2章のアンパック）。数値にする列だけ変換を忘れずに
+- \`analyze\` … 件数の集計は \`Counter\`（基本文法コース 第4章）。上位 3 件は \`most_common\` で取れます
+- エラー率 … 400 以上のステータスの件数を全体で割り、100 を掛けて \`round\` で丸めます
+- \`Counter\` は辞書そのものではないので、返す前に \`dict(...)\` に変換しておくと比較しやすくなります
 `,
             solution: `from collections import Counter
 from pathlib import Path
