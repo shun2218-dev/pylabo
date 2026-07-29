@@ -24,8 +24,7 @@ function siteUrlPlugin(): Plugin {
       }
       return html
         .replaceAll("__SITE_URL__", siteUrl)
-        .replaceAll("<!--SITE_URL_ONLY-->\n", "")
-        .replaceAll("<!--/SITE_URL_ONLY-->\n", "");
+        .replace(/[ \t]*<!--\/?SITE_URL_ONLY-->\n?/g, "");
     },
   };
 }
