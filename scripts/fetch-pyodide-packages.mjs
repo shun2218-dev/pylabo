@@ -16,12 +16,12 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 
+import { WANTED } from "./pyodide-packages.mjs";
+
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dir = path.join(root, "public", "pyodide");
 const require = createRequire(import.meta.url);
 
-/** ここに書いたパッケージと、その依存関係すべてを取得する。 */
-const WANTED = ["numpy", "pandas", "matplotlib"];
 
 const version = JSON.parse(
   await readFile(require.resolve("pyodide/package.json"), "utf8")

@@ -12,7 +12,9 @@
     "build": "npm run sync:pyodide && tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -b",
-    "verify:exercises": "node scripts/verify-exercises.mjs"
+    "verify:exercises": "node scripts/verify-exercises.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@codemirror/lang-python": "^6.2.1",
@@ -33,9 +35,11 @@
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "@vitejs/plugin-react": "^5.1.0",
+    "jsdom": "^26.1.0",
     "sass": "^1.94.0",
     "typescript": "^5.9.3",
-    "vite": "^7.2.2"
+    "vite": "^7.2.2",
+    "vitest": "^3.2.7"
   },
   "engines": {
     "node": ">=20"

@@ -9,6 +9,8 @@
  * （前提の変数が抜けている）といった不備をここで検出できる。
  *
  * pandas などの追加パッケージが要る演習は、手元に入っていなければ読み飛ばす。
+ * CI のように「全件動くはず」の場所では --max-skipped=N を付けること。
+ * 読み飛ばしが N を超えたら失敗する（環境が壊れていても緑になるのを防ぐ）。
  */
 
 import { execFile } from "node:child_process";
@@ -19,6 +21,12 @@ import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 
 const run = promisify(execFile);
+
+/** --max-skipped=N。指定が無ければ上限なし。 */
+const maxSkipped = (() => {
+  const arg = process.argv.find((a) => a.startsWith("--max-skipped="));
+  return arg ? Number(arg.split("=")[1]) : Infinity;
+})();
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 const PREAMBLE = `
@@ -199,6 +207,15 @@ async function main() {
   }
 
   console.log(`\n合計: 通過 ${passed} / 失敗 ${failed} / 読み飛ばし ${skipped}`);
+
+  if (skipped > maxSkipped) {
+    console.error(
+      `\n読み飛ばしが ${skipped} 件あり、上限の ${maxSkipped} 件を超えています。` +
+        "\n必要な Python パッケージが入っているか確認してください。"
+    );
+    process.exit(1);
+  }
+
   process.exit(failed > 0 ? 1 : 0);
 }
 
