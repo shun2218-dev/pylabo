@@ -129,6 +129,11 @@ Python の値には**型**があります。まずはこの 3 つ。
 ### 文字列の計算
 
 文字列同士は \`+\` でつなげられ、\`*\` で繰り返せます。ただし **文字列と数値は \`+\` できません**（\`TypeError\` になります）。
+
+### もっと詳しく
+
+- [文字列のメソッド一覧（公式）](https://docs.python.org/ja/3/library/stdtypes.html#string-methods)
+- [数値型（int / float）（公式）](https://docs.python.org/ja/3/library/stdtypes.html#numeric-types-int-float-complex)
 `,
           examples: [
             {
@@ -393,7 +398,7 @@ if callable(f):
     check(f(7) == "7", "fizzbuzz(7) が文字列の '7'")
     check(f(30) == "FizzBuzz", "30 のように両方で割り切れる数も 'FizzBuzz'")
 `,
-            hint: "`n % 15 == 0` を最初に見るか、`n % 3 == 0 and n % 5 == 0` を先に書きます。最後は `return str(n)` を忘れずに。",
+            hint: "「両方で割り切れる」場合を先に判定しないと、Fizz だけを返して終わってしまいます。どの順で書けばよいか考えてみましょう。最後の分岐は数値ではなく文字列を返す点にも注意。",
             solution: `def fizzbuzz(n: int) -> str:
     if n % 3 == 0 and n % 5 == 0:
         return "FizzBuzz"
@@ -449,6 +454,10 @@ fruits = ["りんご", "みかん", "ぶどう"]
 | \`sorted(lst)\` | 並べ替えた**新しい**リスト |
 | \`lst.sort()\` | 自分自身を並べ替える |
 | \`x in lst\` | 含まれるか |
+
+### もっと詳しく
+
+- [リスト型のメソッド一覧（公式）](https://docs.python.org/ja/3/tutorial/datastructures.html)
 `,
           examples: [
             {
@@ -503,7 +512,7 @@ g = globals()
 check(g.get("top3") == [91, 88, 78], "top3 が [91, 88, 78] になっている")
 check(g.get("scores") == [62, 91, 78, 45, 88, 70], "元の scores は並べ替えずに残っている")
 `,
-            hint: "`sorted(scores, reverse=True)` で大きい順の新しいリストが作れます。そこからスライスで先頭 3 件。",
+            hint: "`sorted()` には並び順を逆にするオプションがあります。並べ替えた結果から、スライスで先頭 3 件を切り出しましょう。",
             solution: `scores = [62, 91, 78, 45, 88, 70]
 
 top3 = sorted(scores, reverse=True)[:3]
@@ -602,7 +611,7 @@ g = globals()
 check(g.get("big_total") == 25100, "big_total が 25100 になっている")
 check(g.get("sales") == [3200, 8100, 4500, 12000, 990, 5000], "sales は変更していない")
 `,
-            hint: "`for s in sales:` の中で `if s >= 5000:` のときだけ `big_total += s`。5000 ちょうども「以上」に含まれます。",
+            hint: "ループの中で条件を満たしたときだけ足し込みます。「5000 円以上」なので 5000 ちょうども含まれる点に注意（`>` と `>=` のどちらを使うか）。",
             solution: `sales = [3200, 8100, 4500, 12000, 990, 5000]
 
 big_total = 0
@@ -675,9 +684,10 @@ for w in words:
 
 print(counter)
 
-# 多い順に並べ替え
-for w, n in sorted(counter.items(), key=lambda x: x[1], reverse=True):
-    print(f"{w}: {n}回")
+for word, count in counter.items():
+    print(f"{word}: {count}回")
+
+# 「多い順に並べ替え」は key= を使います。第3章「短く書く記法」で扱います。
 `,
             },
           ],
@@ -701,13 +711,21 @@ g = globals()
 check(g.get("total") == 5230, "total が 5230 になっている")
 check(g.get("most_expensive") == "メロン", "most_expensive が 'メロン' になっている")
 `,
-            hint: "合計は `sum(prices.values())`。最大は `max(prices, key=prices.get)` でも、for ループで比べても構いません。",
+            hint: "合計は値だけを集めれば出せます（`.values()` と組み込み関数）。最大は、「今のところ一番高い商品」を変数に覚えながらループで比べていくのが確実です。",
             solution: `prices = {"りんご": 150, "メロン": 3800, "みかん": 80, "ぶどう": 1200}
 
 total = sum(prices.values())
-most_expensive = max(prices, key=prices.get)
 
-print(total, most_expensive)`,
+most_expensive = ""
+highest = 0
+for name, price in prices.items():
+    if price > highest:
+        highest = price
+        most_expensive = name
+
+print(total, most_expensive)
+
+# 第3章の key= を使うと、最大値の行は max(prices, key=prices.get) の 1 行になります。`,
           },
         },
 
@@ -806,7 +824,7 @@ check(
 )
 check(isinstance(g.get("unique_answers"), list), "リストになっている（set のままではない）")
 `,
-            hint: "`set()` で重複を消し、`sorted()` で並べるとリストが返ります。",
+            hint: "重複を消せる入れ物が第2章にありました。それを並べ替える関数に渡すと、戻り値はリストになります。",
             solution: `answers = ["Python", "Go", "Python", "Rust", "Go", "Python", "Ruby"]
 
 unique_answers = sorted(set(answers))
@@ -919,7 +937,7 @@ if callable(f):
     check(f(80, 1.8) == 24.7, "bmi(80, 1.8) が 24.7 を返す")
     check(f(50, 1.6) is not None, "return で値を返している（print だけになっていない）")
 `,
-            hint: "2 乗は `height ** 2`。最後に `return round(weight / height ** 2, 1)`。",
+            hint: "2 乗はべき乗の演算子で書けます（第1章）。丸めは `round(値, 桁数)`。`print` ではなく `return` で返すこと。",
             solution: `def bmi(weight: float, height: float) -> float:
     return round(weight / height ** 2, 1)
 
@@ -1017,7 +1035,7 @@ if callable(f):
     check(f("注意", mark="!", times=2) == "!!注意!!", "キーワード引数つきの呼び出しも正しい")
     check(f("A", "-") == "---A---", "mark だけ変えた呼び出しも正しい")
 `,
-            hint: "`mark * times` で繰り返した文字列が作れます。あとは f 文字列で挟むだけ。",
+            hint: "同じ文字を繰り返した文字列は、掛け算の演算子で作れます（第1章）。作った飾りで text を挟みましょう。",
             solution: `def decorate(text: str, mark: str = "*", times: int = 3) -> str:
     edge = mark * times
     return f"{edge}{text}{edge}"
@@ -1025,6 +1043,173 @@ if callable(f):
 
 print(decorate("重要"))
 print(decorate("注意", mark="!", times=2))`,
+          },
+        },
+
+        {
+          id: "shorthand",
+          title: "短く書く記法",
+          goal: "三項演算子・lambda・key= を読めるようにし、使いどころを判断できるようにする",
+          body: `
+実務のコードには「短く書くための記法」がよく出てきます。**知らないと読めない**ので、ここで一度まとめて押さえます。
+
+### 条件を 1 行で書く（三項演算子）
+
+~~~
+label = "偶数" if n % 2 == 0 else "奇数"
+~~~
+
+読み方は真ん中の \`if\` から。「n が偶数なら \`"偶数"\`、そうでなければ \`"奇数"\`」。
+
+これは **式** なので、そのまま代入したり、関数の引数に渡したりできます（\`if\` 文はできません）。
+
+### 名前のない関数（lambda）
+
+\`lambda 引数: 式\` で、その場限りの小さな関数を作れます。
+
+~~~
+double = lambda n: n * 2      # def で書くのとほぼ同じ
+~~~
+
+- 中に書けるのは **式ひとつだけ**。\`return\` は書きません（式の値がそのまま戻り値）
+- 上のように変数へ代入するだけなら、素直に \`def\` で書くべきです
+- **本当の使いどころは「他の関数に渡すとき」**
+
+### key= — 「何を基準に比べるか」を渡す
+
+\`sorted\` \`max\` \`min\` は \`key\` に **関数** を受け取り、その戻り値どうしを比べます。
+
+~~~
+people = [("佐藤", 30), ("鈴木", 25)]
+sorted(people, key=lambda p: p[1])     # 年齢の小さい順
+~~~
+
+\`lambda p: p[1]\` は「渡された値の 1 番目を取り出す関数」。並べ替えたい基準を、その場で書けるわけです。
+
+関数をそのまま渡すこともできます。このとき **かっこを付けない** のがポイントです（呼ぶのではなく、関数自体を渡す）。
+
+~~~
+prices = {"りんご": 150, "メロン": 3800}
+max(prices, key=prices.get)            # → "メロン"
+~~~
+
+\`prices.get()\` と書くと「呼んだ結果」を渡してしまいエラーになります。
+
+### or で既定値を入れる
+
+\`or\` は「左が偽なら右を返す」ため、既定値の指定に使えます。
+
+~~~
+name = user_name or "ゲスト"
+~~~
+
+### 短くしすぎない
+
+これらは **読みやすくなるときだけ** 使います。三項演算子を入れ子にしたり、lambda に複雑な式を詰め込んだりすると、かえって読めなくなります。迷ったら \`def\` と \`if\` 文に戻してください。
+
+### もっと詳しく
+
+- [ソート HOWTO — key の使い方](https://docs.python.org/ja/3/howto/sorting.html)
+- [組み込み関数（sorted / max / min）](https://docs.python.org/ja/3/library/functions.html)
+`,
+          examples: [
+            {
+              caption: "三項演算子と or",
+              code: `
+for n in [3, 8, 0, -5]:
+    label = "偶数" if n % 2 == 0 else "奇数"
+    sign = "正" if n > 0 else "0以下"
+    print(f"{n:>3} → {label} / {sign}")
+
+print("---")
+
+# or で既定値を入れる（空文字列・0・空リストは「偽」）
+for entered in ["山田", "", None]:
+    name = entered or "ゲスト"
+    print(f"{entered!r} → {name}")
+`,
+            },
+            {
+              note: "**ここからが本題です。** 同じ並べ替えを、key を変えて 3 通り試してみましょう。",
+              caption: "key= で比べ方を変える",
+              code: `
+people = [
+    {"name": "佐藤", "age": 30, "score": 72},
+    {"name": "鈴木", "age": 25, "score": 88},
+    {"name": "高橋", "age": 41, "score": 65},
+]
+
+# 年齢の小さい順
+for p in sorted(people, key=lambda p: p["age"]):
+    print(p["name"], p["age"])
+
+print("---")
+
+# 点数の高い順（降順）
+for p in sorted(people, key=lambda p: p["score"], reverse=True):
+    print(p["name"], p["score"])
+
+print("---")
+
+# 最年長 / 最高得点
+print("最年長  :", max(people, key=lambda p: p["age"])["name"])
+print("最高得点:", max(people, key=lambda p: p["score"])["name"])
+
+# key を渡さないと「どう比べればいいか」が分からずエラーになります
+# print(max(people))
+`,
+            },
+          ],
+          exercise: {
+            prompt: `
+社員リストを扱います。次の 2 つを作ってください。
+
+1. \`by_salary\` … \`employees\` を **給与の高い順** に並べた新しいリスト
+2. \`youngest\` … **最年少** の社員の**名前**（文字列）
+
+> \`employees\` そのものは変更しないでください。
+`,
+            starter: `
+employees = [
+    {"name": "佐藤", "age": 30, "salary": 320000},
+    {"name": "鈴木", "age": 25, "salary": 280000},
+    {"name": "高橋", "age": 41, "salary": 450000},
+    {"name": "田中", "age": 34, "salary": 380000},
+]
+
+by_salary =
+youngest =
+
+for e in by_salary:
+    print(f'{e["name"]} {e["salary"]:,}円')
+print("最年少:", youngest)
+`,
+            tests: `
+g = globals()
+bs = g.get("by_salary")
+
+check(isinstance(bs, list) and len(bs) == 4, "by_salary が 4 件のリストになっている")
+if isinstance(bs, list) and len(bs) == 4:
+    check([e["name"] for e in bs] == ["高橋", "田中", "佐藤", "鈴木"], "給与の高い順に並んでいる")
+    check(g.get("employees")[0]["name"] == "佐藤", "元の employees は並べ替えていない")
+
+check(g.get("youngest") == "鈴木", "youngest が '鈴木' になっている")
+check(isinstance(g.get("youngest"), str), "youngest は名前の文字列（辞書のままではない）")
+`,
+            hint: "`sorted` と `min` の `key` には「比べたい値を取り出す関数」を渡します。辞書から 1 つの項目を取り出す関数を lambda で書いてみましょう。降順にするオプションも必要です。最後に、取れた社員から名前だけを取り出します。",
+            solution: `employees = [
+    {"name": "佐藤", "age": 30, "salary": 320000},
+    {"name": "鈴木", "age": 25, "salary": 280000},
+    {"name": "高橋", "age": 41, "salary": 450000},
+    {"name": "田中", "age": 34, "salary": 380000},
+]
+
+by_salary = sorted(employees, key=lambda e: e["salary"], reverse=True)
+youngest = min(employees, key=lambda e: e["age"])["name"]
+
+for e in by_salary:
+    print(f'{e["name"]} {e["salary"]:,}円')
+print("最年少:", youngest)`,
           },
         },
 
@@ -1108,7 +1293,7 @@ print(cleaned)
 g = globals()
 check(g.get("cleaned") == ["alice", "bob", "carol"], "cleaned が ['alice', 'bob', 'carol'] になっている")
 `,
-            hint: "`[w.strip().lower() for w in raw if w.strip()]` — 空白だけの文字列は `strip()` すると空になり、条件が偽になります。",
+            hint: "内包表記は「変換する式 → for → 絞り込みの if」の順です。空白だけの文字列は `strip()` すると空になり、条件式では偽になります。",
             solution: `raw = ["  Alice ", "BOB", "   ", "Carol  ", ""]
 
 cleaned = [w.strip().lower() for w in raw if w.strip()]
@@ -1158,6 +1343,11 @@ finally:
 > **\`except:\` とだけ書いて全部を握りつぶすのは避けましょう。** 想定した種類だけを捕まえるほうが、あとでバグを見つけやすくなります。
 
 自分でエラーを起こしたいときは \`raise ValueError("メッセージ")\`。
+
+### もっと詳しく
+
+- [組み込み例外の一覧（公式）](https://docs.python.org/ja/3/library/exceptions.html)
+- [エラーと例外（公式チュートリアル）](https://docs.python.org/ja/3/tutorial/errors.html)
 `,
           examples: [
             {
@@ -1222,7 +1412,7 @@ if callable(f):
     check(f("abc", -1) == -1, 'to_int("abc", -1) が -1 を返す')
     check(f("  7 ") == 7, "前後に空白があっても int() は変換できる")
 `,
-            hint: "`try: return int(text)` / `except ValueError: return default` の形です。",
+            hint: "`int(\"abc\")` で出る例外の種類を、本文の表で確認しましょう。`try` の中で変換して返し、その例外を受け止めたほうで既定値を返します。",
             solution: `def to_int(text: str, default: int = 0) -> int:
     try:
         return int(text)
@@ -1374,7 +1564,7 @@ if C is not None:
 
     check(C().count() == 0, "別のかごは独立している（items を共有していない）")
 `,
-            hint: "`self.items = []` を `__init__` に。`add` では `self.items.append((name, price))`。合計は `sum(p for _, p in self.items)`。",
+            hint: "`__init__` では、あとで追加していくための空のリストを `self.items` に持たせます。`add` は 2 つの値をひとまとめにして追加します（第2章のタプル）。`total` は価格だけを集めて合計します。",
             solution: `class Cart:
     def __init__(self):
         self.items = []
@@ -1572,6 +1762,12 @@ from datetime import date
 
 - \`collections.Counter\` … 登場回数の集計が 1 行で終わります
 - \`datetime\` … 日付の引き算で「何日前か」が出せます
+
+### もっと詳しく
+
+- [標準ライブラリ目次（公式）](https://docs.python.org/ja/3/library/index.html)
+- [collections（Counter / defaultdict）](https://docs.python.org/ja/3/library/collections.html)
+- [datetime（日付と時刻）](https://docs.python.org/ja/3/library/datetime.html)
 `,
           examples: [
             {
@@ -1636,7 +1832,7 @@ g = globals()
 check(g.get("top_path") == "/", "top_path が '/' になっている")
 check(g.get("top_count") == 3, "top_count が 3 になっている")
 `,
-            hint: "`Counter(paths).most_common(1)` は `[('/', 3)]` を返します。ここから 2 つの値を取り出します。",
+            hint: "`most_common(n)` は `[(値, 回数), ...]` という形で返ってきます。1 件だけ取り出して、タプルを 2 つの変数に分解しましょう（第2章のアンパック）。",
             solution: `from collections import Counter
 
 paths = ["/", "/about", "/", "/contact", "/", "/about"]
@@ -1750,9 +1946,9 @@ if callable(ti):
     check(len(ti(data)) == 3, "n の既定値が 3 になっている")
 `,
             hint: `
-- \`total\` … \`sum(r["price"] for r in records)\`
-- \`by_category\` … 空の辞書を作り、\`d[cat] = d.get(cat, 0) + price\` で足していく
-- \`top_items\` … \`sorted(records, key=lambda r: r["price"], reverse=True)\` してから内包表記でタプルにし、\`[:n]\` で切る
+- \`total\` … 各行から price だけを取り出して合計します（第3章の内包表記が使えます）
+- \`by_category\` … 空の辞書を用意し、カテゴリをキーにして足し込んでいきます（第2章の \`get\` の使い方）
+- \`top_items\` … \`sorted\` の \`key\` に「price を取り出す関数」を渡して降順に並べ、上位 n 件をスライスで切ってから \`(item, price)\` の形に変換します（第3章「短く書く記法」）
 `,
             solution: `def total(records) -> int:
     return sum(r["price"] for r in records)
