@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest";
 
 import { COURSE_ENTRIES, availableCourses, findAvailableCourse } from "../courses/registry";
 import { courseIcons } from "../icons";
-import { countLessons } from "../lib/course-utils";
+import { countLessons, flattenLessons } from "../lib/course-utils";
+import { WANTED } from "../../scripts/pyodide-packages.mjs";
 
 describe("コースレジストリ", () => {
   it("id が重複していない", () => {
@@ -43,6 +44,31 @@ describe("コースレジストリ", () => {
     for (const entry of availableCourses()) {
       const course = await entry.load();
       expect(countLessons(course), `${entry.id} の lessonCount`).toBe(entry.lessonCount);
+    }
+  });
+
+  /* レッスンが要求するパッケージの wheel は、ビルド時に public/pyodide へ
+     取得しておく必要がある。取り忘れると、CI もテストも通ったまま
+     実行時に「パッケージが見つからない」で壊れる。 */
+  it("レッスンが指定するパッケージが、取得対象に含まれている", async () => {
+    const wanted = new Set(WANTED);
+
+    for (const entry of availableCourses()) {
+      const course = await entry.load();
+      const used = new Set<string>(course.packages ?? []);
+
+      for (const { lesson } of flattenLessons(course)) {
+        lesson.packages?.forEach((p) => used.add(p));
+        lesson.exercise?.packages?.forEach((p) => used.add(p));
+        lesson.examples?.forEach((ex) => ex.packages?.forEach((p) => used.add(p)));
+      }
+
+      for (const name of used) {
+        expect(
+          wanted.has(name),
+          `${entry.id} が ${name} を使っているが、scripts/pyodide-packages.mjs の WANTED に無い`
+        ).toBe(true);
+      }
     }
   });
 });
