@@ -4,16 +4,28 @@ import react from "@vitejs/plugin-react";
 import { resolveSiteUrl } from "./scripts/site-url.mjs";
 
 /**
- * index.html の %VITE_SITE_URL% を実際の公開 URL に差し替える。
- * Vite 標準の env 置換は .env ファイルの有無に左右されるため、
- * 未設定でもプレースホルダのまま出さないよう自前で処理している。
+ * index.html の __SITE_URL__ を実際の公開 URL に差し替える。
+ *
+ * 公開 URL が決められないときは、canonical や og:url など「絶対 URL が要る」
+ * タグを丸ごと落とす。間違った URL を出すくらいなら、出さないほうが安全なため
+ * （canonical が他人のサイトを指すと検索結果から落ちる）。
+ *
+ * プレースホルダに %VITE_% 形式を使わないのは、Vite 標準の env 置換が
+ * 先に走って警告を出し、.env の値との食い違いも生むため。
  */
 function siteUrlPlugin(): Plugin {
   const siteUrl = resolveSiteUrl();
+
   return {
     name: "pylabo-site-url",
     transformIndexHtml(html) {
-      return html.replaceAll("%VITE_SITE_URL%", siteUrl);
+      if (!siteUrl) {
+        return html.replace(/[ \t]*<!--SITE_URL_ONLY-->[\s\S]*?<!--\/SITE_URL_ONLY-->\n?/g, "");
+      }
+      return html
+        .replaceAll("__SITE_URL__", siteUrl)
+        .replaceAll("<!--SITE_URL_ONLY-->\n", "")
+        .replaceAll("<!--/SITE_URL_ONLY-->\n", "");
     },
   };
 }
