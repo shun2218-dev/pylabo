@@ -178,6 +178,12 @@ Git Flow に沿っています。
 
 `feature` / `release` のマージは履歴を残すため `--no-ff` で行います。
 
+既定ブランチは `main` です（公開時に見えるブランチであり、Vercel の本番デプロイもここから行われるため）。**feature ブランチの PR は `develop` を宛先にする**ので、`gh pr create` では宛先を明示してください。
+
+```bash
+gh pr create --base develop
+```
+
 **`main` と `develop` への直接コミットは行いません。** すべて Pull Request 経由でマージし、レビュー観点は [docs/コードレビュー観点.md](docs/コードレビュー観点.md) に定義しています。PR では GitHub Actions（[.github/workflows/ci.yml](.github/workflows/ci.yml)）が型チェック・テスト・ビルド・演習の検証を実行します。
 
 ## ブラウザで動かない Python について
