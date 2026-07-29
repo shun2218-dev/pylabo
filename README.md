@@ -48,7 +48,7 @@ npm run dev
 
 `http://localhost:5173` を開いてください。
 
-> `npm install` の後処理で、Pyodide 本体（約 13MB）を `node_modules` から `public/pyodide/` へコピーし、pandas / matplotlib などの wheel（約 17MB）を Pyodide 公式配布物から取得します。**初回のみネットワークが必要で、以降はすべてローカルから配信されます。** 取得したファイルは sha256 で検証しています。
+> `npm install` の後処理で、Pyodide 本体（約 12MB）を `node_modules` から `public/pyodide/` へコピーし、pandas / matplotlib などの wheel（約 17MB）を Pyodide 公式配布物から取得します。**初回のみネットワークが必要で、以降はすべてローカルから配信されます。** 取得したファイルは sha256 で検証しています。
 
 ### そのほかのコマンド
 
@@ -102,11 +102,11 @@ wheel の取得だけをやり直したいときは `npm run fetch:packages`、P
 | `vendor-editor` / `vendor-markdown` | CodeMirror / markdown-it | コースを開いたとき |
 | `basics` / `data-analysis` / … | 各コースの本文 | そのコースを開いたとき |
 
-コースカードにポインタが乗った時点で本文の先読みを始めるため、実際にはクリック後の待ちはほとんどありません。Pyodide（約 13MB）もホーム画面では読み込まず、コースを開いた時点で起動を始めます。
+コースカードにポインタが乗った時点で本文の先読みを始めるため、実際にはクリック後の待ちはほとんどありません。Pyodide（約 12MB）もホーム画面では読み込まず、コースを開いた時点で起動を始めます。
 
 #### エディタのチャンクをこれ以上削らない理由
 
-`vendor-editor`（CodeMirror）は圧縮後 155KB あり、チャンクの中では最大です。ただしこれはコース画面でのみ読み込まれ、**同じ画面が同時に取得する Pyodide ランタイム（約 11.8MB）の約 1.3%** にすぎません。実測でも、コースを開いてからエディタが出るまで 0.34 秒、Python が使えるようになるまで 1.66 秒（localhost）で、体感を決めているのは後者です。
+`vendor-editor`（CodeMirror）は圧縮後 159KB あり、チャンクの中では最大です。ただしこれはコース画面でのみ読み込まれ、**同じ画面が同時に取得する Pyodide ランタイム（約 12MB）の約 1.3%** にすぎません。実測でも、コースを開いてからエディタが出るまで 0.34 秒、Python が使えるようになるまで 1.66 秒（localhost）で、体感を決めているのは後者です。
 
 軽量なエディタに置き換えれば 150KB ほど減りますが、行番号・Python の構文ハイライト・自動インデントを失います。学習アプリの中心がコードを書く体験である以上、割に合わないと判断しています。
 
@@ -131,8 +131,13 @@ src/
 │   └── basics.ts など        ★ 各コースの本文
 └── styles/                   SCSS
 scripts/
-├── sync-pyodide.mjs          Pyodide 本体を public/ へコピー
-└── fetch-pyodide-packages.mjs  wheel を取得（sha256 検証つき）
+├── sync-pyodide.mjs            Pyodide 本体を public/ へコピー
+├── fetch-pyodide-packages.mjs  wheel を取得（sha256 検証つき）
+├── pyodide-packages.mjs        同梱する追加パッケージの一覧
+├── pyodide-versions.mjs        Pyodide 側の Python / パッケージ版を出力（CI 用）
+├── site-url.mjs                公開 URL の決定ロジック
+├── generate-seo.mjs            robots.txt と sitemap.xml を生成
+└── verify-exercises.mjs        全演習の解答例が採点を通るか検証
 ```
 
 ## 設計上のポイント
@@ -144,6 +149,10 @@ scripts/
 **Python はワーカーで動かす。** 学習者が無限ループを書いても UI は固まりません。「停止」ボタンでワーカーを作り直して復帰できます。
 
 **採点は Python 側で行う。** 各演習の `tests` は、学習者のコードと同じ名前空間で実行される Python コードです。`check(条件, "説明")` を並べて書くと、そのままチェック項目の一覧として表示されます。
+
+## 変更履歴
+
+[CHANGELOG.md](CHANGELOG.md) を参照してください。
 
 ## コースを追加する
 
