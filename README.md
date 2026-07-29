@@ -32,6 +32,8 @@ Python は [Pyodide](https://pyodide.org/)（CPython を WebAssembly に移植�
 
 追加予定のコースはホーム画面に非活性の状態で並び、収録予定の内容が確認できます。公開時は `src/courses/registry.ts` の 1 エントリを差し替えるだけで選択可能になります。
 
+優先順位と未採用の候補は [docs/コースロードマップ.md](docs/コースロードマップ.md) にまとめています。
+
 ## 動かす
 
 ```bash
