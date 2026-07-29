@@ -1,6 +1,6 @@
 import { Fragment, useMemo } from "react";
 
-import { IMAGE_MARKER } from "../lib/protocol";
+import { splitOutputSegments } from "../lib/output";
 
 interface Props {
   /** print された内容（図の行を含む） */
@@ -10,39 +10,8 @@ interface Props {
   hasRun: boolean;
 }
 
-type Segment =
-  | { kind: "text"; value: string }
-  | { kind: "image"; value: string };
-
-/** stdout を、テキストと図に切り分ける。 */
-function splitSegments(text: string): Segment[] {
-  const segments: Segment[] = [];
-  let buffer: string[] = [];
-
-  const flush = () => {
-    if (buffer.length === 0) return;
-    segments.push({ kind: "text", value: buffer.join("\n") });
-    buffer = [];
-  };
-
-  const lines = text.split("\n");
-  lines.forEach((line, i) => {
-    if (line.startsWith(IMAGE_MARKER)) {
-      flush();
-      segments.push({ kind: "image", value: line.slice(IMAGE_MARKER.length) });
-      return;
-    }
-    // 末尾の空行は捨てる
-    if (i === lines.length - 1 && line === "") return;
-    buffer.push(line);
-  });
-
-  flush();
-  return segments;
-}
-
 export function OutputPanel({ text, error, hasRun }: Props) {
-  const segments = useMemo(() => splitSegments(text), [text]);
+  const segments = useMemo(() => splitOutputSegments(text), [text]);
 
   if (!hasRun && segments.length === 0 && !error) return null;
 

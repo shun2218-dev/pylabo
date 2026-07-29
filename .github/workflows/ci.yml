@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, develop]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: 型チェック・テスト・ビルド
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # Pyodide 本体と wheel（約 34MB）は postinstall で取得する。
+      # 毎回落とすと遅いうえ、配布元が一時的に不調なだけで CI が赤くなるためキャッシュする。
+      - name: Pyodide のバージョンを取得
+        id: pyodide
+        run: echo "version=$(node -p "require('./package.json').dependencies.pyodide")" >> "$GITHUB_OUTPUT"
+
+      - name: Pyodide ランタイムのキャッシュ
+        uses: actions/cache@v4
+        with:
+          path: public/pyodide
+          key: pyodide-${{ steps.pyodide.outputs.version }}
+
+      - name: 依存関係のインストール
+        run: npm ci
+
+      - name: 型チェック
+        run: npm run typecheck
+
+      - name: ユニットテスト
+        run: npm test
+
+      - name: ビルド
+        run: npm run build
+
+  exercises:
+    name: 演習の解答例が採点を通るか
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # この検証は手元の python3 で走らせるため Pyodide 本体は要らない。
+      # postinstall（34MB のダウンロード）を飛ばす。
+      - name: 依存関係のインストール（postinstall なし）
+        run: npm ci --ignore-scripts
+
+      # 採点の期待値は「実際の計算結果」なので、検証に使う Python と
+      # パッケージは、学習者のブラウザ内（Pyodide）と同じ版に合わせる。
+      - name: Pyodide 側のバージョンを取得
+        id: py
+        run: node scripts/pyodide-versions.mjs --github >> "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ steps.py.outputs.python }}
+
+      - name: 検証用パッケージのインストール
+        run: python -m pip install --quiet ${{ steps.py.outputs.pip-args }}
+
+      # --max-skipped=1 … 解答例を持たない確認用レッスン 1 件だけを許容する。
+      # 環境が壊れて全件読み飛ばしになったとき、緑のまま通り抜けるのを防ぐ。
+      - name: 全演習の解答例を実行して採点を確認
+        run: npm run verify:exercises -- --max-skipped=1

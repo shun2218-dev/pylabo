@@ -54,7 +54,7 @@ export const COURSE_ENTRIES: CourseEntry[] = [
       icon: "code",
       level: "入門",
       accent: "#4f8cff",
-      lessonCount: 16,
+      lessonCount: 17,
       description:
         "変数・条件分岐・リスト・関数・クラスまで、Python の骨格を一通り。ほかのコースの土台になります。",
     },

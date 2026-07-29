@@ -10,7 +10,8 @@
     "moduleDetection": "force",
     "noEmit": true,
     "strict": true,
+    "allowJs": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo"
   },
-  "include": ["vite.config.ts"]
+  "include": ["vite.config.ts", "scripts/site-url.mjs"]
 }
