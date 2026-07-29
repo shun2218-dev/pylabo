@@ -17,13 +17,13 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 
-import { resolveSiteUrl } from "./site-url.mjs";
+import { resolveSiteUrlOrFail } from "./site-url.mjs";
 
 const run = promisify(execFile);
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dist = path.join(root, "dist");
 
-const siteUrl = resolveSiteUrl();
+const siteUrl = resolveSiteUrlOrFail();
 
 try {
   await readdir(dist);

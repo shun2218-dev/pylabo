@@ -1,7 +1,7 @@
 import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 
-import { resolveSiteUrl } from "./scripts/site-url.mjs";
+import { resolveSiteUrlOrFail } from "./scripts/site-url.mjs";
 
 /**
  * index.html の __SITE_URL__ を実際の公開 URL に差し替える。
@@ -14,7 +14,7 @@ import { resolveSiteUrl } from "./scripts/site-url.mjs";
  * 先に走って警告を出し、.env の値との食い違いも生むため。
  */
 function siteUrlPlugin(): Plugin {
-  const siteUrl = resolveSiteUrl();
+  const siteUrl = resolveSiteUrlOrFail();
 
   return {
     name: "pylabo-site-url",
