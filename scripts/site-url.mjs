@@ -43,6 +43,41 @@ function readEnvFiles() {
 }
 
 /**
+ * Vercel の本番ビルドかどうか。
+ * VERCEL_ENV はシステム環境変数が有効なときだけ入る。
+ */
+const isVercelProduction = (env) => env.VERCEL === "1" && env.VERCEL_ENV === "production";
+
+/**
+ * 公開 URL を返す。本番ビルドで決められないときは例外にする。
+ *
+ * Vercel の本番デプロイで URL が取れないのは、プロジェクト設定の
+ * 「Enable access to System Environment Variables」が外れている場合がほとんど。
+ * そのまま通すと canonical も OGP も無いサイトが黙って公開されてしまうため、
+ * ここで止めて気づけるようにする。ローカルやプレビューでは警告のみ。
+ */
+export function resolveSiteUrlOrFail(env = process.env) {
+  const url = resolveSiteUrl(env);
+  if (url) return url;
+
+  if (isVercelProduction(env)) {
+    throw new Error(
+      [
+        "公開 URL を決められませんでした。canonical と OGP が出力されません。",
+        "",
+        "Vercel のプロジェクト設定 → Environment Variables で",
+        "「Enable access to System Environment Variables」を有効にしてください。",
+        "（それだけで VERCEL_PROJECT_PRODUCTION_URL から自動で決まります）",
+        "",
+        "任意のドメインを使う場合は、環境変数 SITE_URL を設定してください。",
+      ].join("\n")
+    );
+  }
+
+  return null;
+}
+
+/**
  * @returns 末尾のスラッシュを除いた URL。決められなければ null。
  */
 export function resolveSiteUrl(env = process.env) {
