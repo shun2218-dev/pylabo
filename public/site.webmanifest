@@ -1,0 +1,15 @@
+{
+  "name": "Pylabo — ブラウザだけで動く Python 学習アプリ",
+  "short_name": "Pylabo",
+  "description": "解説を読み、その場でコードを書いて実行し、自動採点で確かめながら Python を学べます。",
+  "lang": "ja",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0f1117",
+  "theme_color": "#0f1117",
+  "icons": [
+    { "src": "./favicon.svg", "type": "image/svg+xml", "sizes": "any", "purpose": "any" },
+    { "src": "./apple-touch-icon.png", "type": "image/png", "sizes": "180x180" }
+  ]
+}
