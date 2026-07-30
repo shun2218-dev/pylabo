@@ -24,7 +24,7 @@ export type CourseIconName =
 
 /**
  * コースの難易度。バッジの色はこの値で決まるので、増やすときは
- * src/components/HomeView.tsx の LEVEL_TONE にも追記する（型で強制される）。
+ * src/components/CourseCard.tsx の LEVEL_TONE にも追記する（型で強制される）。
  */
 export type CourseLevel = "入門" | "中級" | "実践";
 
