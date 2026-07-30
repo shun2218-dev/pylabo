@@ -94,6 +94,22 @@ def _shown():
     return len(_shown_images) > 0
 `;
 
+/**
+ * Python を動かすときの環境変数。
+ *
+ * 学習者のブラウザ内（Pyodide）と同じ出力になるようにそろえる。
+ * pytest は環境で表示を変えるため、放っておくと「手元では合うのに CI では
+ * 違う」記録になってしまう。
+ *
+ * - COLUMNS … 端末の幅で「===」の長さや失敗一覧の省略位置が変わる
+ * - CI / BUILD_NUMBER … pytest はこれがあると失敗一覧を省略しない
+ *   （学習者のブラウザには無いので、こちらも外して同じ表示にする）
+ */
+function childEnv() {
+  const { CI, BUILD_NUMBER, ...rest } = process.env;
+  return { ...rest, COLUMNS: "80" };
+}
+
 const REPORT = `
 import json, sys
 sys.stdout = _real_stdout
@@ -215,12 +231,10 @@ export async function execute({ source, tests = "", helper, files = {} }) {
 
     let stdout = "";
     try {
-      /* COLUMNS を固定する。pytest は端末の幅で「===」の長さや失敗一覧の
-         省略位置を変えるため、環境によって出力が変わってしまう。 */
       ({ stdout } = await run(python, [file], {
         cwd: workDir,
         timeout: 60_000,
-        env: { ...process.env, COLUMNS: "80" },
+        env: childEnv(),
       }));
     } catch (e) {
       return { error: e.stderr || e.message, checks: [], output: e.stdout ?? "" };
