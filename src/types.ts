@@ -40,6 +40,12 @@ export interface CodeExample {
    * ブラウザでは動かせないコード（サーバー起動など）を載せるときに使う。
    */
   runnable?: boolean;
+  /**
+   * true にすると「実行するとエラーになる」ことを見せる例になる。
+   * scripts/verify-exercises.mjs は、この印が付いた例は逆に
+   * 「本当にエラーで止まるか」を確かめる（説明と食い違ったら落とす）。
+   */
+  raises?: boolean;
   packages?: string[];
   files?: Record<string, string>;
 }
@@ -59,6 +65,15 @@ export interface Exercise {
   tests: string;
   hint?: string;
   solution?: string;
+  /**
+   * 採点が落とせないといけない回答。
+   *
+   * 「初期コードのままなら落ちる」だけでは、答えを丸め込んだ回答
+   * （テストの中身が空、結果を決め打ちなど）が通ってしまう抜けに気づけない。
+   * 落としたい回答をここに置くと、scripts/verify-exercises.mjs が
+   * 「本当に落ちるか」を毎回確かめる。
+   */
+  rejects?: { caption: string; code: string }[];
   packages?: string[];
   files?: Record<string, string>;
 }
