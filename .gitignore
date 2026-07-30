@@ -6,6 +6,9 @@ dist/
 # npm install（postinstall）で生成される Pyodide ランタイム一式
 public/pyodide/
 
+# 演習の検証用に作る Python 環境（npm run verify:setup）
+.venv-pyodide/
+
 # 各自のローカル設定
 .claude/settings.local.json
 .vscode/

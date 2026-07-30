@@ -16,16 +16,48 @@
  * そこで、いま書いているコードをそのままテストファイルとして書き出し、
  * pytest に渡すヘルパーを用意している。
  *
- * 使う側（レッスン）から見える名前は run_pytest() だけ。
- * pytest の import は呼ばれたときに行うので、pytest を読み込まない
+ * レッスンから使うのは run_pytest() だけ。採点からはこれに加えて
+ * _source()（エディタの中身）と _replace_def()（実装だけ差し替えたソースを作る）
+ * を使う。pytest の import は呼ばれたときに行うので、pytest を読み込まない
  * ほかのコースで定義されていても害はない。
  *
  * 前提: 実行前に _pylabo_source（エディタの中身）が名前空間にあること。
  */
-export const PYTEST_HELPER = String.raw`
+export const PYTHON_HELPERS = String.raw`
 def _source():
     """いまエディタに書かれているコードの文字列（この学習アプリ専用）。"""
     return _pylabo_source
+
+
+def _replace_def(source, name, replacement):
+    """
+    トップレベルの def / class を 1 つだけ差し替えたソースを返す（採点用）。
+
+    「学習者が書いたテストは、壊れた実装をちゃんと落とせるか」を見るために使う。
+    エディタが 1 枚なので実装とテストが同じファイルに並んでいる。実装だけを
+    壊した版に置き換えたソースを作れば、テストの中身を確かめられる。
+    （テストが書けているかを個数だけで見ると、中身が空でも通ってしまう）
+
+    デコレータ付きの関数も丸ごと残すため、行番号から切り出している。
+    """
+    import ast
+
+    lines = source.split("\n")
+    tree = ast.parse(source)
+    pieces = []
+
+    for node in tree.body:
+        defined = isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
+        if defined and node.name == name:
+            pieces.append(replacement.strip("\n"))
+            continue
+
+        start = node.lineno
+        for decorator in getattr(node, "decorator_list", []):
+            start = min(start, decorator.lineno)
+        pieces.append("\n".join(lines[start - 1 : node.end_lineno]))
+
+    return "\n\n".join(pieces)
 
 
 class _PytestOutcome:

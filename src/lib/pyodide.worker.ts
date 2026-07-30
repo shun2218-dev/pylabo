@@ -9,7 +9,7 @@
 import type { PyodideInterface } from "pyodide";
 import { IMAGE_MARKER } from "./protocol";
 import type { CheckResult, WorkerRequest, WorkerResponse } from "./protocol";
-import { PYTEST_HELPER } from "./python-helpers";
+import { PYTHON_HELPERS } from "./python-helpers";
 
 const BASE = import.meta.env.BASE_URL || "/";
 const PYODIDE_DIR = new URL(`${BASE}pyodide/`, self.location.href).href;
@@ -93,7 +93,7 @@ def show():
 def _shown():
     """採点用。show() で図を出したかどうか。"""
     return len(_shown_images) > 0
-${PYTEST_HELPER}`;
+${PYTHON_HELPERS}`;
 
 function post(msg: WorkerResponse): void {
   self.postMessage(msg);

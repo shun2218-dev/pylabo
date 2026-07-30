@@ -240,6 +240,8 @@ print("ここまで来たら、上の 3 つはすべて通っている")
             {
               caption: "失敗させてみる",
               note: "`strip()` を忘れた実装です。**どこで・何が違ったのか**が出ることを確かめてください。",
+              // assert で止まることを見せる例（検証は止まることを確かめる）
+              raises: true,
               code: `
 def normalize(name):
     return name.lower()   # strip() を忘れている
@@ -265,6 +267,8 @@ print("ここには来ない")
 | 空文字なら空文字 | \`""\` → \`""\` |
 
 **そのうえで、自分で \`assert\` を 3 つ以上書いて確かめてください。**
+
+> 採点では、あなたの \`assert\` を「受け取った文字列をそのまま返すだけ」の実装にも当てます。そこで止まらなければ、確かめたことになっていないという意味です。
 `,
             starter: `
 def to_slug(title):
@@ -297,6 +301,29 @@ except SyntaxError:
     asserts = []
 
 check(len(asserts) >= 3, "assert を 3 つ以上書いて自分で確かめている（今は {} 個）".format(len(asserts)))
+
+# 個数だけ見ると assert True を並べても通ってしまう。
+# 実装を「受け取った文字列をそのまま返すだけ」に差し替えて走らせ、
+# 書いた assert がちゃんと気づけるかを見る。
+NAIVE = """
+def to_slug(title):
+    return title
+"""
+
+if callable(f) and len(asserts) >= 3:
+    import contextlib
+    import io as _io
+
+    caught = False
+    try:
+        with contextlib.redirect_stdout(_io.StringIO()):
+            exec(compile(_replace_def(_source(), "to_slug", NAIVE), "<probe>", "exec"), {})
+    except AssertionError:
+        caught = True
+    except Exception:
+        caught = False
+
+    check(caught, "書いた assert が、手抜きな実装（受け取った文字列を返すだけ）を見つけられる")
 `,
             hint: "文字列を空白で区切るメソッドと、リストを区切り文字でつなぐメソッドを組み合わせると、連続した空白の扱いまで一度に片付きます。小文字にするのは先でも後でも構いません。",
             solution: `def to_slug(title):
@@ -310,6 +337,20 @@ assert to_slug("A") == "a"
 assert to_slug("") == ""
 
 print("すべて通った")`,
+            rejects: [
+              {
+                caption: "実装は正しいが、assert が何も確かめていない",
+                code: `def to_slug(title):
+    return "-".join(title.lower().split())
+
+
+assert True
+assert 1 == 1
+assert to_slug("A") == to_slug("A")
+
+print("すべて通った")`,
+              },
+            ],
           },
         },
 
@@ -2491,6 +2532,8 @@ def print_summary(path):
 - 最後の行で \`run_pytest()\` を呼び、すべて通る状態にすること
 
 練習用のファイル \`orders.txt\` を置いてあります（3 件・合計 740 円）。
+
+> 採点では、あなたのテストを「空行も数えてしまう \`summarize\`」に対しても走らせます。そこで落ちなければ、空行の仕様を確かめられていないという意味です。
 `,
             starter: `
 def summarize(lines):
@@ -2541,6 +2584,33 @@ if callable(print_summary):
 good = run_pytest(source=_source(), quiet=True)
 check(len(good.results) >= 2, "テストを 2 件以上書けている（今は {} 件）".format(len(good.results)))
 check(good.ok, "書いたテストがすべて通る（落ちたもの: {}）".format(", ".join(good.failed) or "なし"))
+
+# 件数だけ見ると、中身のないテストでも通ってしまう。
+# summarize を「空行も数える版」に差し替えて、書いたテストが気づけるかを見る。
+COUNTS_BLANKS = """
+def summarize(lines):
+    count = 0
+    total = 0
+    for line in lines:
+        if "," not in line:
+            count += 1
+            continue
+        name, price = line.split(",")
+        count += 1
+        total += int(price)
+    return {"count": count, "total": total}
+"""
+
+if good.ok:
+    bad = run_pytest(
+        source=_replace_def(_source(), "summarize", COUNTS_BLANKS),
+        name="test_probe",
+        quiet=True,
+    )
+    check(
+        len(bad.failed) > 0,
+        "書いたテストが、空行を数えてしまう版を落とせる（＝中身を確かめられている）",
+    )
 `,
             hint: "`summarize` は「行の並び」を受け取ります。ファイルオブジェクトも 1 行ずつ取り出せるので、`print_summary` からはそのまま渡せます。件数と合計を数え上げて、最後に辞書にして返してください。",
             solution: `def summarize(lines):
@@ -2579,6 +2649,39 @@ def test_summarize_of_nothing():
 
 
 run_pytest("-v")`,
+            rejects: [
+              {
+                caption: "分けてはいるが、テストが中身を見ていない",
+                code: `def summarize(lines):
+    count = 0
+    total = 0
+    for line in lines:
+        line = line.strip()
+        if not line:
+            continue
+        name, price = line.split(",")
+        count += 1
+        total += int(price)
+    return {"count": count, "total": total}
+
+
+def print_summary(path):
+    with open(path, encoding="utf-8") as f:
+        result = summarize(f)
+    print("{} 件 / 合計 {} 円".format(result["count"], result["total"]))
+
+
+def test_returns_a_dict():
+    assert isinstance(summarize([]), dict)
+
+
+def test_is_callable():
+    assert callable(summarize)
+
+
+run_pytest("-v")`,
+              },
+            ],
           },
         },
 
@@ -3070,6 +3173,8 @@ run_pytest("-v")
 - 最後の行で \`run_pytest()\` を呼び、すべて通る状態にすること
 
 > 手順としては、テストを 1 つ書いて \`run_pytest()\` で赤を見る → 実装を足して緑にする、を繰り返すのがおすすめです。
+
+> 採点では、あなたのテストを「余りを切り捨てる \`fair_share\`」に対しても走らせます。そこで落ちなければ、仕様を確かめられていないという意味です。
 `,
             starter: `
 import pytest
@@ -3117,6 +3222,26 @@ if callable(f):
 good = run_pytest(source=_source(), quiet=True)
 check(len(good.results) >= 4, "テストを 4 件以上書けている（今は {} 件）".format(len(good.results)))
 check(good.ok, "書いたテストがすべて通る（落ちたもの: {}）".format(", ".join(good.failed) or "なし"))
+
+# 先にテストを書いた意味があるかは、件数ではなく「壊れた実装を落とせるか」で見る。
+# 余りを切り捨てる版（合計が元の金額に足りない）に差し替えて、赤くなるかを確かめる。
+DROPS_REMAINDER = """
+def fair_share(total, people):
+    if people <= 0:
+        raise ValueError("人数は 1 人以上にしてください")
+    return [total // people] * people
+"""
+
+if good.ok:
+    bad = run_pytest(
+        source=_replace_def(_source(), "fair_share", DROPS_REMAINDER),
+        name="test_probe",
+        quiet=True,
+    )
+    check(
+        len(bad.failed) > 0,
+        "書いたテストが、余りを切り捨てる版を落とせる（＝仕様を確かめられている）",
+    )
 `,
             hint: "`divmod(total, people)` で「1 人あたり」と「余り」が同時に取れます。余りを先頭から配るには、何番目かを見て 1 円足すかどうかを決めます。人数のチェックは、割り算より先に書いてください。",
             solution: `import pytest
@@ -3157,6 +3282,39 @@ def test_zero_people_is_an_error():
 
 
 run_pytest("-v")`,
+            rejects: [
+              {
+                caption: "実装は正しいが、テストが仕様を確かめていない",
+                code: `import pytest
+
+
+def fair_share(total, people):
+    if people <= 0:
+        raise ValueError("人数は 1 人以上にしてください")
+    base, remainder = divmod(total, people)
+    return [base + (1 if i < remainder else 0) for i in range(people)]
+
+
+def test_returns_a_list():
+    assert isinstance(fair_share(1000, 4), list)
+
+
+def test_returns_one_entry_per_person():
+    assert len(fair_share(1000, 4)) == 4
+
+
+def test_is_callable():
+    assert callable(fair_share)
+
+
+def test_zero_people_is_an_error():
+    with pytest.raises(ValueError):
+        fair_share(1000, 0)
+
+
+run_pytest("-v")`,
+              },
+            ],
           },
         },
 
@@ -3349,23 +3507,8 @@ check(len(good.results) >= 3, "テストを 3 件以上書けている（今は 
 check(good.ok, "書いたテストがすべて通る（落ちたもの: {}）".format(", ".join(good.failed) or "なし"))
 
 
-def _tests_only(source):
-    """自分の実装を取り除き、テストだけを残したソースを作る。"""
-    tree = ast.parse(source)
-    kept = []
-    for node in tree.body:
-        if isinstance(node, ast.FunctionDef) and node.name == "apply_points":
-            continue
-        if isinstance(node, ast.Expr):
-            continue
-        segment = ast.get_source_segment(source, node)
-        if segment:
-            kept.append(segment)
-    return "\\n\\n".join(kept)
-
-
 if good.ok:
-    probe = BUGGY + "\\n\\n" + _tests_only(_source())
+    probe = _replace_def(_source(), "apply_points", BUGGY)
     bad = run_pytest(source=probe, name="test_regression", quiet=True)
     check(
         len(bad.failed) >= 2,

@@ -1,0 +1,1239 @@
+{
+  "basics/ch1/l1#0": {
+    "caption": "そのまま実行してみる",
+    "output": [
+      "こんにちは、Python",
+      "山田",
+      "30",
+      "山田 さんは 30 歳です"
+    ]
+  },
+  "basics/ch1/l1#1": {
+    "caption": "上書きされるところを見る",
+    "output": [
+      "1",
+      "2",
+      "12"
+    ]
+  },
+  "basics/ch1/l2#0": {
+    "caption": "型と計算を確かめる",
+    "output": [
+      "<class 'int'> <class 'float'> <class 'str'>",
+      "3.5",
+      "3",
+      "1",
+      "1024",
+      "Python",
+      "--------------------"
+    ]
+  },
+  "basics/ch1/l2#1": {
+    "caption": "文字列メソッド",
+    "output": [
+      "Hello, Python World",
+      "hello, python world",
+      "HELLO, PYTHON WORLD",
+      "  Hello, Python みんな  ",
+      "19",
+      "True"
+    ]
+  },
+  "basics/ch1/l3#0": {
+    "caption": "f 文字列いろいろ",
+    "output": [
+      "山田さん、こんにちは",
+      "税込 1408.0 円",
+      "税込 1408 円",
+      "合計 1,234,567 円",
+      "price=1280"
+    ]
+  },
+  "basics/ch1/l3#1": {
+    "caption": "型変換とその失敗",
+    "output": [
+      "43",
+      "421",
+      "42歳"
+    ]
+  },
+  "basics/ch1/l4#0": {
+    "caption": "点数で判定する",
+    "output": [
+      "78点 → B",
+      "点数の範囲は正常です"
+    ]
+  },
+  "basics/ch1/l4#1": {
+    "caption": "空かどうかで分ける",
+    "output": [
+      "買い物リストは空です",
+      "奇数"
+    ]
+  },
+  "basics/ch2/l5#0": {
+    "caption": "作る・取り出す・切り出す",
+    "output": [
+      "りんご",
+      "もも",
+      "['みかん', 'ぶどう']",
+      "['りんご', 'みかん']",
+      "4"
+    ]
+  },
+  "basics/ch2/l5#1": {
+    "caption": "変える",
+    "output": [
+      "[5, 3, 9, 1, 7]",
+      "[1, 3, 5, 7, 9]",
+      "[9, 7, 5, 3, 1]",
+      "取り出した: 1 ／残り: [9, 7, 5, 3]",
+      "24 9 3"
+    ]
+  },
+  "basics/ch2/l6#0": {
+    "caption": "いろいろな回し方",
+    "output": [
+      "りんご",
+      "みかん",
+      "ぶどう",
+      "---",
+      "1. りんご",
+      "2. みかん",
+      "3. ぶどう",
+      "---",
+      "りんごは150円",
+      "みかんは80円",
+      "ぶどうは400円"
+    ]
+  },
+  "basics/ch2/l6#1": {
+    "caption": "合計を作る／条件で飛ばす",
+    "output": [
+      "合計: 23",
+      "見つけた: 12"
+    ]
+  },
+  "basics/ch2/l7#0": {
+    "caption": "基本操作",
+    "output": [
+      "山田",
+      "None",
+      "未登録",
+      "name: 山田",
+      "age: 31",
+      "email: me@example.com"
+    ]
+  },
+  "basics/ch2/l7#1": {
+    "caption": "集計に使う（登場回数を数える）",
+    "output": [
+      "{'python': 3, 'go': 2, 'rust': 1}",
+      "python: 3回",
+      "go: 2回",
+      "rust: 1回"
+    ]
+  },
+  "basics/ch2/l8#0": {
+    "caption": "タプルと集合",
+    "unstable": true
+  },
+  "basics/ch2/l8#1": {
+    "caption": "while で数を減らす",
+    "output": [
+      "1日目: 残り 700 円",
+      "2日目: 残り 400 円",
+      "3日目: 残り 100 円",
+      "4日目: 残り -200 円",
+      "4日でなくなりました"
+    ]
+  },
+  "basics/ch3/l9#0": {
+    "caption": "定義して呼ぶ",
+    "output": [
+      "1100",
+      "1080",
+      "合計 2200 円"
+    ]
+  },
+  "basics/ch3/l9#1": {
+    "caption": "return を忘れるとどうなるか",
+    "output": [
+      "10",
+      "bad の結果: None",
+      "good の結果: 10"
+    ]
+  },
+  "basics/ch3/l10#0": {
+    "caption": "既定値とキーワード",
+    "output": [
+      "https://example.com/",
+      "https://example.com/api/users",
+      "http://localhost:8000/"
+    ]
+  },
+  "basics/ch3/l10#1": {
+    "caption": "*args と **kwargs",
+    "output": [
+      "6",
+      "100",
+      "name = 山田",
+      "lang = Python",
+      "year = 2020"
+    ]
+  },
+  "basics/ch3/shorthand#0": {
+    "caption": "三項演算子と or",
+    "output": [
+      "  3 → 奇数 / 正",
+      "  8 → 偶数 / 正",
+      "  0 → 偶数 / 0以下",
+      " -5 → 奇数 / 0以下",
+      "---",
+      "'山田' → 山田",
+      "'' → ゲスト",
+      "None → ゲスト"
+    ]
+  },
+  "basics/ch3/shorthand#1": {
+    "caption": "key= で比べ方を変える",
+    "output": [
+      "鈴木 25",
+      "佐藤 30",
+      "高橋 41",
+      "---",
+      "鈴木 88",
+      "佐藤 72",
+      "高橋 65",
+      "---",
+      "最年長  : 高橋",
+      "最高得点: 鈴木"
+    ]
+  },
+  "basics/ch3/l11#0": {
+    "caption": "作る・しぼる",
+    "output": [
+      "[1, 4, 9, 16, 25, 36, 49, 64, 81, 100]",
+      "[2, 4, 6, 8, 10]",
+      "[80, 90, 100]",
+      "['python', 'go', 'rust']"
+    ]
+  },
+  "basics/ch3/l11#1": {
+    "caption": "辞書内包表記",
+    "output": [
+      "{'りんご': 150, 'みかん': 80, 'ぶどう': 1200}",
+      "{'りんご': 150, 'ぶどう': 1200}"
+    ]
+  },
+  "basics/ch3/l12#0": {
+    "caption": "受け止める",
+    "output": [
+      "'10' → 10",
+      "'abc' は整数にできません（invalid literal for int() with base 10: 'abc'）",
+      "'3.5' は整数にできません（invalid literal for int() with base 10: '3.5'）",
+      "'7' → 7"
+    ]
+  },
+  "basics/ch3/l12#1": {
+    "caption": "自分で投げる",
+    "output": [
+      "700",
+      "エラー: 残高が足りません"
+    ]
+  },
+  "basics/ch4/l13#0": {
+    "caption": "定義して使う",
+    "output": [
+      "山田さんの口座：12,000円",
+      "エラー: 残高不足"
+    ]
+  },
+  "basics/ch4/l13#1": {
+    "caption": "インスタンスはそれぞれ独立している",
+    "output": [
+      "a: 2",
+      "b: 1"
+    ]
+  },
+  "basics/ch4/l14#0": {
+    "caption": "継承と super()",
+    "output": [
+      "佐藤（月給 300,000円）",
+      "鈴木（月給 500,000円） / 部下 4名"
+    ]
+  },
+  "basics/ch4/l14#1": {
+    "caption": "dataclass で楽をする",
+    "output": [
+      "Task(title='ドキュメントを読む', done=False, tags=[])",
+      "True",
+      "Task(title='ドキュメントを読む', done=True, tags=[])"
+    ]
+  },
+  "basics/ch4/l15#0": {
+    "caption": "Counter と statistics",
+    "output": [
+      "Counter({'GET': 3, 'POST': 2, 'DELETE': 1})",
+      "[('GET', 3), ('POST', 2)]",
+      "3",
+      "平均: 72.33333333333333",
+      "中央値: 74.0",
+      "標準偏差: 17.24"
+    ]
+  },
+  "basics/ch4/l15#1": {
+    "caption": "日付を扱う",
+    "output": [
+      "今日: 2026-07-30",
+      "書式: 2026年07月30日",
+      "残り日数: 154",
+      "1週間後: 2026-08-06",
+      "元日からの経過: 210 日"
+    ]
+  },
+  "basics/ch4/l16#0": {
+    "caption": "扱うデータの形を確認する",
+    "output": [
+      "2026-07-01 ランチ 980",
+      "2026-07-01 電車 420",
+      "2026-07-03 本 2640",
+      "件数: 6",
+      "総額: 12320"
+    ]
+  },
+  "data/ch1/l1#0": {
+    "caption": "レコード型で持って眺める",
+    "output": [
+      "渋谷   カフェラテ        5,760円",
+      "新宿   ブレンド         7,600円",
+      "渋谷   サンドイッチ       3,100円",
+      "行数: 3",
+      "列名: ['store', 'item', 'quantity', 'price']"
+    ]
+  },
+  "data/ch1/l2#0": {
+    "caption": "店舗別・カテゴリ別に集計する",
+    "output": [
+      "新宿: 13,760円",
+      "渋谷: 8,860円",
+      "横浜: 4,320円",
+      "---",
+      "合計: 26,940円",
+      "平均: 5,388円",
+      "中央値: 5,760円"
+    ]
+  },
+  "data/ch1/l3#0": {
+    "caption": "csv モジュールで読む",
+    "output": [
+      "行数: 30",
+      "列名: ['date', 'store', 'category', 'item', 'quantity', 'price']",
+      "",
+      "{'date': '2026-04-02', 'store': '渋谷', 'category': 'ドリンク', 'item': 'カフェラテ', 'quantity': '12', 'price': '480'}",
+      "{'date': '2026-04-02', 'store': '渋谷', 'category': 'フード', 'item': 'サンドイッチ', 'quantity': '5', 'price': '620'}",
+      "{'date': '2026-04-02', 'store': '新宿', 'category': 'ドリンク', 'item': 'ブレンド', 'quantity': '20', 'price': '380'}",
+      "",
+      "そのまま足すと: 125",
+      "int にすれば: 17"
+    ]
+  },
+  "data/ch2/l4#0": {
+    "caption": "Series を作って触る",
+    "output": [
+      "ラテ      480",
+      "ブレンド    380",
+      "サンド     620",
+      "キッシュ    780",
+      "dtype: int64",
+      "",
+      "合計: 2260",
+      "平均: 565.0",
+      "最大: 780 → キッシュ",
+      "",
+      "ラテ      528.0",
+      "ブレンド    418.0",
+      "サンド     682.0",
+      "キッシュ    858.0",
+      "dtype: float64"
+    ]
+  },
+  "data/ch2/l4#1": {
+    "caption": "DataFrame を作る",
+    "output": [
+      "     item  quantity  price",
+      "0   カフェラテ        12    480",
+      "1    ブレンド        20    380",
+      "2  サンドイッチ         5    620",
+      "",
+      "     item  quantity  price  amount",
+      "0   カフェラテ        12    480    5760",
+      "1    ブレンド        20    380    7600",
+      "2  サンドイッチ         5    620    3100",
+      "",
+      "売上合計: 16460"
+    ]
+  },
+  "data/ch2/l5#0": {
+    "caption": "読み込んで全体を眺める",
+    "output": [
+      "形: (30, 6)",
+      "",
+      "        date store category    item  quantity  price",
+      "0 2026-04-02    渋谷     ドリンク   カフェラテ        12    480",
+      "1 2026-04-02    渋谷      フード  サンドイッチ         5    620",
+      "2 2026-04-02    新宿     ドリンク    ブレンド        20    380",
+      "3 2026-04-03    渋谷     ドリンク    ブレンド        15    380",
+      "4 2026-04-03    新宿      フード    キッシュ         3    780",
+      "",
+      "<class 'pandas.DataFrame'>",
+      "RangeIndex: 30 entries, 0 to 29",
+      "Data columns (total 6 columns):",
+      " #   Column    Non-Null Count  Dtype         ",
+      "---  ------    --------------  -----         ",
+      " 0   date      30 non-null     datetime64[us]",
+      " 1   store     30 non-null     str           ",
+      " 2   category  30 non-null     str           ",
+      " 3   item      30 non-null     str           ",
+      " 4   quantity  30 non-null     int64         ",
+      " 5   price     30 non-null     int64         ",
+      "dtypes: datetime64[us](1), int64(2), str(3)",
+      "memory usage: 1.5 KB"
+    ]
+  },
+  "data/ch2/l5#1": {
+    "caption": "統計量とユニーク値",
+    "output": [
+      "                      date   quantity       price",
+      "count                   30  30.000000   30.000000",
+      "mean   2026-04-14 00:48:00  11.966667  527.333333",
+      "min    2026-04-02 00:00:00   2.000000  380.000000",
+      "25%    2026-04-05 06:00:00   6.250000  480.000000",
+      "50%    2026-04-13 12:00:00  11.000000  480.000000",
+      "75%    2026-04-21 18:00:00  16.750000  605.000000",
+      "max    2026-04-30 00:00:00  25.000000  780.000000",
+      "std                    NaN   6.499248  126.652752",
+      "",
+      "店舗: <StringArray>",
+      "['渋谷', '新宿', '横浜']",
+      "Length: 3, dtype: str",
+      "カテゴリ: <StringArray>",
+      "['ドリンク', 'フード', 'スイーツ']",
+      "Length: 3, dtype: str",
+      "",
+      "category",
+      "ドリンク    16",
+      "フード      8",
+      "スイーツ     6",
+      "Name: count, dtype: int64"
+    ]
+  },
+  "data/ch2/l6#0": {
+    "caption": "選ぶ・絞る",
+    "output": [
+      "  store    item  amount",
+      "0    渋谷   カフェラテ    5760",
+      "1    渋谷  サンドイッチ    3100",
+      "2    新宿    ブレンド    7600",
+      "3    渋谷    ブレンド    5700",
+      "4    新宿    キッシュ    2340",
+      "",
+      "8000円以上の行: 5",
+      "         date store   item  amount",
+      "7  2026-04-05    新宿  カフェラテ    8640",
+      "11 2026-04-09    横浜   ブレンド    8360",
+      "13 2026-04-12    新宿   ブレンド    9500",
+      "19 2026-04-19    新宿  カフェラテ   10080",
+      "25 2026-04-26    新宿   ブレンド    8740"
+    ]
+  },
+  "data/ch2/l6#1": {
+    "caption": "条件を組み合わせる",
+    "output": [
+      "渋谷のドリンク: 6 件",
+      "売上: 39,520円",
+      "",
+      "         date   item  amount",
+      "2  2026-04-02   ブレンド    7600",
+      "7  2026-04-05  カフェラテ    8640",
+      "13 2026-04-12   ブレンド    9500",
+      "19 2026-04-19  カフェラテ   10080",
+      "25 2026-04-26   ブレンド    8740"
+    ]
+  },
+  "data/ch3/l7#0": {
+    "caption": "groupby いろいろ",
+    "output": [
+      "店舗別の売上",
+      "store",
+      "新宿    68520",
+      "横浜    43660",
+      "渋谷    57080",
+      "Name: amount, dtype: int64",
+      "",
+      "カテゴリ別の複数集計",
+      "             sum    mean  count",
+      "category                       ",
+      "スイーツ       25320  4220.0      6",
+      "ドリンク      115500  7219.0     16",
+      "フード        28440  3555.0      8"
+    ]
+  },
+  "data/ch3/l7#1": {
+    "caption": "2 軸で集計してクロス表にする",
+    "output": [
+      "store  category",
+      "新宿     スイーツ        11360",
+      "       ドリンク        44560",
+      "       フード         12600",
+      "横浜     スイーツ         6960",
+      "       ドリンク        31420",
+      "       フード          5280",
+      "渋谷     スイーツ         7000",
+      "       ドリンク        39520",
+      "       フード         10560",
+      "Name: amount, dtype: int64",
+      "",
+      "category   スイーツ   ドリンク    フード",
+      "store                        ",
+      "新宿        11360  44560  12600",
+      "横浜         6960  31420   5280",
+      "渋谷         7000  39520  10560"
+    ]
+  },
+  "data/ch3/l8#0": {
+    "caption": "上位を出す・構成比を出す",
+    "output": [
+      "売上上位 5 件",
+      "         date store   item  amount",
+      "19 2026-04-19    新宿  カフェラテ   10080",
+      "13 2026-04-12    新宿   ブレンド    9500",
+      "25 2026-04-26    新宿   ブレンド    8740",
+      "7  2026-04-05    新宿  カフェラテ    8640",
+      "11 2026-04-09    横浜   ブレンド    8360",
+      "",
+      "              売上  構成比(%)",
+      "category                ",
+      "ドリンク      115500    68.2",
+      "フード        28440    16.8",
+      "スイーツ       25320    15.0"
+    ]
+  },
+  "data/ch3/l8#1": {
+    "caption": "日付を使ってまとめる",
+    "output": [
+      "week",
+      "14    41100",
+      "15    37580",
+      "16    37100",
+      "17    33520",
+      "18    19960",
+      "Name: amount, dtype: int64",
+      "",
+      "weekday",
+      "Thursday     43560",
+      "Sunday       40600",
+      "Tuesday      28060",
+      "Friday       23180",
+      "Wednesday    21620",
+      "Monday       12240",
+      "Name: amount, dtype: int64"
+    ]
+  },
+  "data/ch3/l9#0": {
+    "caption": "店舗別の棒グラフ",
+    "output": [
+      "[図を表示]"
+    ]
+  },
+  "data/ch3/l9#1": {
+    "caption": "日ごとの推移（折れ線）",
+    "output": [
+      "[図を表示]"
+    ]
+  },
+  "data/ch4/l10#0": {
+    "caption": "完成イメージを先に見る",
+    "output": [
+      "=== 全体 ===",
+      "期間: 2026-04-02 〜 2026-04-30",
+      "売上: 169,260円 / 30件",
+      "",
+      "=== 店舗別 ===",
+      "          売上  件数   構成比",
+      "store                 ",
+      "新宿     68520  10  40.5",
+      "渋谷     57080  11  33.7",
+      "横浜     43660   9  25.8"
+    ]
+  },
+  "automation/ch1/l1#0": {
+    "caption": "パスを組み立てて調べる",
+    "output": [
+      "パス     : data/2026/sales.csv",
+      "ファイル名: sales.csv",
+      "拡張子なし: sales",
+      "拡張子   : .csv",
+      "親       : data/2026",
+      "親の親   : data",
+      "差し替え : data/2026/sales.json"
+    ]
+  },
+  "automation/ch1/l1#1": {
+    "caption": "今あるファイルを探す",
+    "output": [
+      "access.log          885 文字",
+      "members.csv         223 文字",
+      "settings.json       231 文字",
+      "",
+      "csv だけ: ['members.csv']"
+    ]
+  },
+  "automation/ch1/l2#0": {
+    "caption": "ログを読んで数える",
+    "output": [
+      "行数: 20",
+      "",
+      "2026-05-01 09:12:03 GET /            200 128",
+      "2026-05-01 09:12:44 GET /about       200 96",
+      "2026-05-01 09:15:10 POST /api/login  200 41",
+      "",
+      "エラー行: 5"
+    ]
+  },
+  "automation/ch1/l2#1": {
+    "caption": "加工して書き出す",
+    "output": [
+      "書き出し先: errors.txt ／存在: True",
+      "",
+      "2026-05-01 10:33:09 GET /missing     404 12",
+      "2026-05-01 11:41:17 POST /api/order  500 8",
+      "2026-05-02 12:20:55 GET /missing     404 11",
+      "2026-05-03 10:48:33 POST /api/order  500 9",
+      "2026-05-03 18:07:59 GET /missing     404 14"
+    ]
+  },
+  "automation/ch1/l3#0": {
+    "caption": "CSV を読んで整える",
+    "output": [
+      "件数: 5",
+      "生データ: {'name': ' 佐藤 太郎 ', 'email': 'SATO@example.com', 'joined': '2024-04-01', 'plan': 'pro'}",
+      "",
+      "佐藤 太郎      sato@example.com             pro",
+      "鈴木 花子      suzuki@example.com           free",
+      "高橋 健       takahashi@example.com        pro",
+      "田中 実       tanaka@example.com           free",
+      "伊藤 彩       ito@example.com              team"
+    ]
+  },
+  "automation/ch1/l3#1": {
+    "caption": "JSON を読む・書く",
+    "output": [
+      "<class 'dict'>",
+      "アプリ名: reporter",
+      "出力形式: csv",
+      "対象   : sales, members, access",
+      "通知ON : True",
+      "",
+      "{",
+      "  \"app\": \"reporter\",",
+      "  \"version\": \"1.4.0\",",
+      "  \"output\": {",
+      "    \"format\": \"json\",",
+      "    \"directory\": \"./out\"",
+      "  },",
+      "  \"targets\": [",
+      "    \"sales\",",
+      "    \"members\",",
+      "    \"access\",",
+      "    \"logs\"",
+      "  ],",
+      "  \"notify\": {",
+      "    \"enabled\": true,",
+      "    \"channels\": [",
+      "      \"email\",",
+      "      \"slack\"",
+      "    ]",
+      "  }",
+      "}"
+    ]
+  },
+  "automation/ch2/l4#0": {
+    "caption": "ログから欲しいものを抜く",
+    "output": [
+      "2026-05-01 GET / 200",
+      "2026-05-01 GET /about 200",
+      "2026-05-01 POST /api/login 200",
+      "2026-05-01 GET / 200",
+      "2026-05-01 GET /pricing 200",
+      "",
+      "{'date': '2026-05-01', 'time': '09:12:03', 'method': 'GET', 'path': '/', 'status': '200', 'ms': '128'}"
+    ]
+  },
+  "automation/ch2/l4#1": {
+    "caption": "findall と sub",
+    "output": [
+      "メール: ['sato@example.com', 'suzuki@example.co.jp']",
+      "電話  : ['03-1234-5678', '090-8765-4321']",
+      "問い合わせ: sato@example.com（担当 佐藤）",
+      "予備連絡先: suzuki@example.co.jp",
+      "電話: ***-****-**** / ***-****-****"
+    ]
+  },
+  "automation/ch2/l5#0": {
+    "caption": "文字列を日時に変える",
+    "output": [
+      "2026-05-01 09:12:03",
+      "年: 2026 月: 5 日: 1",
+      "曜日: Friday",
+      "整形: 2026年05月01日 09時12分",
+      "",
+      "10日3時間後: 2026-05-11 12:12:03",
+      "差: 10 days, 3:00:00"
+    ]
+  },
+  "automation/ch2/l5#1": {
+    "caption": "日ごとにまとめる",
+    "output": [
+      "2026-05-01   7 #######",
+      "2026-05-02   6 ######",
+      "2026-05-03   7 #######"
+    ]
+  },
+  "automation/ch3/l6#0": {
+    "caption": "返ってきた JSON を処理する（こちらは実行できます）",
+    "output": [
+      "総件数: 3",
+      "○ 1: 佐藤（pro）",
+      "× 2: 鈴木（free）",
+      "○ 3: 高橋（pro）",
+      "",
+      "有効な pro 会員: ['佐藤', '高橋']"
+    ]
+  },
+  "appdev/ch1/l1#0": {
+    "caption": "リクエストを辞書として扱う",
+    "output": [
+      "GET   /health    → 200 {'ok': True}",
+      "GET   /unknown   → 404 {'detail': 'Not Found'}"
+    ]
+  },
+  "appdev/ch1/l2#0": {
+    "caption": "小さなルーターを作って動かす",
+    "output": [
+      "登録されたルート: [('GET', '/health'), ('GET', '/users')]",
+      "",
+      "/health → (200, {'ok': True})",
+      "/users → (200, {'page': 3, 'users': ['佐藤', '鈴木']})",
+      "/nope → (404, {'detail': 'Not Found'})"
+    ]
+  },
+  "appdev/ch1/l3#0": {
+    "caption": "検証を自分で書いてみる",
+    "output": [
+      "{'title': '牛乳を買う'}",
+      "  → OK",
+      "{'title': '', 'done': 'yes'}",
+      "  → ['title は 1〜100 文字にしてください', 'done は true / false にしてください']",
+      "{'done': True, 'priority': 'urgent'}",
+      "  → ['title は必須です', \"priority は ['high', 'low', 'normal'] のいずれかにしてください\"]"
+    ]
+  },
+  "testing/ch1/l1#0": {
+    "caption": "print で観察する（いつものやり方）",
+    "output": [
+      "yamada",
+      "sato",
+      "suzuki"
+    ]
+  },
+  "testing/ch1/l1#1": {
+    "caption": "assert に置き換える",
+    "output": [
+      "ここまで来たら、上の 3 つはすべて通っている"
+    ]
+  },
+  "testing/ch1/l1#2": {
+    "caption": "失敗させてみる",
+    "output": []
+  },
+  "testing/ch1/l2#0": {
+    "caption": "テストを関数に分けて、手で呼ぶ",
+    "output": [
+      "3 件すべて通った"
+    ]
+  },
+  "testing/ch1/l2#1": {
+    "caption": "集めて回す部分を作る",
+    "output": [
+      "FAIL test_broken: - でつながっていない",
+      "ok   test_empty",
+      "ok   test_lowercase",
+      "",
+      "2 passed, 1 failed"
+    ]
+  },
+  "testing/ch1/l3#0": {
+    "caption": "はじめての pytest",
+    "output": [
+      "..                                                                       [100%]",
+      "2 passed in 0.00s"
+    ]
+  },
+  "testing/ch1/l3#1": {
+    "caption": "わざと落として、レポートを読む",
+    "output": [
+      ".F                                                                       [100%]",
+      "=================================== FAILURES ===================================",
+      "____________________________ test_average_of_empty _____________________________",
+      "",
+      "    def test_average_of_empty():",
+      ">       assert average([]) == 1     # わざと間違えている",
+      "        ^^^^^^^^^^^^^^^^^^^^^^^",
+      "E       assert 0 == 1",
+      "E        +  where 0 = average([])",
+      "",
+      "test_lesson.py:10: AssertionError",
+      "=========================== short test summary info ============================",
+      "FAILED test_lesson.py::test_average_of_empty - assert 0 == 1",
+      "1 failed, 1 passed in 0.00s"
+    ]
+  },
+  "testing/ch1/l3#2": {
+    "caption": "-v で 1 件ずつ見る",
+    "output": [
+      "============================= test session starts ==============================",
+      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "rootdir: /tmp/…",
+      "collected 3 items",
+      "",
+      "test_lesson.py ...                                                       [100%]",
+      "",
+      "============================== 3 passed in 0.00s ==============================="
+    ]
+  },
+  "testing/ch2/l4#0": {
+    "caption": "詰め込んだテスト",
+    "output": [
+      "F                                                                        [100%]",
+      "=================================== FAILURES ===================================",
+      "________________________________ test_to_grade _________________________________",
+      "",
+      "    def test_to_grade():",
+      "        assert to_grade(90) == \"A\"",
+      ">       assert to_grade(79) == \"A\"    # わざと間違えている（正しくは \"B\"）",
+      "        ^^^^^^^^^^^^^^^^^^^^^^^^^^",
+      "E       AssertionError: assert 'B' == 'A'",
+      "E         ",
+      "E         - A",
+      "E         + B",
+      "",
+      "test_lesson.py:7: AssertionError",
+      "=========================== short test summary info ============================",
+      "FAILED test_lesson.py::test_to_grade - AssertionError: assert 'B' == 'A'",
+      "1 failed in 0.00s"
+    ]
+  },
+  "testing/ch2/l4#1": {
+    "caption": "分けて、境界を押さえる",
+    "output": [
+      "============================= test session starts ==============================",
+      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "rootdir: /tmp/…",
+      "collected 6 items",
+      "",
+      "test_lesson.py ......                                                    [100%]",
+      "",
+      "============================== 6 passed in 0.00s ==============================="
+    ]
+  },
+  "testing/ch2/l4#2": {
+    "caption": "境界を外すと、何も見つからない",
+    "output": [
+      "============================= test session starts ==============================",
+      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "rootdir: /tmp/…",
+      "collected 2 items",
+      "",
+      "test_lesson.py .F                                                        [100%]",
+      "",
+      "=================================== FAILURES ===================================",
+      "_____________________________ test_the_boundaries ______________________________",
+      "",
+      "    def test_the_boundaries():",
+      ">       assert to_grade(80) == \"A\"     # ここで初めて気づける",
+      "        ^^^^^^^^^^^^^^^^^^^^^^^^^^",
+      "E       AssertionError: assert 'B' == 'A'",
+      "E         ",
+      "E         - A",
+      "E         + B",
+      "",
+      "test_lesson.py:18: AssertionError",
+      "=========================== short test summary info ============================",
+      "FAILED test_lesson.py::test_the_boundaries - AssertionError: assert 'B' == 'A'",
+      "========================= 1 failed, 1 passed in 0.00s =========================="
+    ]
+  },
+  "testing/ch2/l5#0": {
+    "caption": "小数はぴったり一致しない",
+    "output": [
+      "0.30000000000000004",
+      "False",
+      "330.0",
+      "True"
+    ]
+  },
+  "testing/ch2/l5#1": {
+    "caption": "approx で比べる",
+    "output": [
+      "============================= test session starts ==============================",
+      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "rootdir: /tmp/…",
+      "collected 3 items",
+      "",
+      "test_lesson.py ...                                                       [100%]",
+      "",
+      "============================== 3 passed in 0.00s ==============================="
+    ]
+  },
+  "testing/ch2/l5#2": {
+    "caption": "例外を確かめる",
+    "output": [
+      "============================= test session starts ==============================",
+      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "rootdir: /tmp/…",
+      "collected 3 items",
+      "",
+      "test_lesson.py ...                                                       [100%]",
+      "",
+      "============================== 3 passed in 0.00s ==============================="
+    ]
+  },
+  "testing/ch2/l5#3": {
+    "caption": "例外が上がらないと失敗する",
+    "output": [
+      "F                                                                        [100%]",
+      "=================================== FAILURES ===================================",
+      "_____________________________ test_this_one_fails ______________________________",
+      "",
+      "    def test_this_one_fails():",
+      ">       with pytest.raises(ValueError):",
+      "             ^^^^^^^^^^^^^^^^^^^^^^^^^",
+      "E       Failed: DID NOT RAISE <class 'ValueError'>",
+      "",
+      "test_lesson.py:7: Failed",
+      "=========================== short test summary info ============================",
+      "FAILED test_lesson.py::test_this_one_fails - Failed: DID NOT RAISE <class 'Va...",
+      "1 failed in 0.00s"
+    ]
+  },
+  "testing/ch2/l6#0": {
+    "caption": "コピペを 1 つにまとめる",
+    "output": [
+      "============================= test session starts ==============================",
+      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "rootdir: /tmp/…",
+      "collected 6 items",
+      "",
+      "test_lesson.py ......                                                    [100%]",
+      "",
+      "============================== 6 passed in 0.00s ==============================="
+    ]
+  },
+  "testing/ch2/l6#1": {
+    "caption": "落ちた値がレポートに出る",
+    "output": [
+      ".F.                                                                      [100%]",
+      "=================================== FAILURES ===================================",
+      "_____________________________ test_to_grade[60-A] ______________________________",
+      "",
+      "score = 60, expected = 'A'",
+      "",
+      "    @pytest.mark.parametrize(",
+      "        \"score, expected\",",
+      "        [",
+      "            (80, \"A\"),",
+      "            (60, \"A\"),    # わざと間違えている（正しくは \"B\"）",
+      "            (0, \"C\"),",
+      "        ],",
+      "    )",
+      "    def test_to_grade(score, expected):",
+      ">       assert to_grade(score) == expected",
+      "E       AssertionError: assert 'B' == 'A'",
+      "E         ",
+      "E         - A",
+      "E         + B",
+      "",
+      "test_lesson.py:15: AssertionError",
+      "=========================== short test summary info ============================",
+      "FAILED test_lesson.py::test_to_grade[60-A] - AssertionError: assert 'B' == 'A'",
+      "1 failed, 2 passed in 0.00s"
+    ]
+  },
+  "testing/ch2/l6#2": {
+    "caption": "ids で名前を付ける",
+    "output": [
+      "============================= test session starts ==============================",
+      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "rootdir: /tmp/…",
+      "collected 4 items",
+      "",
+      "test_lesson.py ....                                                      [100%]",
+      "",
+      "============================== 4 passed in 0.00s ==============================="
+    ]
+  },
+  "testing/ch2/l7#0": {
+    "caption": "準備が重複している",
+    "output": [
+      "..                                                                       [100%]",
+      "2 passed in 0.00s"
+    ]
+  },
+  "testing/ch2/l7#1": {
+    "caption": "フィクスチャに切り出す",
+    "output": [
+      "============================= test session starts ==============================",
+      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "rootdir: /tmp/…",
+      "collected 3 items",
+      "",
+      "test_lesson.py ...                                                       [100%]",
+      "",
+      "============================== 3 passed in 0.00s ==============================="
+    ]
+  },
+  "testing/ch2/l7#2": {
+    "caption": "tmp_path と、yield での後片付け",
+    "output": [
+      "============================= test session starts ==============================",
+      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "rootdir: /tmp/…",
+      "collected 2 items",
+      "",
+      "test_lesson.py 用意した: app.log",
+      ".後片付け: app.log",
+      "用意した: app.log",
+      ".後片付け: app.log",
+      "",
+      "",
+      "============================== 2 passed in 0.00s ==============================="
+    ]
+  },
+  "testing/ch3/l8#0": {
+    "caption": "差し替えないと、結果が日によって変わる",
+    "unstable": true
+  },
+  "testing/ch3/l8#1": {
+    "caption": "monkeypatch で時刻を固定する",
+    "output": [
+      "============================= test session starts ==============================",
+      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "rootdir: /tmp/…",
+      "collected 3 items",
+      "",
+      "test_lesson.py ...                                                       [100%]",
+      "",
+      "============================== 3 passed in 0.00s ==============================="
+    ]
+  },
+  "testing/ch3/l8#2": {
+    "caption": "Mock で呼ばれ方を確かめる",
+    "output": [
+      "============================= test session starts ==============================",
+      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "rootdir: /tmp/…",
+      "collected 2 items",
+      "",
+      "test_lesson.py ..                                                        [100%]",
+      "",
+      "============================== 2 passed in 0.00s ==============================="
+    ]
+  },
+  "testing/ch3/l9#0": {
+    "caption": "全部やっている関数",
+    "output": [
+      "合計: 740"
+    ]
+  },
+  "testing/ch3/l9#1": {
+    "caption": "分けてからテストする",
+    "output": [
+      "============================= test session starts ==============================",
+      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "rootdir: /tmp/…",
+      "collected 3 items",
+      "",
+      "test_lesson.py ...                                                       [100%]",
+      "",
+      "============================== 3 passed in 0.00s ==============================="
+    ]
+  },
+  "testing/ch3/l9#2": {
+    "caption": "依存を引数で受け取る",
+    "output": [
+      "============================= test session starts ==============================",
+      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "rootdir: /tmp/…",
+      "collected 2 items",
+      "",
+      "test_lesson.py ..                                                        [100%]",
+      "",
+      "============================== 2 passed in 0.00s ==============================="
+    ]
+  },
+  "testing/ch3/l10#0": {
+    "caption": "1 つだけ確かめて、カバレッジを見る",
+    "output": [
+      "Name        Stmts   Miss  Cover   Missing",
+      "-----------------------------------------",
+      "coupon.py       8      4    50%   14, 17-19",
+      "-----------------------------------------",
+      "TOTAL           8      4    50%"
+    ]
+  },
+  "testing/ch3/l10#1": {
+    "caption": "4 つの分岐を全部通す",
+    "output": [
+      "Name        Stmts   Miss  Cover   Missing",
+      "-----------------------------------------",
+      "coupon.py       8      0   100%",
+      "-----------------------------------------",
+      "TOTAL           8      0   100%"
+    ]
+  },
+  "testing/ch3/l10#2": {
+    "caption": "100% でもバグは残る",
+    "output": [
+      "============================= test session starts ==============================",
+      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "rootdir: /tmp/…",
+      "collected 2 items",
+      "",
+      "test_lesson.py .F                                                        [100%]",
+      "",
+      "=================================== FAILURES ===================================",
+      "________________________ test_but_the_boundary_is_wrong ________________________",
+      "",
+      "    def test_but_the_boundary_is_wrong():",
+      ">       assert to_grade(80) == \"A\"     # カバレッジでは見つからないバグ",
+      "        ^^^^^^^^^^^^^^^^^^^^^^^^^^",
+      "E       AssertionError: assert 'B' == 'A'",
+      "E         ",
+      "E         - A",
+      "E         + B",
+      "",
+      "test_lesson.py:18: AssertionError",
+      "=========================== short test summary info ============================",
+      "FAILED test_lesson.py::test_but_the_boundary_is_wrong - AssertionError: asser...",
+      "========================= 1 failed, 1 passed in 0.00s =========================="
+    ]
+  },
+  "testing/ch4/l11#0": {
+    "caption": "まず赤を見る",
+    "output": [
+      "F                                                                        [100%]",
+      "=================================== FAILURES ===================================",
+      "______________________________ test_splits_evenly ______________________________",
+      "",
+      "    def test_splits_evenly():",
+      ">       assert split_evenly(1000, 4) == [250, 250, 250, 250]",
+      "               ^^^^^^^^^^^^",
+      "E       NameError: name 'split_evenly' is not defined",
+      "",
+      "test_lesson.py:3: NameError",
+      "=========================== short test summary info ============================",
+      "FAILED test_lesson.py::test_splits_evenly - NameError: name 'split_evenly' is...",
+      "1 failed in 0.00s"
+    ]
+  },
+  "testing/ch4/l11#1": {
+    "caption": "通す最小の実装",
+    "output": [
+      "============================= test session starts ==============================",
+      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "rootdir: /tmp/…",
+      "collected 1 item",
+      "",
+      "test_lesson.py .                                                         [100%]",
+      "",
+      "============================== 1 passed in 0.00s ==============================="
+    ]
+  },
+  "testing/ch4/l11#2": {
+    "caption": "テストを足して、また赤にする",
+    "output": [
+      "============================= test session starts ==============================",
+      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "rootdir: /tmp/…",
+      "collected 2 items",
+      "",
+      "test_lesson.py .F                                                        [100%]",
+      "",
+      "=================================== FAILURES ===================================",
+      "_______________________ test_remainder_goes_to_the_front _______________________",
+      "",
+      "    def test_remainder_goes_to_the_front():",
+      ">       assert split_evenly(1000, 3) == [334, 333, 333]",
+      "E       assert [333, 333, 333] == [334, 333, 333]",
+      "E         ",
+      "E         At index 0 diff: 333 != 334",
+      "E         Use -v to get more diff",
+      "",
+      "test_lesson.py:12: AssertionError",
+      "=========================== short test summary info ============================",
+      "FAILED test_lesson.py::test_remainder_goes_to_the_front - assert [333, 333, 3...",
+      "========================= 1 failed, 1 passed in 0.00s =========================="
+    ]
+  },
+  "testing/ch4/l11#3": {
+    "caption": "緑に戻す",
+    "output": [
+      "============================= test session starts ==============================",
+      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "rootdir: /tmp/…",
+      "collected 3 items",
+      "",
+      "test_lesson.py ...                                                       [100%]",
+      "",
+      "============================== 3 passed in 0.00s ==============================="
+    ]
+  },
+  "testing/ch4/l12#0": {
+    "caption": "報告されたバグを再現する",
+    "output": [
+      "合計: -200"
+    ]
+  },
+  "testing/ch4/l12#1": {
+    "caption": "テストにして、赤を見る",
+    "output": [
+      "F                                                                        [100%]",
+      "=================================== FAILURES ===================================",
+      "_______________ test_coupon_larger_than_subtotal_results_in_zero _______________",
+      "",
+      "    def test_coupon_larger_than_subtotal_results_in_zero():",
+      ">       assert total([{\"price\": 300, \"qty\": 1}], coupon=500) == 0",
+      "E       AssertionError: assert -200 == 0",
+      "E        +  where -200 = total([{'price': 300, 'qty': 1}], coupon=500)",
+      "",
+      "test_lesson.py:7: AssertionError",
+      "=========================== short test summary info ============================",
+      "FAILED test_lesson.py::test_coupon_larger_than_subtotal_results_in_zero - Ass...",
+      "1 failed in 0.00s"
+    ]
+  },
+  "testing/ch4/l12#2": {
+    "caption": "直して緑にする",
+    "output": [
+      "============================= test session starts ==============================",
+      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "rootdir: /tmp/…",
+      "collected 3 items",
+      "",
+      "test_lesson.py ...                                                       [100%]",
+      "",
+      "============================== 3 passed in 0.00s ==============================="
+    ]
+  }
+}
