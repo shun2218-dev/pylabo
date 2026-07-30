@@ -215,7 +215,13 @@ export async function execute({ source, tests = "", helper, files = {} }) {
 
     let stdout = "";
     try {
-      ({ stdout } = await run(python, [file], { cwd: workDir, timeout: 60_000 }));
+      /* COLUMNS を固定する。pytest は端末の幅で「===」の長さや失敗一覧の
+         省略位置を変えるため、環境によって出力が変わってしまう。 */
+      ({ stdout } = await run(python, [file], {
+        cwd: workDir,
+        timeout: 60_000,
+        env: { ...process.env, COLUMNS: "80" },
+      }));
     } catch (e) {
       return { error: e.stderr || e.message, checks: [], output: e.stdout ?? "" };
     }

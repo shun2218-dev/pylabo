@@ -64,8 +64,8 @@ const snapshotPath = path.join(root, "src/courses/__snapshots__/example-output.j
 
 /**
  * 実行するたびに変わるが、学習者に見せている中身としては同じ部分を伏せる。
- * pytest の「1 passed in 0.02s」や一時ディレクトリの名前、OS 名がそのまま入ると、
- * 出力を記録しても毎回・環境ごとに違う値で赤くなってしまう。
+ * pytest の「1 passed in 0.02s」や一時ディレクトリの名前、OS 名や Python の
+ * パッチ版がそのまま入ると、出力を記録しても毎回・環境ごとに違う値で赤くなる。
  */
 const mask = (line) =>
   line
@@ -73,8 +73,10 @@ const mask = (line) =>
     .replace(/\d+\.\d+s\b/g, "0.00s")
     // 一時ディレクトリ（rootdir や tmp_path。OS で場所が違う）
     .replace(/(?:\/private)?\/(?:var|tmp)\/[\w./\-+]+/g, "/tmp/…")
-    // pytest の環境表示（手元は darwin、CI は linux）
-    .replace(/^platform \w+ --/, "platform … --")
+    /* pytest の環境表示。OS 名（手元は darwin、CI は linux）も、Python の
+       パッチ版（3.14.5 / 3.14.6）も、学習者に見せている中身とは関係がない。
+       版そのものは pyodide-lock.json で固定しているので、ここでは見ない。 */
+    .replace(/^platform .*$/, "platform …（実行環境の表示）")
     // オブジェクトの id（Mock の repr など）
     .replace(/0x[0-9a-f]{6,}/g, "0x…")
     .replace(/id='\d+'/g, "id='…'");

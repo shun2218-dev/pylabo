@@ -803,7 +803,7 @@
     "caption": "-v で 1 件ずつ見る",
     "output": [
       "============================= test session starts ==============================",
-      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "platform …（実行環境の表示）",
       "rootdir: /tmp/…",
       "collected 3 items",
       "",
@@ -838,7 +838,7 @@
     "caption": "分けて、境界を押さえる",
     "output": [
       "============================= test session starts ==============================",
-      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "platform …（実行環境の表示）",
       "rootdir: /tmp/…",
       "collected 6 items",
       "",
@@ -851,7 +851,7 @@
     "caption": "境界を外すと、何も見つからない",
     "output": [
       "============================= test session starts ==============================",
-      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "platform …（実行環境の表示）",
       "rootdir: /tmp/…",
       "collected 2 items",
       "",
@@ -887,7 +887,7 @@
     "caption": "approx で比べる",
     "output": [
       "============================= test session starts ==============================",
-      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "platform …（実行環境の表示）",
       "rootdir: /tmp/…",
       "collected 3 items",
       "",
@@ -900,7 +900,7 @@
     "caption": "例外を確かめる",
     "output": [
       "============================= test session starts ==============================",
-      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "platform …（実行環境の表示）",
       "rootdir: /tmp/…",
       "collected 3 items",
       "",
@@ -931,7 +931,7 @@
     "caption": "コピペを 1 つにまとめる",
     "output": [
       "============================= test session starts ==============================",
-      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "platform …（実行環境の表示）",
       "rootdir: /tmp/…",
       "collected 6 items",
       "",
@@ -974,7 +974,7 @@
     "caption": "ids で名前を付ける",
     "output": [
       "============================= test session starts ==============================",
-      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "platform …（実行環境の表示）",
       "rootdir: /tmp/…",
       "collected 4 items",
       "",
@@ -994,7 +994,7 @@
     "caption": "フィクスチャに切り出す",
     "output": [
       "============================= test session starts ==============================",
-      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "platform …（実行環境の表示）",
       "rootdir: /tmp/…",
       "collected 3 items",
       "",
@@ -1007,7 +1007,7 @@
     "caption": "tmp_path と、yield での後片付け",
     "output": [
       "============================= test session starts ==============================",
-      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "platform …（実行環境の表示）",
       "rootdir: /tmp/…",
       "collected 2 items",
       "",
@@ -1028,7 +1028,7 @@
     "caption": "monkeypatch で時刻を固定する",
     "output": [
       "============================= test session starts ==============================",
-      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "platform …（実行環境の表示）",
       "rootdir: /tmp/…",
       "collected 3 items",
       "",
@@ -1041,7 +1041,7 @@
     "caption": "Mock で呼ばれ方を確かめる",
     "output": [
       "============================= test session starts ==============================",
-      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "platform …（実行環境の表示）",
       "rootdir: /tmp/…",
       "collected 2 items",
       "",
@@ -1060,7 +1060,7 @@
     "caption": "分けてからテストする",
     "output": [
       "============================= test session starts ==============================",
-      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "platform …（実行環境の表示）",
       "rootdir: /tmp/…",
       "collected 3 items",
       "",
@@ -1073,7 +1073,7 @@
     "caption": "依存を引数で受け取る",
     "output": [
       "============================= test session starts ==============================",
-      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "platform …（実行環境の表示）",
       "rootdir: /tmp/…",
       "collected 2 items",
       "",
@@ -1106,7 +1106,7 @@
     "caption": "100% でもバグは残る",
     "output": [
       "============================= test session starts ==============================",
-      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "platform …（実行環境の表示）",
       "rootdir: /tmp/…",
       "collected 2 items",
       "",
@@ -1151,7 +1151,7 @@
     "caption": "通す最小の実装",
     "output": [
       "============================= test session starts ==============================",
-      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "platform …（実行環境の表示）",
       "rootdir: /tmp/…",
       "collected 1 item",
       "",
@@ -1164,7 +1164,7 @@
     "caption": "テストを足して、また赤にする",
     "output": [
       "============================= test session starts ==============================",
-      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "platform …（実行環境の表示）",
       "rootdir: /tmp/…",
       "collected 2 items",
       "",
@@ -1190,7 +1190,7 @@
     "caption": "緑に戻す",
     "output": [
       "============================= test session starts ==============================",
-      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "platform …（実行環境の表示）",
       "rootdir: /tmp/…",
       "collected 3 items",
       "",
@@ -1227,7 +1227,7 @@
     "caption": "直して緑にする",
     "output": [
       "============================= test session starts ==============================",
-      "platform … -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0",
+      "platform …（実行環境の表示）",
       "rootdir: /tmp/…",
       "collected 3 items",
       "",
