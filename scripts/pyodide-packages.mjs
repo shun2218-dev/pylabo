@@ -5,4 +5,4 @@
  * コースのレッスンが指定できる packages は、この一覧に含まれるものだけ。
  * （src/__tests__/registry.test.ts が両者の一致を検査している）
  */
-export const WANTED = ["numpy", "pandas", "matplotlib"];
+export const WANTED = ["numpy", "pandas", "matplotlib", "pytest", "coverage"];

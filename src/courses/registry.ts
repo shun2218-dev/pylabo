@@ -103,29 +103,21 @@ export const COURSE_ENTRIES: CourseEntry[] = [
     () => import("./app-dev")
   ),
 
-  /* ---------- 追加予定 ---------- */
-
-  planned(
+  available(
     {
       id: "testing",
       title: "テストと品質",
       icon: "test",
       level: "実践",
       accent: "#e05a8a",
+      lessonCount: 12,
       description:
         "pytest でテストを書き、壊れたらすぐ気づける状態を作る。テストしやすい設計の勘所まで。",
     },
-    {
-      plannedFor: "次回リリース",
-      topics: [
-        "pytest の基本と assert",
-        "フィクスチャとパラメータ化",
-        "モックで外部依存を切る",
-        "カバレッジの読み方",
-        "テストしやすい設計",
-      ],
-    }
+    () => import("./testing")
   ),
+
+  /* ---------- 追加予定 ---------- */
 
   planned(
     {
