@@ -71,18 +71,26 @@ def _shown():
     return len(_shown_images) > 0
 `;
 
+/**
+ * アプリ側と同じ run_pytest() を使えるようにする。
+ * 解答例のソースを _pylabo_source として渡す（アプリでは ns.set で渡している）。
+ * JSON の文字列表現は Python の文字列リテラルとしてもそのまま通る。
+ */
+const pytestPreamble = (source, helper) =>
+  `_pylabo_source = ${JSON.stringify(source)}\n${helper}`;
+
 const REPORT = `
 import json, sys
 sys.stdout = _real_stdout
 print("@@RESULT@@" + json.dumps(_checks, ensure_ascii=False))
 `;
 
-/** コースデータを esbuild で束ねて読み込む。 */
-async function loadCourses(workDir) {
-  const bundle = path.join(workDir, "courses.mjs");
+/** TypeScript のモジュールを esbuild で束ねて読み込む。 */
+async function loadModule(workDir, entry, outName) {
+  const bundle = path.join(workDir, outName);
   await run("npx", [
     "esbuild",
-    path.join(root, "src/courses/registry.ts"),
+    path.join(root, entry),
     "--bundle",
     "--format=esm",
     "--platform=node",
@@ -90,7 +98,12 @@ async function loadCourses(workDir) {
     `--outfile=${bundle}`,
   ], { cwd: root });
 
-  const mod = await import(`file://${bundle}`);
+  return import(`file://${bundle}`);
+}
+
+/** コースデータを読み込む。 */
+async function loadCourses(workDir) {
+  const mod = await loadModule(workDir, "src/courses/registry.ts", "courses.mjs");
   const entries = mod.COURSE_ENTRIES.filter((e) => e.status === "available");
   return Promise.all(entries.map((e) => e.load()));
 }
@@ -117,6 +130,11 @@ async function main() {
 
   try {
     const courses = await loadCourses(workDir);
+    const { PYTEST_HELPER } = await loadModule(
+      workDir,
+      "src/lib/python-helpers.ts",
+      "helpers.mjs"
+    );
 
     const allPackages = new Set();
     for (const course of courses) {
@@ -164,7 +182,14 @@ async function main() {
             await writeFile(path.join(workDir, name), content, "utf8");
           }
 
-          const script = [PREAMBLE, ex.solution, "\n", ex.tests, REPORT].join("\n");
+          const script = [
+            PREAMBLE,
+            pytestPreamble(ex.solution, PYTEST_HELPER),
+            ex.solution,
+            "\n",
+            ex.tests,
+            REPORT,
+          ].join("\n");
           const file = path.join(workDir, "case.py");
           await writeFile(file, script, "utf8");
 

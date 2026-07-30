@@ -8,7 +8,7 @@ Python は [Pyodide](https://pyodide.org/)（CPython を WebAssembly に移植�
 
 ## できること
 
-- **目的別のコース制** — 現在 4 コース / 全 40 レッスン。追加予定のコースも一覧に表示されます
+- **目的別のコース制** — 現在 5 コース / 全 52 レッスン。追加予定のコースも一覧に表示されます
 - **その場で実行** — 解説中のコードはすべて編集して実行できる
 - **自動採点** — 演習を書いて「採点する」を押すと、チェック項目ごとに合否が出る
 - **pandas / matplotlib が動く** — グラフはそのままページ内に表示される
@@ -25,12 +25,13 @@ Python は [Pyodide](https://pyodide.org/)（CPython を WebAssembly に移植�
 | データ分析・集計 | 中級 | 素の Python での集計 → pandas → groupby と可視化 → 売上レポート（10 レッスン） |
 | Web/API・自動化 | 中級 | pathlib・CSV/JSON・正規表現・日時・HTTP → ログ集計ツール（7 レッスン） |
 | アプリ開発（FastAPI） | 実践 | ルーティングと検証を自作 → FastAPI で書き直す → TODO API（6 レッスン） |
+| テストと品質 | 実践 | assert → pytest → parametrize / fixture → モックとカバレッジ → TDD と回帰テスト（12 レッスン） |
 
 コースは互いに独立しています。どこから始めても構いません。
 
 ### 追加予定
 
-テストと品質（pytest）／型ヒントと静的解析（mypy・ruff）／データベースと SQL／非同期処理と並行実行／環境とパッケージング／CLI ツール開発
+型ヒントと静的解析（mypy・ruff）／データベースと SQL／非同期処理と並行実行／環境とパッケージング／CLI ツール開発
 
 追加予定のコースはホーム画面に非活性の状態で並び、収録予定の内容が確認できます。公開時は `src/courses/registry.ts` の 1 エントリを差し替えるだけで選択可能になります。
 
@@ -48,7 +49,7 @@ npm run dev
 
 `http://localhost:5173` を開いてください。
 
-> `npm install` の後処理で、Pyodide 本体（約 12MB）を `node_modules` から `public/pyodide/` へコピーし、pandas / matplotlib などの wheel（約 17MB）を Pyodide 公式配布物から取得します。**初回のみネットワークが必要で、以降はすべてローカルから配信されます。** 取得したファイルは sha256 で検証しています。
+> `npm install` の後処理で、Pyodide 本体（約 12MB）を `node_modules` から `public/pyodide/` へコピーし、pandas / matplotlib / pytest などの wheel（約 19MB）を Pyodide 公式配布物から取得します。**初回のみネットワークが必要で、以降はすべてローカルから配信されます。** 取得したファイルは sha256 で検証しています。
 
 ### そのほかのコマンド
 
@@ -120,6 +121,7 @@ src/
 ├── components/               画面（ホーム・サイドバー・レッスン・コードブロック…）
 ├── lib/
 │   ├── pyodide.worker.ts     Python を実行する Web Worker
+│   ├── python-helpers.ts     Python 側へ足すヘルパー（run_pytest など）
 │   ├── runner.ts             ワーカーとのやりとりを Promise にまとめる
 │   ├── protocol.ts           ワーカーとのメッセージ定義
 │   ├── markdown.ts           本文のレンダリング
@@ -149,6 +151,10 @@ scripts/
 **Python はワーカーで動かす。** 学習者が無限ループを書いても UI は固まりません。「停止」ボタンでワーカーを作り直して復帰できます。
 
 **採点は Python 側で行う。** 各演習の `tests` は、学習者のコードと同じ名前空間で実行される Python コードです。`check(条件, "説明")` を並べて書くと、そのままチェック項目の一覧として表示されます。
+
+**pytest も本物を動かす。** 「テストと品質」コースでは、ブラウザ内の Python で実際に pytest を走らせています。エディタがファイル 1 枚なので、`run_pytest()` ヘルパーが**いま書かれているコードをそのままテストファイルとして書き出して** pytest に渡します（`src/lib/python-helpers.ts`）。失敗レポートの行番号はエディタの行と一致します。
+
+このおかげで、テストの演習は「テストが書けたか」ではなく「**そのテストが本当にバグを捕まえられるか**」で採点できます。採点側は、わざと壊した実装に学習者のテストを当てて、落ちることを確かめています。
 
 ## 変更履歴
 
