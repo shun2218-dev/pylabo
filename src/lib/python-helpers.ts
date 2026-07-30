@@ -92,15 +92,36 @@ class _PytestRecorder:
     """pytest のプラグイン。どのテストがどうなったかを集める。"""
 
     def __init__(self):
-        self.results = []
+        self._outcomes = {}
+        self._order = []
 
     def pytest_runtest_logreport(self, report):
-        # 1 テストにつき setup / call / teardown が来る。本体（call）だけ数え、
-        # 前準備で落ちたものは失敗として拾う。
+        """
+        1 テストにつき setup / call / teardown の 3 回呼ばれる。本体（call）を
+        結果とし、前準備・後片付けで落ちたものは失敗として拾う。
+
+        テスト 1 件は必ず 1 件として数える。本体が落ちたうえに後片付けでも
+        落ちた場合など、同じテストで 2 回拾える場面があり、そのまま並べると
+        「テストを N 件以上書けている」の採点が実際より多く数えてしまう。
+        """
         if report.when == "call":
-            self.results.append((report.nodeid, report.outcome))
+            outcome = report.outcome
         elif report.outcome == "failed":
-            self.results.append((report.nodeid, "failed"))
+            outcome = "failed"
+        else:
+            return
+
+        if report.nodeid not in self._outcomes:
+            self._order.append(report.nodeid)
+            self._outcomes[report.nodeid] = outcome
+        elif outcome == "failed":
+            # 落ちたことのほうを残す（片付けで落ちても、そのテストは失敗）
+            self._outcomes[report.nodeid] = "failed"
+
+    @property
+    def results(self):
+        """[(nodeid, "passed" / "failed"), ...] を実行順で返す。"""
+        return [(nodeid, self._outcomes[nodeid]) for nodeid in self._order]
 
 
 def _without_run_pytest(src):
@@ -199,7 +220,8 @@ def run_pytest(*args, **kwargs):
             sys.modules.pop(mod_name, None)
 
     report = buffered.getvalue()
-    if not quiet:
+    # 出力が空のときに print すると、意味のない空行が 1 行出てしまう
+    if not quiet and report:
         print(report, end="" if report.endswith("\n") else "\n")
 
     return _PytestOutcome(exit_code, recorder.results, report)
