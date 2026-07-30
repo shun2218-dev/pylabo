@@ -19,6 +19,13 @@
   --warn: #f0b429;
   --err: #ff6b6b;
 
+  /* コースの難易度バッジ。コース固有のアクセント色とは別に持つ
+     （アクセント色はコースの識別色で、難易度の手がかりにはならない）。
+     赤系は採点の失敗色（--err）と紛れるため、実践は紫にしている。 */
+  --level-intro: #3ecf8e;
+  --level-mid: #f5b73d;
+  --level-advanced: #c084fc;
+
   --radius-sm: 8px;
   --radius: 12px;
   --radius-lg: 16px;
@@ -50,6 +57,10 @@
   --ok: #15803d;
   --warn: #b45309;
   --err: #dc2626;
+
+  --level-intro: #0f7a52;
+  --level-mid: #96590a;
+  --level-advanced: #7c3aed;
 
   --shadow: 0 1px 2px rgb(20 30 60 / 6%), 0 8px 24px rgb(20 30 60 / 6%);
 }

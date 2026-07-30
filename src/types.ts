@@ -22,6 +22,12 @@ export type CourseIconName =
   | "package"
   | "cli";
 
+/**
+ * コースの難易度。バッジの色はこの値で決まるので、増やすときは
+ * src/components/HomeView.tsx の LEVEL_TONE にも追記する（型で強制される）。
+ */
+export type CourseLevel = "入門" | "中級" | "実践";
+
 /** 解説の途中に置く、実行できるコード例。 */
 export interface CodeExample {
   /** ブロック見出し */
@@ -86,7 +92,7 @@ export interface CourseSummary {
   description: string;
   icon: CourseIconName;
   /** 「入門」「中級」など */
-  level: string;
+  level: CourseLevel;
   /** コース色（CSS のカスタムプロパティに流し込む） */
   accent: string;
 }

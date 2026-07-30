@@ -1,7 +1,19 @@
 import { courseIcons, Hourglass, Sparkles } from "../icons";
 import { progress } from "../lib/storage";
 import { coursePath, navigate } from "../lib/route";
-import type { AvailableCourse, CourseEntry, PlannedCourse } from "../types";
+import type {
+  AvailableCourse,
+  CourseEntry,
+  CourseLevel,
+  PlannedCourse,
+} from "../types";
+
+/** 難易度バッジの色。実際の色は src/styles/_tokens.scss の --level-* にある。 */
+const LEVEL_TONE: Record<CourseLevel, string> = {
+  入門: "intro",
+  中級: "mid",
+  実践: "advanced",
+};
 
 interface Props {
   entries: CourseEntry[];
@@ -115,7 +127,11 @@ function CourseCard({ course }: { course: AvailableCourse }) {
         <span className="course-card__icon">
           <Icon aria-hidden />
         </span>
-        <span className="course-card__level">{course.level}</span>
+        <span
+          className={`course-card__level course-card__level--${LEVEL_TONE[course.level]}`}
+        >
+          {course.level}
+        </span>
       </div>
       <h3 className="course-card__title">{course.title}</h3>
       <p className="course-card__desc">{course.description}</p>
