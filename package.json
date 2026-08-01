@@ -1,7 +1,7 @@
 {
   "name": "pylabo",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "description": "ブラウザだけで学べる Python 学習アプリ（Pyodide + React + TypeScript）",
   "scripts": {
@@ -13,6 +13,7 @@
     "preview": "vite preview",
     "typecheck": "tsc -b",
     "verify:exercises": "node scripts/verify-exercises.mjs",
+    "verify:setup": "node scripts/setup-verify-env.mjs",
     "test": "vitest run",
     "test:watch": "vitest"
   },

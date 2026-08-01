@@ -1,212 +1,342 @@
 /**
- * すべての演習について「解答例をそのまま実行したら採点を通るか」を確かめる。
+ * 学習コンテンツが「書いてあるとおりに動くか」を確かめる。
  *
  *   node scripts/verify-exercises.mjs
+ *   node scripts/verify-exercises.mjs --update-snapshot   # 出力の記録を取り直す
  *
- * コース本文を esbuild で束ねて読み込み、各演習の solution と tests を
- * 手元の python3 で実行する。アプリ側と同じヘルパー（check / _stdout / _shown）を
- * 用意したうえで走らせるので、期待値の書き間違いや、解答例だけでは動かない
- * （前提の変数が抜けている）といった不備をここで検出できる。
+ * 見ているのは 3 つ。
+ *
+ *   1. 演習の解答例（solution）… 全項目が通ること
+ *      期待値の書き間違いや、解答例だけでは動かない（前提の変数が抜けている）
+ *      不備を検出する。
+ *   2. 演習の初期コード（starter）… 通ってはいけないこと
+ *      手つかずのまま「採点する」を押して全項目クリアになる演習は、採点が
+ *      課題文の要求を見ていない（＝学習者に誤った合格を返す）。1 だけでは
+ *      この抜けが見つからないので、逆向きにも試す。
+ *      どこまで細かく見ているかは scripts/audit-grading.mjs で調べられる。
+ *   3. 解説中のコード例… エラーで止まらないこと＋出力が前回と同じこと
+ *      学習者が最初に触るのは解説中のコード例なので、ここが動かないと
+ *      解説そのものが誤りになる。出力は src/courses/__snapshots__ に記録し、
+ *      本文の説明と食い違う変化（パッケージ更新で表示が変わった等）を
+ *      レビューで気づけるようにする。raises: true の例は逆に「止まること」を見る。
+ *
+ * 1 件ごとに空のディレクトリを作って実行するので、ほかのレッスンが書いた
+ * ファイルが混ざることはない（scripts/course-runner.mjs）。
  *
  * pandas などの追加パッケージが要る演習は、手元に入っていなければ読み飛ばす。
  * CI のように「全件動くはず」の場所では --max-skipped=N を付けること。
  * 読み飛ばしが N を超えたら失敗する（環境が壊れていても緑になるのを防ぐ）。
+ *
+ * そのほかの引数:
+ *   --only-solution   … 2 を省く（原因を切り分けるとき用）
+ *   --only-exercises  … 3 を省く
  */
 
-import { execFile } from "node:child_process";
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { promisify } from "node:util";
 
-const run = promisify(execFile);
+import {
+  availablePackages,
+  eachExercise,
+  execute,
+  filesFor,
+  loadCourses,
+  packagesFor,
+  python,
+  pythonVersion,
+  root,
+  usedPackages,
+} from "./course-runner.mjs";
 
 /** --max-skipped=N。指定が無ければ上限なし。 */
 const maxSkipped = (() => {
   const arg = process.argv.find((a) => a.startsWith("--max-skipped="));
   return arg ? Number(arg.split("=")[1]) : Infinity;
 })();
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+/** --only-solution … 初期コードを落とせるかの確認を省く。 */
+const onlySolution = process.argv.includes("--only-solution");
+/** --only-exercises … 解説中のコード例の確認を省く。 */
+const onlyExercises = process.argv.includes("--only-exercises");
+/** --update-snapshot … コード例の出力を記録し直す。 */
+const updateSnapshot = process.argv.includes("--update-snapshot");
 
-const PREAMBLE = `
-import io, sys
+const snapshotPath = path.join(root, "src/courses/__snapshots__/example-output.json");
 
-_real_stdout = sys.stdout
+/**
+ * 実行するたびに変わるが、学習者に見せている中身としては同じ部分を伏せる。
+ * pytest の「1 passed in 0.02s」や一時ディレクトリの名前、OS 名や Python の
+ * パッチ版がそのまま入ると、出力を記録しても毎回・環境ごとに違う値で赤くなる。
+ */
+const mask = (line) =>
+  line
+    // pytest の所要時間（in 0.02s / 0.01s call ...）
+    .replace(/\d+\.\d+s\b/g, "0.00s")
+    // 一時ディレクトリ（rootdir や tmp_path。OS で場所が違う）
+    .replace(/(?:\/private)?\/(?:var|tmp)\/[\w./\-+]+/g, "/tmp/…")
+    /* pytest の環境表示。OS 名（手元は darwin、CI は linux）も、Python の
+       パッチ版（3.14.5 / 3.14.6）も、学習者に見せている中身とは関係がない。
+       版そのものは pyodide-lock.json で固定しているので、ここでは見ない。 */
+    .replace(/^platform .*$/, "platform …（実行環境の表示）")
+    // オブジェクトの id（Mock の repr など）
+    .replace(/0x[0-9a-f]{6,}/g, "0x…")
+    .replace(/id='\d+'/g, "id='…'");
 
+/** 記録用に出力を行の配列へ。末尾の空行は落とす。 */
+const toLines = (output) => {
+  const lines = output.replace(/\n+$/, "").split("\n").map(mask);
+  return lines.length === 1 && lines[0] === "" ? [] : lines;
+};
 
-class _Tee(io.TextIOBase):
-    def __init__(self, real):
-        self._real = real
-        self.buf = io.StringIO()
+const same = (a, b) => a.length === b.length && a.every((line, i) => line === b[i]);
 
-    def write(self, s):
-        self.buf.write(s)
-        return self._real.write(s)
+const indent = (text) =>
+  String(text)
+    .split("\n")
+    .map((l) => "       " + l)
+    .join("\n");
 
-
-_tee = _Tee(_real_stdout)
-sys.stdout = _tee
-
-
-def _stdout():
-    return _tee.buf.getvalue()
-
-
-_checks = []
-
-
-def check(cond, message):
-    _checks.append((bool(cond), str(message)))
-
-
-_shown_images = []
-
-
-def show():
-    _shown_images.append(True)
-
-
-def _shown():
-    return len(_shown_images) > 0
-`;
-
-const REPORT = `
-import json, sys
-sys.stdout = _real_stdout
-print("@@RESULT@@" + json.dumps(_checks, ensure_ascii=False))
-`;
-
-/** コースデータを esbuild で束ねて読み込む。 */
-async function loadCourses(workDir) {
-  const bundle = path.join(workDir, "courses.mjs");
-  await run("npx", [
-    "esbuild",
-    path.join(root, "src/courses/registry.ts"),
-    "--bundle",
-    "--format=esm",
-    "--platform=node",
-    "--log-level=warning",
-    `--outfile=${bundle}`,
-  ], { cwd: root });
-
-  const mod = await import(`file://${bundle}`);
-  const entries = mod.COURSE_ENTRIES.filter((e) => e.status === "available");
-  return Promise.all(entries.map((e) => e.load()));
-}
-
-/** 手元の python3 で使えるパッケージを調べる。 */
-async function availablePackages(names) {
-  const found = new Set();
-  for (const name of names) {
-    try {
-      await run("python3", ["-c", `import ${name.replace("-", "_")}`]);
-      found.add(name);
-    } catch {
-      /* 入っていない */
-    }
+async function loadSnapshot() {
+  try {
+    return JSON.parse(await readFile(snapshotPath, "utf8"));
+  } catch {
+    return {};
   }
-  return found;
 }
 
 async function main() {
-  const workDir = await mkdtemp(path.join(tmpdir(), "verify-exercises-"));
-  let failed = 0;
   let passed = 0;
+  let failed = 0;
   let skipped = 0;
+  /** 初期コードのまま採点を通ってしまった演習 */
+  const lenient = [];
+  let examplePassed = 0;
+  let exampleFailed = 0;
+  let exampleSkipped = 0;
 
-  try {
-    const courses = await loadCourses(workDir);
+  const recorded = updateSnapshot ? {} : await loadSnapshot();
+  /** 記録と突き合わせたキー（残ったものは古い記録なので消す） */
+  const seen = new Set();
 
-    const allPackages = new Set();
-    for (const course of courses) {
-      for (const p of course.packages ?? []) allPackages.add(p);
-      for (const ch of course.chapters) {
-        for (const ls of ch.lessons) {
-          for (const p of ls.packages ?? []) allPackages.add(p);
-          for (const p of ls.exercise?.packages ?? []) allPackages.add(p);
-        }
+  /* どの Python で確かめたのかは、結果の意味そのものなので必ず出す。
+     Pyodide と違う版だった場合、緑でも学習者の環境の保証にはならない。 */
+  console.log(`検証に使う Python: ${await pythonVersion()}（${python}）`);
+
+  const { courses, helper } = await loadCourses();
+  const usable = await availablePackages(usedPackages(courses));
+
+  /* ---------- 演習の採点 ---------- */
+
+  console.log("\n########## 演習の採点 ##########");
+
+  let currentCourse = null;
+  for (const { course, lesson, exercise, label } of eachExercise(courses)) {
+    if (course !== currentCourse) {
+      console.log(`\n=== ${course.title} ===`);
+      currentCourse = course;
+    }
+
+    if (!exercise.solution) {
+      console.log(`  -  ${label} … 解答例なし（読み飛ばし）`);
+      skipped += 1;
+      continue;
+    }
+
+    const missing = packagesFor(course, lesson, exercise).filter((p) => !usable.has(p));
+    if (missing.length > 0) {
+      console.log(`  -  ${label} … ${missing.join(", ")} が無いので読み飛ばし`);
+      skipped += 1;
+      continue;
+    }
+
+    const args = {
+      tests: exercise.tests,
+      helper,
+      files: filesFor(course, lesson, exercise),
+    };
+    const solution = await execute({ ...args, source: exercise.solution });
+
+    if (solution.error) {
+      console.log(`  ✕  ${label}`);
+      console.log(`       解答例の実行でエラー:\n${indent(solution.error)}`);
+      failed += 1;
+      continue;
+    }
+    if (solution.checks.length === 0) {
+      console.log(`  ✕  ${label} … check() が 1 つも実行されていません`);
+      failed += 1;
+      continue;
+    }
+
+    const ng = solution.checks.filter(([ok]) => !ok);
+    if (ng.length > 0) {
+      console.log(`  ✕  ${label}`);
+      ng.forEach(([, msg]) => console.log(`       通らなかった項目: ${msg}`));
+      failed += 1;
+      continue;
+    }
+
+    /* 逆向き: 落としたい回答が落ちること。
+       エラーで止まるなら、アプリでも採点まで進まないので落ちた扱い。 */
+    if (!onlySolution) {
+      const shouldFail = [
+        { caption: "初期コードのまま", code: exercise.starter },
+        ...(exercise.rejects ?? []),
+      ];
+      const slipped = [];
+
+      for (const { caption, code } of shouldFail) {
+        const attempt = await execute({ ...args, source: code });
+        const rejected =
+          attempt.error !== null ||
+          attempt.checks.length === 0 ||
+          attempt.checks.some(([ok]) => !ok);
+        if (!rejected) slipped.push(caption);
+      }
+
+      if (slipped.length > 0) {
+        console.log(`  ✕  ${label}  (${solution.checks.length} 項目)`);
+        slipped.forEach((caption) =>
+          console.log(`       「${caption}」で全項目クリアになります（採点が甘い）`)
+        );
+        lenient.push(`${label} … ${slipped.join(" / ")}`);
+        failed += 1;
+        continue;
       }
     }
-    const usable = await availablePackages([...allPackages]);
+
+    console.log(`  ✓  ${label}  (${solution.checks.length} 項目)`);
+    passed += 1;
+  }
+
+  /* ---------- 解説中のコード例 ---------- */
+
+  if (!onlyExercises) {
+    console.log("\n########## 解説中のコード例 ##########");
 
     for (const course of courses) {
       console.log(`\n=== ${course.title} ===`);
 
       for (const chapter of course.chapters) {
         for (const lesson of chapter.lessons) {
-          const ex = lesson.exercise;
-          if (!ex) continue;
+          const runnable = (lesson.examples ?? []).filter((e) => e.runnable !== false);
+          if (runnable.length === 0) continue;
 
           const label = `${chapter.id}/${lesson.id}  ${lesson.title}`;
+          let ok = 0;
+          const problems = [];
 
-          if (!ex.solution) {
-            console.log(`  -  ${label} … 解答例なし（読み飛ばし）`);
-            skipped += 1;
-            continue;
+          for (const [i, example] of runnable.entries()) {
+            const name = example.caption ? `「${example.caption}」` : `${i + 1} 番目`;
+            const key = `${course.id}/${chapter.id}/${lesson.id}#${i}`;
+            seen.add(key);
+
+            const missing = packagesFor(course, lesson, example).filter((p) => !usable.has(p));
+            if (missing.length > 0) {
+              exampleSkipped += 1;
+              continue;
+            }
+
+            // 採点は無い。ここで見たいのは「止まらないか」と「何が出るか」。
+            const args = {
+              source: example.code,
+              helper,
+              files: filesFor(course, lesson, example),
+            };
+            const result = await execute(args);
+
+            if (example.raises) {
+              // わざとエラーを見せる例。止まらなかったら説明と食い違っている。
+              if (result.error) ok += 1;
+              else problems.push([name, "エラーになる例のはずが、通ってしまいます"]);
+            } else if (result.error) {
+              problems.push([name, result.error]);
+              continue;
+            } else {
+              ok += 1;
+            }
+
+            /* 出力の記録。取り直すときは 2 回動かし、実行ごとに変わる例
+               （時刻を使うなど）は記録しない。記録してしまうと、あとから
+               中身の違いではなく実行時刻で赤くなる。 */
+            const lines = toLines(result.output);
+
+            if (updateSnapshot) {
+              const again = await execute(args);
+              recorded[key] = same(lines, toLines(again.output))
+                ? { caption: example.caption ?? null, output: lines }
+                : { caption: example.caption ?? null, unstable: true };
+              continue;
+            }
+
+            const before = recorded[key];
+            if (!before) {
+              problems.push([
+                name,
+                "出力が記録されていません（npm run verify:exercises -- --update-snapshot で記録してください）",
+              ]);
+            } else if (!before.unstable && !same(lines, before.output)) {
+              problems.push([
+                name,
+                "出力が記録と違います。解説の説明と合っているか確かめてください。\n" +
+                  `--- 記録\n${before.output.join("\n")}\n+++ いま\n${lines.join("\n")}`,
+              ]);
+            }
           }
 
-          const needed = [
-            ...(course.packages ?? []),
-            ...(lesson.packages ?? []),
-            ...(ex.packages ?? []),
-          ];
-          const missing = needed.filter((p) => !usable.has(p));
-          if (missing.length > 0) {
-            console.log(`  -  ${label} … ${missing.join(", ")} が無いので読み飛ばし`);
-            skipped += 1;
-            continue;
-          }
-
-          // 練習用ファイルを置く
-          const files = { ...(course.files ?? {}), ...(lesson.files ?? {}), ...(ex.files ?? {}) };
-          for (const [name, content] of Object.entries(files)) {
-            await writeFile(path.join(workDir, name), content, "utf8");
-          }
-
-          const script = [PREAMBLE, ex.solution, "\n", ex.tests, REPORT].join("\n");
-          const file = path.join(workDir, "case.py");
-          await writeFile(file, script, "utf8");
-
-          let stdout = "";
-          try {
-            ({ stdout } = await run("python3", [file], { cwd: workDir, timeout: 30_000 }));
-          } catch (e) {
-            console.log(`  ✕  ${label}`);
-            console.log(`       解答例の実行でエラー:\n${indent(e.stderr || e.message)}`);
-            failed += 1;
-            continue;
-          }
-
-          const marker = stdout.lastIndexOf("@@RESULT@@");
-          if (marker === -1) {
-            console.log(`  ✕  ${label} … 採点結果を取得できませんでした`);
-            failed += 1;
-            continue;
-          }
-
-          const checks = JSON.parse(stdout.slice(marker + "@@RESULT@@".length));
-          const ng = checks.filter(([ok]) => !ok);
-
-          if (checks.length === 0) {
-            console.log(`  ✕  ${label} … check() が 1 つも実行されていません`);
-            failed += 1;
-          } else if (ng.length > 0) {
-            console.log(`  ✕  ${label}`);
-            ng.forEach(([, msg]) => console.log(`       通らなかった項目: ${msg}`));
-            failed += 1;
+          examplePassed += ok;
+          if (problems.length === 0) {
+            console.log(`  ✓  ${label}  (${ok} 例)`);
           } else {
-            console.log(`  ✓  ${label}  (${checks.length} 項目)`);
-            passed += 1;
+            console.log(`  ✕  ${label}  (${ok} / ${runnable.length} 例)`);
+            for (const [name, detail] of problems) {
+              console.log(`       ${name}:\n${indent(detail)}`);
+            }
+            exampleFailed += problems.length;
           }
         }
       }
     }
-  } finally {
-    await rm(workDir, { recursive: true, force: true });
   }
 
-  console.log(`\n合計: 通過 ${passed} / 失敗 ${failed} / 読み飛ばし ${skipped}`);
+  /* ---------- 出力の記録を書く / 古い記録を指摘する ---------- */
+
+  if (updateSnapshot) {
+    await mkdir(path.dirname(snapshotPath), { recursive: true });
+    await writeFile(snapshotPath, JSON.stringify(recorded, null, 2) + "\n", "utf8");
+    const unstable = Object.values(recorded).filter((v) => v.unstable);
+    console.log(
+      `\nコード例の出力を ${Object.keys(recorded).length} 件記録しました` +
+        `（実行ごとに変わるため記録しないもの ${unstable.length} 件）: ` +
+        path.relative(root, snapshotPath)
+    );
+  } else if (!onlyExercises && exampleSkipped === 0) {
+    // 読み飛ばしがあると「消えた」のか「動かせなかった」のか区別できないので、
+    // 全件動かせたときだけ古い記録を指摘する。
+    const stale = Object.keys(recorded).filter((key) => !seen.has(key));
+    if (stale.length > 0) {
+      exampleFailed += stale.length;
+      console.log(
+        `\n記録にしか無いコード例が ${stale.length} 件あります` +
+          "（--update-snapshot で記録を取り直してください）:"
+      );
+      stale.forEach((key) => console.log(`  - ${key}`));
+    }
+  }
+
+  console.log(`\n演習: 通過 ${passed} / 失敗 ${failed} / 読み飛ばし ${skipped}`);
+  if (!onlyExercises) {
+    console.log(
+      `コード例: 通過 ${examplePassed} / 失敗 ${exampleFailed} / 読み飛ばし ${exampleSkipped}`
+    );
+  }
+
+  if (lenient.length > 0) {
+    console.error(
+      `\n初期コードのままで採点を通る演習が ${lenient.length} 件あります:\n` +
+        lenient.map((l) => `  - ${l}`).join("\n") +
+        "\n課題文が求めていることを check() で見ているか確認してください。"
+    );
+  }
 
   if (skipped > maxSkipped) {
     console.error(
@@ -216,13 +346,7 @@ async function main() {
     process.exit(1);
   }
 
-  process.exit(failed > 0 ? 1 : 0);
+  process.exit(failed + exampleFailed > 0 ? 1 : 0);
 }
-
-const indent = (text) =>
-  String(text)
-    .split("\n")
-    .map((l) => "       " + l)
-    .join("\n");
 
 await main();

@@ -9,6 +9,7 @@
 import type { PyodideInterface } from "pyodide";
 import { IMAGE_MARKER } from "./protocol";
 import type { CheckResult, WorkerRequest, WorkerResponse } from "./protocol";
+import { PYTHON_HELPERS } from "./python-helpers";
 
 const BASE = import.meta.env.BASE_URL || "/";
 const PYODIDE_DIR = new URL(`${BASE}pyodide/`, self.location.href).href;
@@ -18,8 +19,9 @@ const loadedPackages = new Set<string>();
 
 /* 実行のたびに、まっさらな名前空間へ流し込む前処理。
    - print の内容を「画面へ流す」と「採点で参照する」の両方に配る
-   - check() : 演習の採点で使うヘルパー
-   - show()  : matplotlib の図を画面に出すヘルパー           */
+   - check()       : 演習の採点で使うヘルパー
+   - show()        : matplotlib の図を画面に出すヘルパー
+   - run_pytest()  : 書いたコードを pytest にかけるヘルパー（末尾で連結） */
 const PREAMBLE = `
 import io
 import os
@@ -91,7 +93,7 @@ def show():
 def _shown():
     """採点用。show() で図を出したかどうか。"""
     return len(_shown_images) > 0
-`;
+${PYTHON_HELPERS}`;
 
 function post(msg: WorkerResponse): void {
   self.postMessage(msg);
@@ -175,6 +177,15 @@ async function execute(req: Extract<WorkerRequest, { type: "run" }>): Promise<vo
     writeFiles(req.files);
 
     ns = pyodide!.runPython("{}"); // まっさらな名前空間（PyProxy の dict）
+
+    /* スクリプトとして実行したのと同じ状態にする。名前空間に __name__ が
+       無いと builtins の "builtins" を拾ってしまい、学習者が書いた
+       if __name__ == "__main__": が静かに一度も成立しなくなる。 */
+    ns.set("__name__", "__main__");
+
+    // run_pytest() が「いま書かれているコード」を書き出せるように渡しておく。
+    // <exec> で実行するため inspect.getsource では取れない。
+    ns.set("_pylabo_source", req.code);
     await pyodide!.runPythonAsync(PREAMBLE, { globals: ns });
 
     try {

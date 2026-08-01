@@ -8,7 +8,7 @@ Python は [Pyodide](https://pyodide.org/)（CPython を WebAssembly に移植�
 
 ## できること
 
-- **目的別のコース制** — 現在 4 コース / 全 40 レッスン。追加予定のコースも一覧に表示されます
+- **目的別のコース制** — 現在 5 コース / 全 52 レッスン。追加予定のコースも一覧に表示されます
 - **その場で実行** — 解説中のコードはすべて編集して実行できる
 - **自動採点** — 演習を書いて「採点する」を押すと、チェック項目ごとに合否が出る
 - **pandas / matplotlib が動く** — グラフはそのままページ内に表示される
@@ -25,12 +25,13 @@ Python は [Pyodide](https://pyodide.org/)（CPython を WebAssembly に移植�
 | データ分析・集計 | 中級 | 素の Python での集計 → pandas → groupby と可視化 → 売上レポート（10 レッスン） |
 | Web/API・自動化 | 中級 | pathlib・CSV/JSON・正規表現・日時・HTTP → ログ集計ツール（7 レッスン） |
 | アプリ開発（FastAPI） | 実践 | ルーティングと検証を自作 → FastAPI で書き直す → TODO API（6 レッスン） |
+| テストと品質 | 実践 | assert → pytest → parametrize / fixture → モックとカバレッジ → TDD と回帰テスト（12 レッスン） |
 
 コースは互いに独立しています。どこから始めても構いません。
 
 ### 追加予定
 
-テストと品質（pytest）／型ヒントと静的解析（mypy・ruff）／データベースと SQL／非同期処理と並行実行／環境とパッケージング／CLI ツール開発
+型ヒントと静的解析（mypy・ruff）／データベースと SQL／非同期処理と並行実行／環境とパッケージング／CLI ツール開発
 
 追加予定のコースはホーム画面に非活性の状態で並び、収録予定の内容が確認できます。公開時は `src/courses/registry.ts` の 1 エントリを差し替えるだけで選択可能になります。
 
@@ -48,7 +49,7 @@ npm run dev
 
 `http://localhost:5173` を開いてください。
 
-> `npm install` の後処理で、Pyodide 本体（約 12MB）を `node_modules` から `public/pyodide/` へコピーし、pandas / matplotlib などの wheel（約 17MB）を Pyodide 公式配布物から取得します。**初回のみネットワークが必要で、以降はすべてローカルから配信されます。** 取得したファイルは sha256 で検証しています。
+> `npm install` の後処理で、Pyodide 本体（約 12MB）を `node_modules` から `public/pyodide/` へコピーし、pandas / matplotlib / pytest などの wheel（約 19MB）を Pyodide 公式配布物から取得します。**初回のみネットワークが必要で、以降はすべてローカルから配信されます。** 取得したファイルは sha256 で検証しています。
 
 ### そのほかのコマンド
 
@@ -74,7 +75,27 @@ npm run verify:exercises
 
 `test` は Vitest によるユニットテストです（ルーティング、進捗の保存、出力の解析、コースデータの整合性など）。
 
-`verify:exercises` は、**すべての演習について「解答例をそのまま実行したら採点を通るか」**を手元の python3 で確かめます。期待値の書き間違いや、解答例だけでは動かない（前提の変数が抜けている）不備を検出できます。pandas などが手元に無い場合、その演習は読み飛ばされます。
+`verify:exercises` は、**学習コンテンツが書いてあるとおりに動くか**を確かめます。見ているのは 3 つです。
+
+| 見ているもの | 落ちるとき |
+|---|---|
+| 演習の解答例 | 解答例をそのまま実行して、通らない項目がある（期待値の書き間違い／解答例だけでは動かない） |
+| 演習の初期コード | 手つかずのままで全項目クリアになる（採点が課題文の要求を見ていない＝誤った合格を返す） |
+| 解説中のコード例 | 実行がエラーで止まる／出力が記録（`src/courses/__snapshots__/`）と違う |
+
+コード例の出力を記録しているのは、**解説の説明と実際の表示がずれたことに気づくため**です。パッケージを上げて表示が変わった場合などは差分が出るので、本文を直すか記録を取り直すか判断できます。取り直しは `npm run verify:exercises -- --update-snapshot` です（実行ごとに変わる出力は自動的に記録の対象外になります）。
+
+```bash
+npm run verify:setup
+```
+
+採点の期待値や記録した出力は「実際の計算結果」なので、**学習者のブラウザ内（Pyodide）と同じ版の Python で確かめないと意味がありません**。`verify:setup` は Pyodide と同じ Python・パッケージの組み合わせを `.venv-pyodide/` に用意します（[uv](https://docs.astral.sh/uv/) が必要）。用意があれば `verify:exercises` が自動でそちらを使い、無ければ `python3` にそのまま任せます（`PYLABO_PYTHON` で明示指定も可能）。どの Python で確かめたかは実行時の 1 行目に出ます。pandas などが無い環境では、その演習・コード例は読み飛ばされます。
+
+```bash
+node scripts/audit-grading.mjs
+```
+
+こちらは CI に入れていない調査用です。解答例を少しだけ間違えた版（数値をずらす・比較を反転する・文を消す）に書き換えて、**それでも採点を通ってしまわないか**を試します。通ってしまう書き換えは「採点がその振る舞いを見ていない」ということなので、課題文が明確に求めていることなら `check()` を足します。表示の文言まで固定すると理不尽な採点になるため、すべてを塞ぐ前提のものではありません。
 
 wheel の取得だけをやり直したいときは `npm run fetch:packages`、Pyodide 本体のコピーだけなら `npm run sync:pyodide` です。
 
@@ -120,6 +141,7 @@ src/
 ├── components/               画面（ホーム・サイドバー・レッスン・コードブロック…）
 ├── lib/
 │   ├── pyodide.worker.ts     Python を実行する Web Worker
+│   ├── python-helpers.ts     Python 側へ足すヘルパー（run_pytest など）
 │   ├── runner.ts             ワーカーとのやりとりを Promise にまとめる
 │   ├── protocol.ts           ワーカーとのメッセージ定義
 │   ├── markdown.ts           本文のレンダリング
@@ -150,6 +172,10 @@ scripts/
 
 **採点は Python 側で行う。** 各演習の `tests` は、学習者のコードと同じ名前空間で実行される Python コードです。`check(条件, "説明")` を並べて書くと、そのままチェック項目の一覧として表示されます。
 
+**pytest も本物を動かす。** 「テストと品質」コースでは、ブラウザ内の Python で実際に pytest を走らせています。エディタがファイル 1 枚なので、`run_pytest()` ヘルパーが**いま書かれているコードをそのままテストファイルとして書き出して** pytest に渡します（`src/lib/python-helpers.ts`）。失敗レポートの行番号はエディタの行と一致します。
+
+このおかげで、テストの演習は「テストが書けたか」ではなく「**そのテストが本当にバグを捕まえられるか**」で採点できます。採点側は、わざと壊した実装に学習者のテストを当てて、落ちることを確かめています。
+
 ## 変更履歴
 
 [CHANGELOG.md](CHANGELOG.md) を参照してください。
@@ -177,6 +203,12 @@ Git Flow に沿っています。
 | `hotfix/*` | 緊急修正。`main` から切って `main` と `develop` へ |
 
 `feature` / `release` のマージは履歴を残すため `--no-ff` で行います。
+
+既定ブランチは `main` です（公開時に見えるブランチであり、Vercel の本番デプロイもここから行われるため）。**feature ブランチの PR は `develop` を宛先にする**ので、`gh pr create` では宛先を明示してください。
+
+```bash
+gh pr create --base develop
+```
 
 **`main` と `develop` への直接コミットは行いません。** すべて Pull Request 経由でマージし、レビュー観点は [docs/コードレビュー観点.md](docs/コードレビュー観点.md) に定義しています。PR では GitHub Actions（[.github/workflows/ci.yml](.github/workflows/ci.yml)）が型チェック・テスト・ビルド・演習の検証を実行します。
 

@@ -1,6 +1,6 @@
-import { courseIcons, Hourglass, Sparkles } from "../icons";
-import { progress } from "../lib/storage";
-import { coursePath, navigate } from "../lib/route";
+import { Hourglass, Sparkles } from "../icons";
+import { CourseCard } from "./CourseCard";
+import { PlannedCourseCard } from "./PlannedCourseCard";
 import type { AvailableCourse, CourseEntry, PlannedCourse } from "../types";
 
 interface Props {
@@ -87,75 +87,6 @@ export function HomeView({ entries }: Props) {
           </ol>
         </section>
       </div>
-    </div>
-  );
-}
-
-function CourseCard({ course }: { course: AvailableCourse }) {
-  const Icon = courseIcons[course.icon];
-  const done = progress.countDone(course.id);
-  const percent =
-    course.lessonCount === 0 ? 0 : Math.round((done / course.lessonCount) * 100);
-
-  // 触れた時点で本文を先読みしておくと、クリック後の待ちがなくなる
-  const prefetch = () => {
-    void course.load();
-  };
-
-  return (
-    <button
-      type="button"
-      className="course-card"
-      style={{ "--accent": course.accent } as React.CSSProperties}
-      onClick={() => navigate(coursePath(course.id))}
-      onPointerEnter={prefetch}
-      onFocus={prefetch}
-    >
-      <div className="course-card__top">
-        <span className="course-card__icon">
-          <Icon aria-hidden />
-        </span>
-        <span className="course-card__level">{course.level}</span>
-      </div>
-      <h3 className="course-card__title">{course.title}</h3>
-      <p className="course-card__desc">{course.description}</p>
-      <div className="course-card__foot">
-        <span className="progress-bar">
-          <span style={{ width: `${percent}%` }} />
-        </span>
-        <span>
-          {done}/{course.lessonCount}
-        </span>
-      </div>
-    </button>
-  );
-}
-
-function PlannedCourseCard({ course }: { course: PlannedCourse }) {
-  const Icon = courseIcons[course.icon];
-
-  return (
-    <div
-      className="course-card course-card--planned"
-      style={{ "--accent": course.accent } as React.CSSProperties}
-      aria-disabled="true"
-    >
-      <div className="course-card__top">
-        <span className="course-card__icon">
-          <Icon aria-hidden />
-        </span>
-        <span className="course-card__badge">
-          <Hourglass aria-hidden />
-          {course.plannedFor ?? "追加予定"}
-        </span>
-      </div>
-      <h3 className="course-card__title">{course.title}</h3>
-      <p className="course-card__desc">{course.description}</p>
-      <ul className="course-card__topics">
-        {course.topics.map((topic) => (
-          <li key={topic}>{topic}</li>
-        ))}
-      </ul>
     </div>
   );
 }
