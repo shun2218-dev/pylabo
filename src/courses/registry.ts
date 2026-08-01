@@ -117,28 +117,21 @@ export const COURSE_ENTRIES: CourseEntry[] = [
     () => import("./testing")
   ),
 
-  /* ---------- 追加予定 ---------- */
-
-  planned(
+  available(
     {
       id: "typing",
       title: "型ヒントと静的解析",
       icon: "lint",
       level: "実践",
       accent: "#3aa0d8",
+      lessonCount: 12,
       description:
-        "型ヒントを設計の道具として使い、mypy と ruff で実行前に間違いを見つける。",
+        "型ヒントを設計の道具として使い、mypy で実行前に間違いを見つける。ブラウザの中で本物の mypy が動きます。",
     },
-    {
-      topics: [
-        "typing の実用パターン",
-        "mypy / pyright の導入と設定",
-        "ruff によるリントと整形",
-        "Protocol と型による疎結合",
-        "既存コードへの段階的な導入",
-      ],
-    }
+    () => import("./typing")
   ),
+
+  /* ---------- 追加予定 ---------- */
 
   planned(
     {
