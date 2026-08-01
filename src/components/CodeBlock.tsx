@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { CodeEditor } from "./CodeEditor";
 import { OutputPanel } from "./OutputPanel";
@@ -29,7 +29,8 @@ interface Props {
 
   /** 採点用コード。渡すと「演習モード」になる */
   tests?: string;
-  hint?: string;
+  /** 文字列なら 1 つ、配列なら段階ヒント */
+  hint?: string | string[];
   solution?: string;
 
   /** 書きかけコードの保存先（演習モードのみ） */
@@ -58,6 +59,14 @@ export function CodeBlock({
     }
     return code;
   });
+
+  /* ヒントは 1 段ずつ開く。レッスンを移ると CodeBlock ごと作り直されるので
+     （CourseView が LessonView に key を渡している）、開いた段数は持ち越さない。 */
+  const hints = useMemo(
+    () => (Array.isArray(hint) ? hint : hint ? [hint] : []),
+    [hint]
+  );
+  const [shownHints, setShownHints] = useState(1);
 
   const [output, setOutput] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -207,13 +216,32 @@ export function CodeBlock({
         </div>
       )}
 
-      {hint && (
+      {hints.length > 0 && (
         <details className="reveal">
           <summary>
             <Lightbulb aria-hidden />
-            ヒントを見る
+            {hints.length > 1 ? `ヒントを見る（全 ${hints.length} 段階）` : "ヒントを見る"}
           </summary>
-          <Prose className="reveal__body" source={hint} />
+
+          <div className="reveal__body">
+            {hints.slice(0, shownHints).map((text, i) => (
+              <div key={i} className="hint-step">
+                {hints.length > 1 && <p className="hint-step__label">ヒント {i + 1}</p>}
+                <Prose source={text} />
+              </div>
+            ))}
+
+            {shownHints < hints.length && (
+              <button
+                type="button"
+                className="btn btn--ghost"
+                onClick={() => setShownHints((n) => Math.min(n + 1, hints.length))}
+              >
+                <Lightbulb aria-hidden />
+                次のヒントを見る（残り {hints.length - shownHints}）
+              </button>
+            )}
+          </div>
         </details>
       )}
 
@@ -223,7 +251,12 @@ export function CodeBlock({
             <BookOpen aria-hidden />
             解答例を見る
           </summary>
-          <Prose className="reveal__body" source={"```python\n" + solution + "\n```"} />
+          <div className="reveal__body">
+            <p className="reveal__note">
+              書き方のひとつです。チェック項目を満たしていれば、違う書き方でも正解です。
+            </p>
+            <Prose source={"```python\n" + solution + "\n```"} />
+          </div>
         </details>
       )}
     </div>

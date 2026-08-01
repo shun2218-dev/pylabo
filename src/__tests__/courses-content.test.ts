@@ -6,6 +6,10 @@ import type { Course } from "../types";
 
 const courses: Course[] = await Promise.all(availableCourses().map((e) => e.load()));
 
+/** 段階ヒントも 1 本の文字列も、同じ検査にかけられるようにまとめる。 */
+const hintText = (hint: string | string[]): string =>
+  Array.isArray(hint) ? hint.join("\n") : hint;
+
 describe.each(courses.map((c) => [c.title, c] as const))("%s", (_title, course) => {
   it("章とレッスンの id が重複していない", () => {
     const chapterIds = course.chapters.map((c) => c.id);
@@ -56,12 +60,25 @@ describe.each(courses.map((c) => [c.title, c] as const))("%s", (_title, course) 
             !line.startsWith("class ")
         );
 
-      const flatHint = hint.replace(/\s+/g, " ");
+      const flatHint = hintText(hint).replace(/\s+/g, " ");
       for (const line of meaningful) {
         expect(
           flatHint.includes(line.replace(/\s+/g, " ")),
           `${lesson.id} のヒントが解答例の行をそのまま含んでいる: ${line}`
         ).toBe(false);
+      }
+    }
+  });
+
+  it("段階ヒントは 2 段以上あり、どの段も空でない", () => {
+    for (const { lesson } of flattenLessons(course)) {
+      const hint = lesson.exercise?.hint;
+      if (!Array.isArray(hint)) continue;
+
+      /* 1 段だけの配列は、ただの文字列で書けばよい（UI も段数表示を出さない）。 */
+      expect(hint.length, `${lesson.id} の段階ヒント`).toBeGreaterThan(1);
+      for (const [i, step] of hint.entries()) {
+        expect(step.trim().length, `${lesson.id} のヒント ${i + 1}`).toBeGreaterThan(0);
       }
     }
   });
