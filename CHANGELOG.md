@@ -3,7 +3,7 @@
 形式は [Keep a Changelog](https://keepachangelog.com/ja/1.1.0/)、
 バージョンは [セマンティック バージョニング](https://semver.org/lang/ja/) に従います。
 
-## [未リリース]
+## [1.3.0] - 2026-08-02
 
 ### 追加
 
@@ -16,6 +16,8 @@
 
 - `verify:exercises` がコード例を**ハッシュの種を固定して**実行するようになった。集合を print する例は並びが実行ごとに変わりうるため、記録が中身の違いとは無関係にずれることがあった。取り直しのときは種を変えて 2 回動かし、並びが変わりうる例は記録しない
 - `verify:exercises --update-snapshot` に `--only-exercises` を付けたとき、コード例の記録を空にしてしまわないようにした
+
+[1.3.0]: https://github.com/shun2218-dev/pylabo/releases/tag/v1.3.0
 
 ## [1.2.0] - 2026-08-01
 
