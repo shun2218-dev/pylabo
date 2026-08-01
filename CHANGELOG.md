@@ -3,7 +3,7 @@
 形式は [Keep a Changelog](https://keepachangelog.com/ja/1.1.0/)、
 バージョンは [セマンティック バージョニング](https://semver.org/lang/ja/) に従います。
 
-## [Unreleased]
+## [1.1.0] - 2026-08-01
 
 ### 追加
 
@@ -28,7 +28,7 @@
 - コースカードの難易度バッジ（入門 / 中級 / 実践）を、難易度ごとに色分けした塗りのバッジにした。従来は枠線と淡い文字色だけで、カード背景に同化して読みにくかった
 - 「追加予定」カードの収録内容の箇条書きを下端で揃えた。説明文の行数がカードごとに違うため、開始位置がずれて見えていた
 
-[Unreleased]: https://github.com/shun2218-dev/pylabo/compare/v1.0.0...develop
+[1.1.0]: https://github.com/shun2218-dev/pylabo/releases/tag/v1.1.0
 
 ## [1.0.0] - 2026-07-30
 
