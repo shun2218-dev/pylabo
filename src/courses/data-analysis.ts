@@ -76,6 +76,13 @@ quantities = [12, 20]
 「この列の合計」「この列の平均」といった**列単位の計算に強い**形です。pandas の DataFrame は内部的にこちら側の考え方でできています。
 
 まずは 1 の形で手を動かし、限界を感じたところで pandas に移ります。**pandas が何を楽にしてくれるのか**が体でわかると、覚え方がまったく違ってきます。
+
+### もっと詳しく
+
+レコードを辞書ではなく \`dataclass\` や \`NamedTuple\`（基本文法コース 第4章）で表すと、\`r["stroe"]\` のようなキー名の打ち間違いを実行前に見つけられ、\`r.store\` と書けるようになります。行数が多くない設定データやマスタを持つときは、こちらのほうが安全です。
+
+- [dataclasses（公式）](https://docs.python.org/ja/3/library/dataclasses.html)
+- [pandas のデータ構造入門（公式・英語）](https://pandas.pydata.org/docs/user_guide/dsintro.html)
 `,
           examples: [
             {
@@ -171,6 +178,22 @@ for r in rows:
 平均が欲しいときは、合計と件数の両方を持つのがコツです。
 
 > この「キーごとに足し込む」処理こそ、pandas の \`groupby\` が 1 行で置き換えてくれるものです。
+
+### もっと詳しく
+
+集計の種類によっては、\`defaultdict\` よりも短く書ける道具があります。
+
+| やりたいこと | 道具 |
+|---|---|
+| 件数を数えるだけ | \`collections.Counter\` |
+| 平均・中央値を出す | \`statistics.mean\` / \`median\` |
+| キーでまとめて回す | \`itertools.groupby\`（**先に \`sorted\` が必要**） |
+
+\`itertools.groupby\` は「並んでいる同じキーをひとまとめにする」だけなので、並べ替えずに渡すと同じキーが何度も現れます。SQL の \`GROUP BY\` とは違う挙動なので、ここは引っかかりやすいところです。
+
+- [collections（公式）](https://docs.python.org/ja/3/library/collections.html)
+- [itertools.groupby（公式）](https://docs.python.org/ja/3/library/itertools.html#itertools.groupby)
+- [statistics（公式）](https://docs.python.org/ja/3/library/statistics.html)
 `,
           examples: [
             {
@@ -296,6 +319,15 @@ with open("sales.csv", encoding="utf-8") as f:
 ### 注意：CSV の値は全部「文字列」
 
 \`quantity\` は \`12\` ではなく \`"12"\` として読まれます。計算する前に \`int()\` で変換が必要です。**この型変換の手間こそ、pandas を使う大きな理由の 1 つ**です。
+
+### もっと詳しく
+
+\`open\` には \`newline=""\` を付けるのが \`csv\` モジュールの公式の作法です。付けないと、値の中に改行が入っている CSV を読んだときに行が崩れることがあります。
+
+区切り文字は \`csv.reader(f, delimiter="\\t")\` のように変えられるので、TSV も同じコードで読めます。書き出しは \`csv.DictWriter\` で、辞書のリストをそのまま渡せます。
+
+- [csv（公式）](https://docs.python.org/ja/3/library/csv.html)
+- [pandas.read_csv（公式・英語）](https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html)
 `,
           examples: [
             {
@@ -392,6 +424,15 @@ df["amount"] = df["quantity"] * df["price"]   # 全行が一度に計算され�
 > pandas の import は \`import pandas as pd\` が慣習です。世界中のコードがこの名前で書かれているので、これに合わせておきましょう。
 
 > 初回だけライブラリの読み込みに数秒かかります。
+
+### もっと詳しく
+
+思ったとおりに集計できないときは、まず \`df.dtypes\` か \`df.info()\` で **列の型** を見てください。数値のはずの列が \`object\`（文字列）のままだと、合計が数の足し算ではなく文字列の連結になります。直すには \`astype(int)\` や \`pd.to_numeric\`（変換できない値を \`errors="coerce"\` で欠損にできます）を使います。
+
+なお、1 行ずつ処理する \`apply\` は for ループより読みやすくなりますが、速さの面ではベクトル化された演算にかないません。まず列どうしの計算で書けないかを考えるのがおすすめです。
+
+- [基本的な使い方（pandas 公式・英語）](https://pandas.pydata.org/docs/user_guide/basics.html)
+- [データ構造入門（pandas 公式・英語）](https://pandas.pydata.org/docs/user_guide/dsintro.html)
 `,
           examples: [
             {
@@ -636,6 +677,15 @@ df[(df["store"] == "渋谷") & (df["amount"] >= 5000)]
 - \`df[df["store"].isin(["渋谷", "新宿"])]\` … 複数候補
 - \`df[df["item"].str.contains("ラテ")]\` … 部分一致
 - \`df.query("amount >= 5000 and store == '渋谷'")\` … 文字列で書く書き方
+
+### もっと詳しく
+
+行と列を同時に指定するときは \`df.loc[条件, ["store", "amount"]]\` の形が基本です。角かっこを 2 回続ける書き方（\`df[条件]["amount"]\`）でも読み出せますが、**値を代入するときは意図した場所が書き換わらないこと**があります（\`SettingWithCopyWarning\` が出るのはこの形です）。読むだけでも \`loc\` に寄せておくと、あとで代入に変えたときに事故になりません。
+
+\`str\` と \`dt\` は「Series 版の文字列メソッド／日付メソッド」がまとまった入り口で、\`.str.startswith\`、\`.str.replace\`、\`.dt.year\` など、ここに載せた以外にもたくさんあります。
+
+- [インデックス参照と選択（pandas 公式・英語）](https://pandas.pydata.org/docs/user_guide/indexing.html)
+- [文字列データの扱い（pandas 公式・英語）](https://pandas.pydata.org/docs/user_guide/text.html)
 `,
           examples: [
             {
@@ -887,6 +937,15 @@ share = sales / sales.sum() * 100
 - \`df["date"].dt.month\` … 月
 - \`df["date"].dt.day_name()\` … 曜日名
 - \`df.groupby(df["date"].dt.to_period("W"))\` … 週ごと
+
+### もっと詳しく
+
+日付を軸にまとめるなら、日付を索引にしてから \`resample("ME")\`（月ごと）と書く方法もあります。データが無い期間も 0 として並ぶので、時系列のグラフを描くときは \`groupby\` より扱いやすくなります。
+
+「上位 n 件」はグループごとにも出せます。\`groupby(...).head(3)\` で「店舗ごとの上位 3 件」がそのまま取れるので、店舗の数だけループを回す必要はありません。順位そのものが欲しいときは \`rank\` があります。
+
+- [並べ替え（pandas 公式・英語）](https://pandas.pydata.org/docs/user_guide/basics.html#sorting)
+- [時系列 / resample（pandas 公式・英語）](https://pandas.pydata.org/docs/user_guide/timeseries.html)
 `,
           examples: [
             {
@@ -1149,6 +1208,23 @@ show()`,
 ### 関数に分ける意味
 
 「読み込み」「集計」「表示」を関数に分けておくと、あとでデータが変わっても壊れにくくなります。とくに **集計関数は DataFrame を受け取って DataFrame を返す** 形にしておくと、テストも書きやすく再利用しやすい形になります。
+
+### もっと詳しく
+
+「整える」の段は、\`assign\` と \`pipe\` を使うと、途中の変数を作らずにひと続きに書けます。どこで何をしているかが上から順に読めるようになり、行の入れ替えも楽になります。
+
+~~~
+report = (
+    df.assign(amount=df["quantity"] * df["price"])
+      .pivot_table(index="store", columns="category", values="amount",
+                   aggfunc="sum", fill_value=0)
+)
+~~~
+
+結果を配りたいときは \`to_csv\` のほかに \`to_excel\`、\`to_markdown\`、\`to_html\` があり、同じ表をそのまま別の形式で出せます。
+
+- [ピボットと集計（pandas 公式・英語）](https://pandas.pydata.org/docs/user_guide/reshaping.html)
+- [DataFrame.assign（pandas 公式・英語）](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.assign.html)
 `,
           examples: [
             {

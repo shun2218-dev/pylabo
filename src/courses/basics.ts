@@ -33,6 +33,14 @@ Python のプログラムは、上から順に 1 行ずつ実行されます。�
 ### コメント
 
 \`#\` から行末まではコメントで、実行されません。あとで読み返す自分のためのメモです。
+
+### もっと詳しく
+
+\`print\` は値をいくつでも受け取れます（\`print(a, b)\` で空白を挟んで並びます）。区切り文字は \`sep\`、行末は \`end\` で変えられるので、\`print(a, b, sep=" / ")\` のような書き方も覚えておくと表示の調整が楽になります。
+
+- [組み込み関数 print（公式）](https://docs.python.org/ja/3/library/functions.html#print)
+- [はじめての一歩（公式チュートリアル）](https://docs.python.org/ja/3/tutorial/introduction.html)
+- [PEP 8 — コーディング規約（英語）](https://peps.python.org/pep-0008/)
 `,
           examples: [
             {
@@ -230,6 +238,15 @@ print(f"こんにちは、{name}さん")
 - \`str(42)\` → \`"42"\`
 
 数字に見えない文字列を \`int()\` に渡すと \`ValueError\` になります。
+
+### もっと詳しく
+
+\`f"{name=}"\` と書くと \`name='Python'\` のように **変数名ごと** 表示されます。デバッグ用の print はこれ 1 つで済みます。
+
+書式の指定は \`:\` の後ろだけで完結する小さな言語になっていて、埋め文字を変える（\`{x:*>8}\`）、パーセント表示（\`{r:.1%}\`）、日付の整形（\`{d:%Y-%m-%d}\`）まで同じ場所に書けます。ここに載せた 3 つは、そのごく一部です。
+
+- [書式指定ミニ言語（公式）](https://docs.python.org/ja/3/library/string.html#format-specification-mini-language)
+- [入力と出力（公式チュートリアル）](https://docs.python.org/ja/3/tutorial/inputoutput.html)
 `,
           examples: [
             {
@@ -329,6 +346,16 @@ Python では \`0 < x < 10\` のように**つなげて書けます**。これ�
 ### 「偽」とみなされる値
 
 \`0\`、空文字列 \`""\`、空リスト \`[]\`、\`None\` は条件式では偽になります。だから \`if items:\` と書けば「items が空でなければ」の意味になります。
+
+### もっと詳しく
+
+分岐の中身が「値を選ぶだけ」なら、条件式で 1 行にまとめられます（\`label = "合格" if score >= 60 else "不合格"\`）。
+
+値の **形** で分けたいとき（辞書にどのキーがあるか、リストが何要素かなど）は \`match\` 文という選択肢もあります。\`if\` を長く連ねるより、何で場合分けしているのかが読み取りやすくなります。
+
+- [if 文（公式チュートリアル）](https://docs.python.org/ja/3/tutorial/controlflow.html#if-statements)
+- [真理値判定 — 何が偽になるか（公式）](https://docs.python.org/ja/3/library/stdtypes.html#truth-value-testing)
+- [match 文（公式チュートリアル）](https://docs.python.org/ja/3/tutorial/controlflow.html#match-statements)
 `,
           examples: [
             {
@@ -557,6 +584,16 @@ for fruit in fruits:
 
 - \`break\` … ループを抜ける
 - \`continue\` … 次の周回へ飛ぶ
+
+### もっと詳しく
+
+\`enumerate()\` は開始番号を指定できます（\`enumerate(items, 1)\` で 1 から）。「1 から数えたいので \`i + 1\`」と書き足す必要はありません。
+
+\`for\` には \`else\` を付けられ、\`break\` せずに回り切ったときだけ実行されます。「探したが見つからなかった」の処理を、フラグ用の変数なしで書けます。
+
+- [for 文（公式チュートリアル）](https://docs.python.org/ja/3/tutorial/controlflow.html#for-statements)
+- [enumerate（公式）](https://docs.python.org/ja/3/library/functions.html#enumerate)
+- [zip（公式）](https://docs.python.org/ja/3/library/functions.html#zip)
 `,
           examples: [
             {
@@ -660,6 +697,21 @@ JSON とほぼ同じ形なので、API のレスポンスや設定ファイル�
 ### 追加・更新・削除
 
 \`d["key"] = 値\` で追加も更新も兼ねます。削除は \`del d["key"]\`。
+
+### もっと詳しく
+
+「無ければ用意してから足し込む」は \`get\` でも書けますが、専用の道具のほうが短く、意図もはっきりします。
+
+| やりたいこと | 道具 |
+|---|---|
+| 登場回数を数える | \`collections.Counter\` |
+| 初めてのキーを自動で用意する | \`collections.defaultdict\` |
+| 無ければ入れて、その値を返す | \`d.setdefault(k, [])\` |
+
+2 つの辞書を合わせるときは \`a | b\`（右側優先）が使えます。
+
+- [辞書型（公式）](https://docs.python.org/ja/3/library/stdtypes.html#dict)
+- [collections — Counter・defaultdict（公式）](https://docs.python.org/ja/3/library/collections.html)
 `,
           examples: [
             {
@@ -772,6 +824,15 @@ while 条件:
 ~~~
 
 > 条件がずっと真だと無限ループになります。このアプリでは「停止」ボタンで止められるので、恐れず試してかまいません。
+
+### もっと詳しく
+
+タプルは、要素に名前を付けたくなった時点が置き換えどきです。\`typing.NamedTuple\` や \`dataclass\`（第4章）にすると \`point[0]\` が \`point.x\` になり、あとから読む人にも意味が伝わります。
+
+集合には \`<=\`（部分集合か）や \`isdisjoint\`（共通する要素が無いか）もあります。「必要な項目がすべて含まれているか」の判定を、ループを書かずに 1 行で済ませられます。
+
+- [集合型（公式）](https://docs.python.org/ja/3/library/stdtypes.html#set-types-set-frozenset)
+- [NamedTuple（公式）](https://docs.python.org/ja/3/library/typing.html#typing.NamedTuple)
 `,
           examples: [
             {
@@ -883,6 +944,16 @@ print(greet("山田"))
 def add(a: int, b: int) -> int:
     return a + b
 ~~~
+
+### もっと詳しく
+
+\`def\` のすぐ下に置いた文字列は **docstring** になり、\`help(関数名)\` やエディタのポップアップから読めます。「この関数が何をするか」はコメントではなく docstring に書くのが Python の作法です。
+
+型ヒントは実行時には無視されますが、mypy のような型チェッカに渡すと、動かす前に食い違いを見つけられます。
+
+- [関数を定義する（公式チュートリアル）](https://docs.python.org/ja/3/tutorial/controlflow.html#defining-functions)
+- [docstring の書き方（PEP 257・英語）](https://peps.python.org/pep-0257/)
+- [typing（公式）](https://docs.python.org/ja/3/library/typing.html)
 `,
           examples: [
             {
@@ -977,6 +1048,15 @@ print(bmi(62, 1.72))`,
 ### スコープ
 
 関数の中で作った変数は、関数の外からは見えません。外の変数を関数の中で読むことはできますが、**書き換えるには工夫が要ります**（原則、引数で受けて return で返すほうが安全）。
+
+### もっと詳しく
+
+引数リストに \`*\` を挟むと、呼び方そのものを縛れます。\`def f(a, *, b)\` と書けば \`b\` はキーワードでしか渡せなくなり、\`f(1, True)\` のような「順番に頼った、読んで意味の分からない呼び出し」を防げます。
+
+受け取った引数をそのまま別の関数へ渡す \`f(*args, **kwargs)\` の書き方（アンパック）も、既存の関数を包むときの定番です。
+
+- [関数定義のさらに進んだ話（公式チュートリアル）](https://docs.python.org/ja/3/tutorial/controlflow.html#more-on-defining-functions)
+- [キーワード専用引数（公式）](https://docs.python.org/ja/3/reference/compound_stmts.html#function-definitions)
 `,
           examples: [
             {
@@ -1254,6 +1334,15 @@ evens = [n for n in nums if n % 2 == 0]
 - 集合：\`{x for x in items}\`
 
 > 何でも 1 行にすればいいわけではありません。**入れ子が 2 段を超えたら、素直に for 文に戻す**のが読みやすさのコツです。
+
+### もっと詳しく
+
+角かっこを丸かっこに変えると **ジェネレータ式** になり、リストを作らずに 1 件ずつ流します。\`sum(...)\` や \`any(...)\` にそのまま渡せば、途中のリストを作らずに済みます。
+
+\`if\` を \`for\` の **前** に置く形（\`[a if 条件 else b for x in xs]\`）は、絞り込みではなく「値の選択」です。後ろに置く \`if\` とは意味がまったく違うので、読み分けられるようにしておきましょう。
+
+- [リストの内包表記（公式チュートリアル）](https://docs.python.org/ja/3/tutorial/datastructures.html#list-comprehensions)
+- [ジェネレータ式（公式）](https://docs.python.org/ja/3/reference/expressions.html#generator-expressions)
 `,
           examples: [
             {
@@ -1469,6 +1558,16 @@ class User:
 ### \`__str__\`
 
 \`print(オブジェクト)\` したときの表示を決められます。デバッグがぐっと楽になります。
+
+### もっと詳しく
+
+\`__str__\` と同じ仲間の **特殊メソッド** を実装すると、自作クラスが組み込み型と同じ書き味になります。\`__eq__\` を書けば \`==\` で中身を比べられ、\`__len__\` を書けば \`len(cart)\` が使えます。
+
+「計算した結果を、属性のように読ませたい」ときは \`@property\` です。\`cart.total()\` ではなく \`cart.total\` と書けるようになり、あとから計算方法を変えても呼び出し側を直さずに済みます。
+
+- [クラス（公式チュートリアル）](https://docs.python.org/ja/3/tutorial/classes.html)
+- [特殊メソッド一覧（公式）](https://docs.python.org/ja/3/reference/datamodel.html#special-method-names)
+- [property（公式）](https://docs.python.org/ja/3/library/functions.html#property)
 `,
           examples: [
             {
@@ -1636,6 +1735,16 @@ class Point:
 ~~~
 
 \`__init__\`、\`__repr__\`（見やすい表示）、\`==\`（値どうしの比較）が自動生成されます。設定やレコードを表すクラスは、まずこれで書き始めるのがおすすめです。
+
+### もっと詳しく
+
+\`@dataclass(frozen=True)\` にすると、作ったあと変更できないクラスになります（辞書のキーにも使えます）。既定値にリストを持たせたいときは \`field(default_factory=list)\` を使ってください。前のレッスンの「既定値にリストを書いてはいけない」と同じ落とし穴を、dataclass は明示的に避けさせます。
+
+継承は便利ですが、「A は B の一種だ」と言い切れないなら、継承よりも **持たせる**（合成）ほうが壊れにくくなります。「同じ使い方ができること」だけをそろえたい場合は、継承せずに \`typing.Protocol\` で表す方法もあります。
+
+- [dataclasses（公式）](https://docs.python.org/ja/3/library/dataclasses.html)
+- [継承（公式チュートリアル）](https://docs.python.org/ja/3/tutorial/classes.html#inheritance)
+- [Protocol（公式）](https://docs.python.org/ja/3/library/typing.html#typing.Protocol)
 `,
           examples: [
             {
@@ -1872,6 +1981,16 @@ print(top_path, top_count)`,
 - f 文字列で整形する
 
 実務のデータ処理も、突き詰めればこの組み合わせです。ここができれば、他のコースへ進む土台は十分にできています。
+
+### もっと詳しく
+
+この演習で手を動かして書く集計は、標準ライブラリだけでも短くできます。数え上げと上位 n 件は \`collections.Counter\`（\`most_common\`）、平均や中央値は \`statistics\`、並べ替え済みの列をキーでまとめるなら \`itertools.groupby\` です。
+
+同じことを表の形でまとめて処理する道具が pandas で、「データ分析・集計」コースで扱います。まずは素の Python でどう書くかを知ってから使うと、pandas が何を肩代わりしているのかが分かります。
+
+- [collections（公式）](https://docs.python.org/ja/3/library/collections.html)
+- [statistics（公式）](https://docs.python.org/ja/3/library/statistics.html)
+- [itertools（公式）](https://docs.python.org/ja/3/library/itertools.html)
 `,
           examples: [
             {
