@@ -47,6 +47,13 @@ Web アプリケーションの仕事は、突き詰めると 1 つだけです�
 | ボディ | \`{"id": 3, "title": "牛乳を買う"}\` |
 
 FastAPI を使うと、この受け渡しのほとんどを関数の**引数と戻り値**として書けるようになります。「関数を書けば API になる」——これがフレームワークのありがたみです。
+
+### もっと詳しく
+
+ステータスコードは「返せる番号」ではなく、**呼び出し側との約束** です。作成に成功したら \`201\`、消したあと返す中身が無いなら \`204\`、送られてきた値がおかしいなら \`400\` 系、こちらの落ち度なら \`500\` 系。番号を適当に \`200\` で揃えてしまうと、クライアント側が成功と失敗を区別できなくなります。
+
+- [HTTP レスポンスステータスコード（MDN・日本語）](https://developer.mozilla.org/ja/docs/Web/HTTP/Reference/Status)
+- [HTTP メソッド（MDN・日本語）](https://developer.mozilla.org/ja/docs/Web/HTTP/Reference/Methods)
 `,
           examples: [
             {
@@ -178,6 +185,16 @@ def health():
 ### パスパラメータ
 
 \`/todos/3\` の \`3\` のように、URL に埋め込まれた値です。素朴に作るならパスを \`/\` で分割して照合します。
+
+### もっと詳しく
+
+パターンの照合は、正規表現に翻訳してから当てる方法もあります（\`/todos/{id}\` を \`^/todos/(?P<id>[^/]+)$\` に変換する）。名前付きグループがそのままパラメータの辞書になるので、実際の Web フレームワークの多くはこの方式です。
+
+デコレータを自分で書くときは \`functools.wraps\` を付けておくと、包んだあとも元の関数名や docstring が保たれます。付けないと、エラー表示や \`help()\` が全部 \`decorator\` になってしまいます。
+
+- [正規表現の構文 — 名前付きグループ（公式）](https://docs.python.org/ja/3/library/re.html#regular-expression-syntax)
+- [functools.wraps（公式）](https://docs.python.org/ja/3/library/functools.html#functools.wraps)
+- [パスパラメータ（FastAPI 公式・日本語）](https://fastapi.tiangolo.com/ja/tutorial/path-params/)
 `,
           examples: [
             {
@@ -269,10 +286,12 @@ if callable(f):
     check(f("/health", "/health") == {}, "パラメータ無しで一致したら空の辞書")
     check(f("/health", "/version") is None, "一致しなければ None")
 `,
-            hint: `
-両方を \`split("/")\` で分割し、**長さが違えば \`None\`**。あとは 1 区画ずつ突き合わせて、
-\`{\` で始まる区画は変数として拾い、そうでなければ文字列が一致するか確かめます。
-`,
+            hint: [
+              "`/todos/{id}` と `/todos/3` は文字列としてはまったくの別物ですが、`/` で区切った「区画の並び」として見ると、同じ長さで 1 区画ずつ対応しています。文字列のまま比べようとせず、まず比べられる形にそろえるのが出発点です。",
+              "区画の数が違えば、中身を見るまでもなく不一致が確定します（`/todos` と `/todos/3/extra` がこれ）。ここを先に片付けておくと、あとの突き合わせで長さのずれを気にせずに済みます。",
+              "1 区画ずつ見ていくと、パターン側の区画は 2 種類しかありません。中かっこで囲まれた区画は「どんな値でも受け入れて、名前をつけて拾う」もの。そうでない区画は「完全に同じでなければ不一致」。名前は囲みを外した部分です。",
+              "戻り値は 3 通りに見えて 2 通りです。不一致なら `None`、一致したら拾えたぶんの辞書。`/health` が `{}` を返すのは「一致したがパラメータが 0 個だった」というだけなので、この場合のための特別扱いは要りません。",
+            ],
             solution: `def match_path(pattern: str, path: str):
     pattern_parts = pattern.strip("/").split("/")
     path_parts = path.strip("/").split("/")
@@ -330,6 +349,16 @@ class TodoCreate(BaseModel):
 これだけで、必須チェック・型チェック・長さチェック・エラーメッセージが揃います。
 
 まずは自分で書いてみて、あとで Pydantic に置き換えると、何が自動化されているのかがはっきり分かります。
+
+### もっと詳しく
+
+「4. 余計な項目が混ざっていないか」は、Pydantic なら \`model_config = ConfigDict(extra="forbid")\` の 1 行で弾けます。既定では余計なキーは黙って捨てられるので、\`titel\` のような打ち間違いに気づけません。API を作るときは明示しておくと安全です。
+
+値そのものの妥当性（「終了日は開始日より後」など、項目をまたぐ検査）は \`field_validator\` / \`model_validator\` で書けます。この 2 つを知っておくと、自前の検証関数を書く場面はほとんどなくなります。
+
+- [Pydantic のモデル（公式・英語）](https://docs.pydantic.dev/latest/concepts/models/)
+- [Pydantic のバリデータ（公式・英語）](https://docs.pydantic.dev/latest/concepts/validators/)
+- [リクエストボディ（FastAPI 公式・日本語）](https://fastapi.tiangolo.com/ja/tutorial/body/)
 `,
           examples: [
             {
@@ -450,10 +479,12 @@ if callable(f):
     check("plan が不正です" in f({"name": "佐藤", "age": 30, "plan": "gold"}), "未知の plan はエラー")
     check(len(f({"name": "", "age": "x"})) == 2, "問題が 2 つならエラーも 2 件")
 `,
-            hint: `
-\`age\` は「整数であること」だけでは足りません。本文の注記のとおり \`bool\` も \`int\` の一種なので、もう 1 つ判定を足して \`True\` を弾きます。
-\`plan\` は省略可なので、\`get\` で既定値を入れてから、許可されている値の集合に含まれるか確かめます。
-`,
+            hint: [
+              "3 つの項目は互いに独立に判定できます。エラーは見つかったぶんだけ溜めていく形なので、最初の 1 つを見つけた時点で `return` してしまうと「問題が 2 つならエラーも 2 件」のチェックが通りません。",
+              "必須の項目でも、キー自体が無いまま呼ばれます。取り出しで落ちない形にしたうえで、「無かった」も不正の一種として同じ判定に流し込めると、`name` も `age` も条件が 1 本にまとまります。",
+              "`age` は「整数であること」だけでは足りません。課題文の注記のとおり `True` も整数の一種と見なされるので、型の判定だけでは `True` がすり抜けます。型・`bool` 除外・範囲の 3 つがそろって初めて全部のチェックが通ります。",
+              "`plan` だけは省略可で、省略時は `\"free\"` として扱います。先に既定値を埋めてから「許されている値かどうか」を見れば、「キーが無い場合」と「知らない値が来た場合」を別々に書かずに済みます。",
+            ],
             solution: `PLANS = {"free", "pro", "team"}
 
 
@@ -735,11 +766,12 @@ if callable(f):
         raised = True
     check(raised, "変換できない値では ValueError になる")
 `,
-            hint: `
-\`spec\` の値は \`(型, 既定値)\` のタプルなので、ループの受け取り側で分解できます。
-\`bool\` だけは特別扱いが必要です。\`bool("false")\` は \`True\` になってしまうため、文字列を小文字にして真とみなす値の集合に含まれるか確かめます。
-それ以外の型は、受け取った型を関数として呼べばそのまま変換できます。
-`,
+            hint: [
+              "回すのは `raw` ではなく `spec` です。`raw` に無いキーも既定値つきで結果に入れる必要があるので、「何を返すべきか」を知っている側を基準にすると、抜けが出ません。`spec` の値は `(型, 既定値)` の 2 つ組です。",
+              "各キーは「`raw` に来ているか / 来ていないか」の 2 通り。来ていなければ既定値をそのまま入れ、来ていれば文字列を指定された型に変換します。変換に失敗したときは、そのままエラーが上がって構いません（受け止めなくてよい、というのが課題の指定です）。",
+              "`bool` だけは他の型と同じようにはいきません。`\"false\"` も `\"NO\"` も、空でない文字列は真になってしまうからです。真とみなす言葉をあらかじめ決めておき、来た文字列がそれに当てはまるかで判定します。大文字小文字を無視する必要もあります。",
+              "`bool` 以外は、`spec` から受け取った型そのものが変換に使えます。Python では型も呼び出せる値なので、`int` か `str` かで分岐を書き分ける必要はありません。",
+            ],
             solution: `TRUTHY = {"true", "1", "yes"}
 
 
@@ -795,6 +827,16 @@ def coerce_query(raw: dict, spec: dict) -> dict:
 | 作成 | \`POST /todos\` | \`create(title)\` |
 | 更新 | \`PATCH /todos/{id}\` | \`update(id, ...)\` |
 | 削除 | \`DELETE /todos/{id}\` | \`delete(id)\` |
+
+### もっと詳しく
+
+サービス層が投げる例外（このレッスンの \`TodoNotFound\`）を、FastAPI 側で \`HTTPException(404)\` に翻訳するところは、ハンドラごとに \`try\` を書かなくても済みます。\`@app.exception_handler(TodoNotFound)\` を 1 か所に置けば、どのルートから上がってきても同じレスポンスに変換されます。**サービス層に HTTP の都合を持ち込まない**ための定石です。
+
+サービス層をルートに渡すところは \`Depends\` に任せると、テストのときだけ差し替えられます。保存先を辞書からデータベースに替えるときも、差し替え点がここ 1 か所に収まります。
+
+- [依存性注入 Depends（FastAPI 公式・日本語）](https://fastapi.tiangolo.com/ja/tutorial/dependencies/)
+- [エラーハンドリング（FastAPI 公式・英語）](https://fastapi.tiangolo.com/tutorial/handling-errors/)
+- [テスト（FastAPI 公式・日本語）](https://fastapi.tiangolo.com/ja/tutorial/testing/)
 `,
           examples: [
             {
@@ -944,12 +986,12 @@ if S is not None:
     check(raises(lambda: s.delete(999), NF), "無い ID の delete で TodoNotFound")
     check(raises(lambda: s.create("   "), ValueError), "空白だけの title は ValueError")
 `,
-            hint: `
-- \`create\` … 空白を取り除いた title が空なら \`raise\` します。保存したあとに次の ID を 1 進めるのを忘れずに
-- \`get\` … 辞書にキーがあるかを先に確かめ、無ければ \`TodoNotFound\` を送出します
-- \`list_todos\` … いったん値のリストにしてから、\`done\` が \`None\` でないときだけ絞り込みます
-- \`update\` / \`delete\` … 先頭で \`self.get(...)\` を呼んでおくと、存在チェックを 1 か所にまとめられます
-`,
+            hint: [
+              "メソッドは 6 つありますが、状態は 2 つ（保存先と次の ID）だけです。`__init__` → `create` → `get` → 残り、の順に書いて、そのつど採点すると切り分けやすくなります。ID で 1 件を引く操作が多いので、保存先は「ID から 1 件を引ける形」にしておくと後が楽です。",
+              "`create` … 空白だけの `\"   \"` も弾く必要があります。「文字が入っているか」を見るには、前後の空白を落としてから判断します。ID は削除しても再利用しないので、次の ID は「今ある件数」から計算するのではなく、使うたびに増やしていくカウンタとして持ちます。",
+              "`update` と `delete` は、どちらも「無い ID なら `TodoNotFound`」という同じ前提から始まります。`get` がすでにその判定をしているので、先頭で自分の `get` を呼べば、存在チェックを 3 か所に書き散らさずに済みます。",
+              "`update` は `title` と `done` **だけ**を反映します。渡された `changes` をまるごと上書きすると `id` まで書き換えられてしまい、「update しても id は変わらない」チェックで落ちます。`list_todos` は `done=None`（絞り込みなし）と、`True`/`False` での絞り込みを区別してください。",
+            ],
             solution: `class TodoNotFound(Exception):
     """指定された ID のタスクが無いときに送出する。"""
 

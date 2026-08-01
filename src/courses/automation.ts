@@ -224,6 +224,16 @@ lines = [l.strip() for l in text.splitlines() if l.strip()]
 ~~~
 
 「前後の空白を取り、空行を捨てる」。ログやメモを扱うとき、まずこれをやります。
+
+### もっと詳しく
+
+書き出しで気をつけたいのが、途中で失敗したときです。\`"w"\` で開いた時点で中身は消えるので、書いている最中にエラーになると、元のファイルも新しい内容も残りません。**別名で書き切ってから \`Path.replace\` で置き換える**と、失敗しても元のファイルが残ります。
+
+読み込み側では、\`errors="replace"\` を指定すると、文字コードが崩れた行があってもそこで止まらずに読み進められます（壊れた文字は \`�\` になります）。ログのように「全部きれいとは限らない」入力では役に立ちます。
+
+- [open の引数（公式）](https://docs.python.org/ja/3/library/functions.html#open)
+- [Path.replace（公式）](https://docs.python.org/ja/3/library/pathlib.html#pathlib.Path.replace)
+- [ファイルの読み書き（公式チュートリアル）](https://docs.python.org/ja/3/tutorial/inputoutput.html#reading-and-writing-files)
 `,
           examples: [
             {
@@ -447,7 +457,11 @@ if out.exists():
     check(json.loads(text) == {"pro": 2, "free": 2, "team": 1}, "書き出した JSON の中身が正しい")
     check("\\n" in text and "  " in text, "indent=2 で整形されている")
 `,
-            hint: "件数はプランをキーにして辞書に足し込みます（基本文法コース 第2章）。書き出しは、辞書を JSON 文字列にしてからファイルへ書く 2 段階です。日本語をそのまま出すオプションとインデントの指定は本文にあります。",
+            hint: [
+              "課題は「数える」と「書き出す」の 2 つに分かれています。まず `plan_counts` を正しく作り、`print` で中身を確かめてから、書き出しに進みましょう。",
+              "数え上げは「そのプランを初めて見たら 1、2 回目からは今の値に 1 を足す」という動きです。まだ辞書に無いキーにいきなり足そうとすると落ちるので、そこをどう避けるかが要点です（基本文法コース 第2章）。",
+              "書き出しは「辞書を JSON の文字列に変える」→「その文字列をファイルに書く」の 2 段階です。採点されるのは、日本語が `\\u30d7...` ではなくそのまま読める形か、そして改行と字下げが入っているかの 2 点。どちらも文字列に変える側で指定します。",
+            ],
             solution: `import csv
 import json
 from pathlib import Path
@@ -800,7 +814,7 @@ Web API とのやりとりは、次の 2 つの往復でできています。
 
 ### もっと詳しく
 
-- [requests クイックスタート（公式・日本語）](https://requests.readthedocs.io/projects/ja/latest/user/quickstart.html)
+- [requests クイックスタート（公式・英語）](https://requests.readthedocs.io/en/latest/user/quickstart/)
 - [HTTP ステータスコード一覧（MDN）](https://developer.mozilla.org/ja/docs/Web/HTTP/Status)
 `,
           examples: [
@@ -926,7 +940,11 @@ if callable(f):
     empty = f({"page": 1})
     check(empty.get("total") == 0 and empty.get("plans") == {}, "users が無くても落ちない")
 `,
-            hint: "`users` キーが無いレスポンスも来る前提で書きます。辞書から既定値つきで取り出す方法（基本文法コース 第2章の `get`）を使うと、キーが無いときも空のリストとして扱えて、以降の処理を分岐なしで書けます。",
+            hint: [
+              "返す 3 つの値はすべて `users` のリストだけから出せます。まず `users` を 1 つの変数に取り出し、そこから total・active・plans を順に組み立てると、あとの見通しがよくなります。",
+              "`users` キーが無いレスポンスも来ます。「キーがあるかどうかで処理を分ける」と書くこともできますが、取り出す時点で「無ければ空のリスト」にしてしまえば、以降は分岐なしで同じコードが通ります（基本文法コース 第2章）。空のリストなら件数は自然に 0 になります。",
+              "`active` は真偽値なので、`active` が真の要素だけを数えることになります。`plans` はプランをキーにした数え上げで、初めて出てきたキーをどう扱うかは前のレッスンと同じ問題です。",
+            ],
             solution: `import json
 
 
@@ -982,6 +1000,16 @@ print(summarize(json.loads(raw)))`,
 3 番目がとくに大事です。集計関数が \`print\` してしまうと、あとで「CSV にも出したい」「Slack にも送りたい」となったときに書き直しになります。**データを返す関数と、表示する関数を分ける**のが再利用のコツです。
 
 > 手元の Python では、この形にしたうえで \`if __name__ == "__main__":\` を書き、\`python report.py access.log\` のように動かせるようにします。
+
+### もっと詳しく
+
+コマンドラインから引数を受け取るところは、\`sys.argv\` を自分で読むより \`argparse\` に任せたほうが早く仕上がります。\`--help\` の表示、必須引数の検査、既定値、型変換まで面倒を見てくれます。
+
+進捗や警告を出すときは \`print\` ではなく \`logging\` を使うと、出力先（画面／ファイル）と詳しさ（INFO／DEBUG）を、コードを書き換えずに切り替えられます。定期実行するスクリプトほど効いてきます。
+
+- [argparse チュートリアル（公式・日本語）](https://docs.python.org/ja/3/howto/argparse.html)
+- [logging 入門（公式・日本語）](https://docs.python.org/ja/3/howto/logging.html)
+- [\`__main__\` とスクリプトの書き方（公式）](https://docs.python.org/ja/3/library/__main__.html)
 `,
           examples: [
             {
@@ -1123,12 +1151,12 @@ if callable(load):
         check(rep.get("top_paths")[0] == ("/", 5), f"人気 1 位が ('/', 5)（今は {rep.get('top_paths')[0] if rep.get('top_paths') else None}）")
         check(len(rep.get("top_paths", [])) == 3, "top_paths が 3 件")
 `,
-            hint: `
-- \`load\` … 1 行を \`split()\` すると 6 つに分かれます。まとめて分解代入できます（第2章のアンパック）。数値にする列だけ変換を忘れずに
-- \`analyze\` … 件数の集計は \`Counter\`（基本文法コース 第4章）。上位 3 件は \`most_common\` で取れます
-- エラー率 … 400 以上のステータスの件数を全体で割り、100 を掛けて \`round\` で丸めます
-- \`Counter\` は辞書そのものではないので、返す前に \`dict(...)\` に変換しておくと比較しやすくなります
-`,
+            hint: [
+              "2 つの関数は役割がはっきり分かれています。`load` は「テキストを扱いやすい形に変える」だけ、`analyze` は「変換済みのデータを数える」だけ。まず `load` のチェックを通してから `analyze` に進むと、どちらの問題か切り分けられます。",
+              "`load` … ログの 1 行は空白区切りで 6 つに分かれます。ここで全部を文字列のまま辞書に入れると、あとで「200 かどうか」「400 以上か」を比べるときに文字列の比較になってしまい、結果が狂います。数として扱う列はこの段階で変換しておきましょう。",
+              "`analyze` … `total` は件数、`statuses` はステータスごとの数え上げ、`top_paths` は「多い順に 3 件」です。数え上げと順位付けをまとめて引き受けてくれる道具が基本文法コース 第4章にありました。ただし採点は素の辞書と比べるので、返す形が辞書になっているかは確かめてください。",
+              "`error_rate` … 「400 以上のステータスの件数 ÷ 全件数 × 100」を、小数第 1 位で丸めた値です。件数を数える条件（400 以上か）と、丸める桁の指定、その 2 つが合っていれば 30.0 になります。",
+            ],
             solution: `from collections import Counter
 from pathlib import Path
 
