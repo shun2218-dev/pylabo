@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 
+import indexHtml from "../../index.html?raw";
+
 import { COURSE_ENTRIES, availableCourses, findAvailableCourse } from "../courses/registry";
 import { courseIcons } from "../icons";
 import { countLessons, flattenLessons } from "../lib/course-utils";
@@ -38,6 +40,19 @@ describe("コースレジストリ", () => {
     for (const entry of availableCourses()) {
       expect(findAvailableCourse(entry.id)?.id).toBe(entry.id);
     }
+  });
+
+  /* index.html の meta description は検索結果にそのまま出る。コースを足したときに
+     直し忘れると、実際より少ないコース数を宣伝し続けることになる（1.1.0 から
+     1.3.0 まで「4 コース」のままだった）。 */
+  it("index.html の説明文がコース数と合っている", () => {
+    const description = indexHtml.match(/name="description"\s+content="([^"]+)"/s)?.[1];
+
+    expect(description, "index.html に meta description が無い").toBeTruthy();
+    expect(
+      description,
+      `公開中は ${availableCourses().length} コースだが、説明文が合っていない`
+    ).toContain(`${availableCourses().length} コース`);
   });
 
   it("lessonCount が本文と一致している", async () => {
