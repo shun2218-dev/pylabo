@@ -1235,5 +1235,290 @@
       "",
       "============================== 3 passed in 0.00s ==============================="
     ]
+  },
+  "typing/ch1/l1#0": {
+    "caption": "型ヒントを付けた関数",
+    "output": [
+      "こんにちは、山田",
+      "こんにちは、山田",
+      "こんにちは、山田"
+    ]
+  },
+  "typing/ch1/l1#1": {
+    "caption": "型と違う値を渡しても止まらない",
+    "output": [
+      "42",
+      "ああ"
+    ]
+  },
+  "typing/ch1/l1#2": {
+    "caption": "注釈はデータとして残っている",
+    "output": [
+      "{'n': <class 'int'>, 'return': <class 'int'>}"
+    ]
+  },
+  "typing/ch1/l2#0": {
+    "caption": "問題のないコードを mypy にかける",
+    "output": [
+      "こんにちは、山田",
+      "Success: no issues found in 1 source file"
+    ]
+  },
+  "typing/ch1/l2#1": {
+    "caption": "型が食い違っているコードを mypy にかける",
+    "output": [
+      "ああ",
+      "lesson.py:6: error: Argument 1 to \"double\" has incompatible type \"str\"; expected \"int\"  [arg-type]",
+      "Found 1 error in 1 file (checked 1 source file)"
+    ]
+  },
+  "typing/ch1/l2#2": {
+    "caption": "いろいろなエラーコードを一度に見る",
+    "output": [
+      "実行そのものは最後まで通る",
+      "lesson.py:3: error: Incompatible return value type (got \"str\", expected \"int\")  [return-value]",
+      "lesson.py:7: error: \"str\" has no attribute \"uppercase\"  [attr-defined]",
+      "lesson.py:10: error: Incompatible types in assignment (expression has type \"str\", variable has type \"int\")  [assignment]",
+      "Found 3 errors in 1 file (checked 1 source file)"
+    ]
+  },
+  "typing/ch1/l3#0": {
+    "caption": "中身の型まで書くと、要素を触ったところまで見てくれる",
+    "output": [
+      "りんご 110",
+      "みかん 90",
+      "lesson.py:6: error: \"int\" has no attribute \"upper\"  [attr-defined]",
+      "Found 1 error in 1 file (checked 1 source file)"
+    ]
+  },
+  "typing/ch1/l3#1": {
+    "caption": "中身を書かないと見逃される",
+    "output": [
+      "100",
+      "Success: no issues found in 1 source file"
+    ]
+  },
+  "typing/ch1/l3#2": {
+    "caption": "入れ子と、広く受け取る書き方",
+    "output": [
+      "新宿、渋谷、新宿",
+      "A、B",
+      "Success: no issues found in 1 source file"
+    ]
+  },
+  "typing/ch1/l4#0": {
+    "caption": "None かもしれない値を、そのまま使ってしまう",
+    "output": [
+      "110",
+      "lesson.py:8: error: Unsupported operand types for + (\"None\" and \"int\")  [operator]",
+      "lesson.py:8: note: Left operand is of type \"int | None\"",
+      "Found 1 error in 1 file (checked 1 source file)"
+    ]
+  },
+  "typing/ch1/l4#1": {
+    "caption": "見つからない名前を渡すと、実際に落ちる",
+    "output": []
+  },
+  "typing/ch1/l4#2": {
+    "caption": "絞り込んでから使う",
+    "output": [
+      "りんご は税込 110 円",
+      "ぶどう は取り扱っていません",
+      "Success: no issues found in 1 source file"
+    ]
+  },
+  "typing/ch2/l5#0": {
+    "caption": "デフォルト引数と可変長引数",
+    "output": [
+      "こんにちは、山田",
+      "はじめまして、佐藤",
+      "600",
+      "250",
+      "Success: no issues found in 1 source file"
+    ]
+  },
+  "typing/ch2/l5#1": {
+    "caption": "関数を受け取る関数",
+    "output": [
+      "[2, 4, 6]",
+      "[101, 102, 103]",
+      "Success: no issues found in 1 source file"
+    ]
+  },
+  "typing/ch2/l5#2": {
+    "caption": "渡す関数が合っていないと、動かす前に分かる",
+    "output": [
+      "mypy の指摘だけを見ます（use() は呼びません）",
+      "lesson.py:14: error: Argument 2 to \"apply_all\" has incompatible type \"Callable[[int], str]\"; expected \"Callable[[int], int]\"  [arg-type]",
+      "Found 1 error in 1 file (checked 1 source file)"
+    ]
+  },
+  "typing/ch2/l6#0": {
+    "caption": "dataclass でデータの形を決める",
+    "output": [
+      "りんご 100 ['果物']",
+      "牛乳 200 ['飲料', '冷蔵']",
+      "Item(name='りんご', price=100, tags=['果物'])",
+      "True",
+      "Success: no issues found in 1 source file"
+    ]
+  },
+  "typing/ch2/l6#1": {
+    "caption": "打ち間違いと型違いを、動かす前に見つける",
+    "output": [
+      "実行は最後まで通ってしまう: Item(name='りんご', price='100')",
+      "lesson.py:12: error: \"Item\" has no attribute \"prise\"; maybe \"price\"?  [attr-defined]",
+      "lesson.py:15: error: Argument 2 to \"Item\" has incompatible type \"str\"; expected \"int\"  [arg-type]",
+      "Found 2 errors in 1 file (checked 1 source file)"
+    ]
+  },
+  "typing/ch2/l6#2": {
+    "caption": "TypedDict で、辞書のまま形を決める",
+    "output": [
+      "300",
+      "りんご",
+      "Success: no issues found in 1 source file"
+    ]
+  },
+  "typing/ch2/l7#0": {
+    "caption": "Literal で候補を決める",
+    "output": [
+      "['佐藤', '山田', '鈴木']",
+      "['鈴木', '山田', '佐藤']",
+      "Success: no issues found in 1 source file"
+    ]
+  },
+  "typing/ch2/l7#1": {
+    "caption": "候補にない値は、動かす前に弾かれる",
+    "output": [
+      "['佐藤', '山田']",
+      "lesson.py:9: error: Argument 2 to \"sort_names\" has incompatible type \"Literal['asec']\"; expected \"Literal['asc', 'desc']\"  [arg-type]",
+      "Found 1 error in 1 file (checked 1 source file)"
+    ]
+  },
+  "typing/ch2/l7#2": {
+    "caption": "Enum で名前を付ける",
+    "output": [
+      "['山田', '佐藤']",
+      "['asc', 'desc']",
+      "Success: no issues found in 1 source file"
+    ]
+  },
+  "typing/ch2/l8#0": {
+    "caption": "型を保ったまま返す",
+    "output": [
+      "佐藤",
+      "90",
+      "None",
+      "Success: no issues found in 1 source file"
+    ]
+  },
+  "typing/ch2/l8#1": {
+    "caption": "mypy がどう見ているかを確かめる",
+    "output": [
+      "lesson.py:9: note: Revealed type is \"builtins.str | None\"",
+      "lesson.py:10: note: Revealed type is \"builtins.int | None\"",
+      "Success: no issues found in 1 source file"
+    ]
+  },
+  "typing/ch2/l8#2": {
+    "caption": "型が保たれていると、使い方の間違いに気づける",
+    "output": [
+      "mypy の指摘だけを見ます",
+      "lesson.py:9: error: \"int\" has no attribute \"upper\"  [attr-defined]",
+      "Found 1 error in 1 file (checked 1 source file)"
+    ]
+  },
+  "typing/ch3/l9#0": {
+    "caption": "形が合っていれば、継承しなくても渡せる",
+    "output": [
+      "メール: こんにちは",
+      "メール: お知らせ",
+      "2",
+      "Slack: こんにちは",
+      "1",
+      "Success: no issues found in 1 source file"
+    ]
+  },
+  "typing/ch3/l9#1": {
+    "caption": "テスト用のダミーも、ただのクラスでよい",
+    "output": [
+      "2",
+      "['A', 'B']",
+      "Success: no issues found in 1 source file"
+    ]
+  },
+  "typing/ch3/l9#2": {
+    "caption": "形が合わないと、渡す前に止められる",
+    "output": [
+      "mypy の指摘だけを見ます",
+      "lesson.py:19: error: Argument 1 to \"notify_all\" has incompatible type \"Printer\"; expected \"Sender\"  [arg-type]",
+      "Found 1 error in 1 file (checked 1 source file)"
+    ]
+  },
+  "typing/ch3/l10#0": {
+    "caption": "注釈が無ければ、中身は見てもらえない",
+    "output": [
+      "2.0",
+      "Success: no issues found in 1 source file",
+      "lesson.py:2: error: Function is missing a type annotation  [no-untyped-def]",
+      "lesson.py:6: error: Call to untyped function \"average\" in typed context  [no-untyped-call]",
+      "Found 2 errors in 1 file (checked 1 source file)"
+    ]
+  },
+  "typing/ch3/l10#1": {
+    "caption": "既定値が None のときの落とし穴",
+    "output": [
+      "山田: 未評価",
+      "佐藤: 82.5",
+      "lesson.py:2: error: Incompatible default for argument \"score\" (default has type \"None\", argument has type \"float\")  [assignment]",
+      "lesson.py:2: note: PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True",
+      "lesson.py:2: note: Use https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase",
+      "Found 1 error in 1 file (checked 1 source file)"
+    ]
+  },
+  "typing/ch3/l10#2": {
+    "caption": "type: ignore の効き方を見る",
+    "output": [
+      "500 3 りんご",
+      "lesson.py:2: error: Incompatible types in assignment (expression has type \"str\", variable has type \"int\")  [assignment]",
+      "lesson.py:4: error: Unused \"type: ignore\" comment  [unused-ignore]",
+      "Found 2 errors in 1 file (checked 1 source file)"
+    ]
+  },
+  "typing/ch3/l11#0": {
+    "caption": "コードを木として読む",
+    "output": [
+      "import: os as None",
+      "import: Path as None",
+      "使っている名前: print",
+      "使っている名前: os"
+    ]
+  },
+  "typing/ch3/l11#1": {
+    "caption": "使っていない import を見つける",
+    "output": [
+      "['sys']"
+    ]
+  },
+  "typing/ch4/l12#0": {
+    "caption": "型が無いと、mypy は通ってしまう",
+    "output": [
+      "5",
+      "Success: no issues found in 1 source file"
+    ]
+  },
+  "typing/ch4/l12#1": {
+    "caption": "実際に落ちる",
+    "output": []
+  },
+  "typing/ch4/l12#2": {
+    "caption": "注釈を足すと、動かす前に同じ場所を指せる",
+    "output": [
+      "mypy の指摘を見ます",
+      "lesson.py:10: error: Unsupported operand types for + (\"None\" and \"int\")  [operator]",
+      "lesson.py:10: note: Left operand is of type \"int | None\"",
+      "Found 1 error in 1 file (checked 1 source file)"
+    ]
   }
 }

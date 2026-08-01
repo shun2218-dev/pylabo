@@ -3,6 +3,22 @@
 形式は [Keep a Changelog](https://keepachangelog.com/ja/1.1.0/)、
 バージョンは [セマンティック バージョニング](https://semver.org/lang/ja/) に従います。
 
+## [1.3.0] - 2026-08-02
+
+### 追加
+
+- **型ヒントと静的解析**（実践・12 レッスン）を公開 — 型ヒントの書き方から始め、mypy・コレクションの型・`X | None` と絞り込み・`Callable`・dataclass / TypedDict・Literal / Enum・ジェネリクス・Protocol・`--strict` と設定ファイル・ruff とリンタの中身まで。最後は「型のないコードに型を入れ、その過程で見つかるバグを直す」卒業制作
+- ブラウザ内で**本物の mypy を実行**できるようにした。`run_mypy()` が、いまエディタに書かれているコードをそのままファイルとして書き出して mypy に渡す（`run_mypy("--strict")` のように引数もそのまま通る）。指摘の行番号はエディタの行と一致する
+- 同梱パッケージに `mypy` を追加（wheel 約 6.7MB。型ヒントコースに到達した学習者だけがダウンロードする）。Pyodide の配布物に無い依存（`mypy_extensions` / `pathspec`）は `scripts/pyodide-packages.mjs` の `EXTRA_WHEELS` に版と sha256 を固定して PyPI から取得し、ほかの wheel と同じく自前で配信する
+- 型の演習は「**書いた型が誤った使い方を捕まえられるか**」で採点する。注釈が書いてあることではなく、その型が効いているかを見るため、学習者のコードの後ろにわざと間違った呼び出しを足して mypy にかけている（`list` や `dict` と書いただけの緩い型では通らない）
+
+### 変更
+
+- `verify:exercises` がコード例を**ハッシュの種を固定して**実行するようになった。集合を print する例は並びが実行ごとに変わりうるため、記録が中身の違いとは無関係にずれることがあった。取り直しのときは種を変えて 2 回動かし、並びが変わりうる例は記録しない
+- `verify:exercises --update-snapshot` に `--only-exercises` を付けたとき、コード例の記録を空にしてしまわないようにした
+
+[1.3.0]: https://github.com/shun2218-dev/pylabo/releases/tag/v1.3.0
+
 ## [1.2.0] - 2026-08-01
 
 ### 追加

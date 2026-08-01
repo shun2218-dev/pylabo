@@ -1,15 +1,15 @@
 {
   "name": "pylabo",
   "private": true,
-  "version": "1.2.0",
+  "version": "1.3.0",
   "type": "module",
   "description": "ブラウザだけで学べる Python 学習アプリ（Pyodide + React + TypeScript）",
   "scripts": {
     "postinstall": "node scripts/sync-pyodide.mjs && node scripts/fetch-pyodide-packages.mjs",
     "sync:pyodide": "node scripts/sync-pyodide.mjs",
     "fetch:packages": "node scripts/fetch-pyodide-packages.mjs",
-    "dev": "npm run sync:pyodide && vite",
-    "build": "npm run sync:pyodide && tsc -b && vite build && node scripts/generate-seo.mjs",
+    "dev": "npm run sync:pyodide && npm run fetch:packages && vite",
+    "build": "npm run sync:pyodide && npm run fetch:packages && tsc -b && vite build && node scripts/generate-seo.mjs",
     "preview": "vite preview",
     "typecheck": "tsc -b",
     "verify:exercises": "node scripts/verify-exercises.mjs",
