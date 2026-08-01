@@ -224,6 +224,16 @@ lines = [l.strip() for l in text.splitlines() if l.strip()]
 ~~~
 
 「前後の空白を取り、空行を捨てる」。ログやメモを扱うとき、まずこれをやります。
+
+### もっと詳しく
+
+書き出しで気をつけたいのが、途中で失敗したときです。\`"w"\` で開いた時点で中身は消えるので、書いている最中にエラーになると、元のファイルも新しい内容も残りません。**別名で書き切ってから \`Path.replace\` で置き換える**と、失敗しても元のファイルが残ります。
+
+読み込み側では、\`errors="replace"\` を指定すると、文字コードが崩れた行があってもそこで止まらずに読み進められます（壊れた文字は \`�\` になります）。ログのように「全部きれいとは限らない」入力では役に立ちます。
+
+- [open の引数（公式）](https://docs.python.org/ja/3/library/functions.html#open)
+- [Path.replace（公式）](https://docs.python.org/ja/3/library/pathlib.html#pathlib.Path.replace)
+- [ファイルの読み書き（公式チュートリアル）](https://docs.python.org/ja/3/tutorial/inputoutput.html#reading-and-writing-files)
 `,
           examples: [
             {
@@ -804,7 +814,7 @@ Web API とのやりとりは、次の 2 つの往復でできています。
 
 ### もっと詳しく
 
-- [requests クイックスタート（公式・日本語）](https://requests.readthedocs.io/projects/ja/latest/user/quickstart.html)
+- [requests クイックスタート（公式・英語）](https://requests.readthedocs.io/en/latest/user/quickstart/)
 - [HTTP ステータスコード一覧（MDN）](https://developer.mozilla.org/ja/docs/Web/HTTP/Status)
 `,
           examples: [
@@ -990,6 +1000,16 @@ print(summarize(json.loads(raw)))`,
 3 番目がとくに大事です。集計関数が \`print\` してしまうと、あとで「CSV にも出したい」「Slack にも送りたい」となったときに書き直しになります。**データを返す関数と、表示する関数を分ける**のが再利用のコツです。
 
 > 手元の Python では、この形にしたうえで \`if __name__ == "__main__":\` を書き、\`python report.py access.log\` のように動かせるようにします。
+
+### もっと詳しく
+
+コマンドラインから引数を受け取るところは、\`sys.argv\` を自分で読むより \`argparse\` に任せたほうが早く仕上がります。\`--help\` の表示、必須引数の検査、既定値、型変換まで面倒を見てくれます。
+
+進捗や警告を出すときは \`print\` ではなく \`logging\` を使うと、出力先（画面／ファイル）と詳しさ（INFO／DEBUG）を、コードを書き換えずに切り替えられます。定期実行するスクリプトほど効いてきます。
+
+- [argparse チュートリアル（公式・日本語）](https://docs.python.org/ja/3/howto/argparse.html)
+- [logging 入門（公式・日本語）](https://docs.python.org/ja/3/howto/logging.html)
+- [\`__main__\` とスクリプトの書き方（公式）](https://docs.python.org/ja/3/library/__main__.html)
 `,
           examples: [
             {

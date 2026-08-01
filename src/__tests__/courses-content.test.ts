@@ -83,6 +83,21 @@ describe.each(courses.map((c) => [c.title, c] as const))("%s", (_title, course) 
     }
   });
 
+  it("すべてのレッスンに「もっと詳しく」がある", () => {
+    /* 本文で扱うのは、その課題を解くのに要る分だけ。そこから先へ自分で
+       進めるように、外部の一次資料への入り口を各レッスンに置いている。 */
+    for (const { lesson } of flattenLessons(course)) {
+      const section = lesson.body.split("### もっと詳しく")[1];
+      expect(section, `${lesson.id} に「もっと詳しく」が無い`).toBeTruthy();
+
+      const links = [...(section ?? "").matchAll(/\]\((\S+?)\)/g)].map((m) => m[1]);
+      expect(links.length, `${lesson.id} の「もっと詳しく」にリンクが無い`).toBeGreaterThan(0);
+      for (const url of links) {
+        expect(url, `${lesson.id} のリンクが https でない: ${url}`).toMatch(/^https:\/\//);
+      }
+    }
+  });
+
   it("実行できる例には空でないコードがある", () => {
     for (const { lesson } of flattenLessons(course)) {
       for (const example of lesson.examples ?? []) {

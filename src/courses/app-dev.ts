@@ -47,6 +47,13 @@ Web アプリケーションの仕事は、突き詰めると 1 つだけです�
 | ボディ | \`{"id": 3, "title": "牛乳を買う"}\` |
 
 FastAPI を使うと、この受け渡しのほとんどを関数の**引数と戻り値**として書けるようになります。「関数を書けば API になる」——これがフレームワークのありがたみです。
+
+### もっと詳しく
+
+ステータスコードは「返せる番号」ではなく、**呼び出し側との約束** です。作成に成功したら \`201\`、消したあと返す中身が無いなら \`204\`、送られてきた値がおかしいなら \`400\` 系、こちらの落ち度なら \`500\` 系。番号を適当に \`200\` で揃えてしまうと、クライアント側が成功と失敗を区別できなくなります。
+
+- [HTTP レスポンスステータスコード（MDN・日本語）](https://developer.mozilla.org/ja/docs/Web/HTTP/Reference/Status)
+- [HTTP メソッド（MDN・日本語）](https://developer.mozilla.org/ja/docs/Web/HTTP/Reference/Methods)
 `,
           examples: [
             {
@@ -178,6 +185,16 @@ def health():
 ### パスパラメータ
 
 \`/todos/3\` の \`3\` のように、URL に埋め込まれた値です。素朴に作るならパスを \`/\` で分割して照合します。
+
+### もっと詳しく
+
+パターンの照合は、正規表現に翻訳してから当てる方法もあります（\`/todos/{id}\` を \`^/todos/(?P<id>[^/]+)$\` に変換する）。名前付きグループがそのままパラメータの辞書になるので、実際の Web フレームワークの多くはこの方式です。
+
+デコレータを自分で書くときは \`functools.wraps\` を付けておくと、包んだあとも元の関数名や docstring が保たれます。付けないと、エラー表示や \`help()\` が全部 \`decorator\` になってしまいます。
+
+- [正規表現の構文 — 名前付きグループ（公式）](https://docs.python.org/ja/3/library/re.html#regular-expression-syntax)
+- [functools.wraps（公式）](https://docs.python.org/ja/3/library/functools.html#functools.wraps)
+- [パスパラメータ（FastAPI 公式・日本語）](https://fastapi.tiangolo.com/ja/tutorial/path-params/)
 `,
           examples: [
             {
@@ -332,6 +349,16 @@ class TodoCreate(BaseModel):
 これだけで、必須チェック・型チェック・長さチェック・エラーメッセージが揃います。
 
 まずは自分で書いてみて、あとで Pydantic に置き換えると、何が自動化されているのかがはっきり分かります。
+
+### もっと詳しく
+
+「4. 余計な項目が混ざっていないか」は、Pydantic なら \`model_config = ConfigDict(extra="forbid")\` の 1 行で弾けます。既定では余計なキーは黙って捨てられるので、\`titel\` のような打ち間違いに気づけません。API を作るときは明示しておくと安全です。
+
+値そのものの妥当性（「終了日は開始日より後」など、項目をまたぐ検査）は \`field_validator\` / \`model_validator\` で書けます。この 2 つを知っておくと、自前の検証関数を書く場面はほとんどなくなります。
+
+- [Pydantic のモデル（公式・英語）](https://docs.pydantic.dev/latest/concepts/models/)
+- [Pydantic のバリデータ（公式・英語）](https://docs.pydantic.dev/latest/concepts/validators/)
+- [リクエストボディ（FastAPI 公式・日本語）](https://fastapi.tiangolo.com/ja/tutorial/body/)
 `,
           examples: [
             {
@@ -800,6 +827,16 @@ def coerce_query(raw: dict, spec: dict) -> dict:
 | 作成 | \`POST /todos\` | \`create(title)\` |
 | 更新 | \`PATCH /todos/{id}\` | \`update(id, ...)\` |
 | 削除 | \`DELETE /todos/{id}\` | \`delete(id)\` |
+
+### もっと詳しく
+
+サービス層が投げる例外（このレッスンの \`TodoNotFound\`）を、FastAPI 側で \`HTTPException(404)\` に翻訳するところは、ハンドラごとに \`try\` を書かなくても済みます。\`@app.exception_handler(TodoNotFound)\` を 1 か所に置けば、どのルートから上がってきても同じレスポンスに変換されます。**サービス層に HTTP の都合を持ち込まない**ための定石です。
+
+サービス層をルートに渡すところは \`Depends\` に任せると、テストのときだけ差し替えられます。保存先を辞書からデータベースに替えるときも、差し替え点がここ 1 か所に収まります。
+
+- [依存性注入 Depends（FastAPI 公式・日本語）](https://fastapi.tiangolo.com/ja/tutorial/dependencies/)
+- [エラーハンドリング（FastAPI 公式・英語）](https://fastapi.tiangolo.com/tutorial/handling-errors/)
+- [テスト（FastAPI 公式・日本語）](https://fastapi.tiangolo.com/ja/tutorial/testing/)
 `,
           examples: [
             {

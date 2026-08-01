@@ -207,6 +207,15 @@ assert total == 700, f"合計が合っていない: {total}"
 この 2 つを比べて、違ったら知らせる。あとのレッスンで出てくる pytest も、豪華になっているだけで、していることはこれと同じです。
 
 > \`assert\` は Python の文で、\`-O\` オプションを付けて実行すると**まるごと無効になります**。本番のコードで入力チェックの代わりに使ってはいけません。値の検証には \`if\` と \`raise\` を使い、\`assert\` はテストのために取っておきます。
+
+### もっと詳しく
+
+1 つの \`assert\` に \`and\` で条件を詰め込むと、落ちたときに **どちらが偽だったのか** が分かりません。行を分けて書いたほうが、失敗レポートがそのまま原因になります。
+
+比べる向きは「実際 == 期待」に統一しておくのがおすすめです。あとで pytest を使うと、この並びに合わせて差分が表示されます。
+
+- [assert 文（公式）](https://docs.python.org/ja/3/reference/simple_stmts.html#the-assert-statement)
+- [例外を送出する raise（公式チュートリアル）](https://docs.python.org/ja/3/tutorial/errors.html#raising-exceptions)
 `,
           examples: [
             {
@@ -403,6 +412,14 @@ for name, value in globals().items():
 失敗を受け止めるには \`try\` / \`except AssertionError\` を使います。1 件落ちても \`except\` で拾えば、ループは次へ進みます。
 
 次のレッスンで使う pytest は、この「集めて回す」を本気で作り込んだものです。中身が想像できていると、出てくるレポートの意味が分かります。
+
+### もっと詳しく
+
+同じ仕組みは標準ライブラリの \`unittest\` にも入っていて、こちらは Python を入れれば最初から使えます。書き方はクラスと \`self.assertEqual(...)\` 中心で、pytest のように素の \`assert\` は使いません。**外部ライブラリを入れられない環境** では選択肢になります。
+
+pytest は \`unittest\` で書かれたテストもそのまま集めて実行できるので、あとから乗り換えるときに全部書き直す必要はありません。
+
+- [unittest（公式）](https://docs.python.org/ja/3/library/unittest.html)
 `,
           examples: [
             {
@@ -667,6 +684,22 @@ E        +  where 20.0 = average([10, 20, 30])
 この「式をほどく」機能があるので、\`assertEqual\` のような専用メソッドを覚える必要がありません。書くのは素の \`assert\` だけです。
 
 > pytest はテストファイルを **import** して関数を集めます。つまりファイルのトップレベルは読み込みのときに 1 回動きます。表示を伴う処理をトップレベルに書くと二重に出るので、実験用の \`print\` は \`if __name__ == "__main__":\` の中に入れるか、テスト関数の中に置いてください。
+
+### もっと詳しく
+
+手元で回すときは、走らせる範囲を絞れると効率が変わります。
+
+| オプション | 意味 |
+|---|---|
+| \`-k "average and not empty"\` | 名前で絞り込む |
+| \`-x\` | 最初の失敗で止める |
+| \`--lf\` | 前回落ちたものだけ |
+| \`-q\` / \`-v\` | 結果を短く／1 件ずつ |
+
+よく使う設定は \`pyproject.toml\` の \`[tool.pytest.ini_options]\` に書いておけば、毎回打たずに済みます。
+
+- [pytest の実行方法（公式・英語）](https://docs.pytest.org/en/stable/how-to/usage.html)
+- [設定ファイル（pytest 公式・英語）](https://docs.pytest.org/en/stable/reference/customize.html)
 `,
           examples: [
             {
@@ -884,6 +917,14 @@ def test_b_at_the_boundary():
 | 範囲外 | \`ValueError\` |
 
 境界は **80 と 79**、**60 と 59** の 4 つ。ここを押さえるのが、このレッスンの主題です（\`ValueError\` の確かめ方は次のレッスンで扱います）。
+
+### もっと詳しく
+
+ここでやっている「代表値を 1 つと、境界を対で」という選び方には、**同値分割** と **境界値分析** という名前が付いています。テスト設計の教科書では最初に出てくる考え方で、入力の種類が増えたときの指針になります。
+
+入力の組み合わせが多すぎて代表値を選びきれないときは、**値のほうを自動生成して反例を探させる** やり方（property-based testing）もあります。Python では Hypothesis が有名で、「どんな入力でも合計は元の金額と一致するはず」のような性質を書くと、崩れる入力を探してくれます。
+
+- [Hypothesis（公式・英語）](https://hypothesis.readthedocs.io/en/latest/)
 `,
           examples: [
             {
@@ -1151,6 +1192,22 @@ assert [0.1 + 0.2, 1.0] == pytest.approx([0.3, 1.0])
 |---|---|
 | \`add_tax(price, rate=0.1)\` | 税込価格。\`price\` が負なら \`ValueError\` |
 | \`split_bill(total, people)\` | 1 人あたりの金額。\`people\` が 0 以下なら \`ValueError\` |
+
+### もっと詳しく
+
+\`pytest.raises\` は \`as\` で例外そのものを受け取れます。受け取れば、メッセージや属性まで確かめられるので「例外の種類は合っているが理由が違う」を見分けられます。
+
+~~~
+with pytest.raises(ValueError) as e:
+    add_tax(-1)
+assert "負" in str(e.value)
+~~~
+
+\`approx\` は誤差の許容量を \`rel\`（相対）と \`abs\`（絶対）で指定でき、リストや辞書をまとめて包むこともできます。そもそも金額を誤差なしで扱いたいなら、\`float\` をやめて \`decimal.Decimal\` にするという道もあります。
+
+- [例外を確かめる（pytest 公式・英語）](https://docs.pytest.org/en/stable/how-to/assert.html#assertions-about-expected-exceptions)
+- [pytest.approx（公式・英語）](https://docs.pytest.org/en/stable/reference/reference.html#pytest-approx)
+- [decimal（公式）](https://docs.python.org/ja/3/library/decimal.html)
 `,
           examples: [
             {
@@ -1432,6 +1489,15 @@ def test_to_grade(score, expected):
 | 境界値をまとめて並べたい | ケースごとに確かめたいことが別 |
 
 「表にできるか」が判断の目安です。表にならないものを無理に \`parametrize\` へ押し込むと、\`if\` の入ったテストになって読めなくなります。そのときは素直に別のテストとして書きます。
+
+### もっと詳しく
+
+\`parametrize\` は重ねて付けられます。2 つ書くと、全部の組み合わせ（直積）が自動で作られるので、「3 つの入力 × 2 つの設定」を 6 件のテストとして回せます。
+
+表の中の 1 行だけ扱いを変えたいときは \`pytest.param\` を使います。「この入力はまだ通らない見込み」を \`marks=pytest.mark.xfail\` として残しておけば、テストを消さずに、通るようになった時点で気づけます。
+
+- [パラメータ化（pytest 公式・英語）](https://docs.pytest.org/en/stable/how-to/parametrize.html)
+- [xfail と skip（pytest 公式・英語）](https://docs.pytest.org/en/stable/how-to/skipping.html)
 `,
           examples: [
             {
@@ -1727,6 +1793,15 @@ def test_write(tmp_path):
 | \`done(number)\` | \`number\` 番目（1 から数える）を完了にする |
 | \`remaining()\` | まだ終わっていない項目のタイトルのリスト |
 | \`len(todos)\` | 項目の総数 |
+
+### もっと詳しく
+
+フィクスチャを \`conftest.py\` に置くと、\`import\` を書かなくても、同じディレクトリ以下のすべてのテストファイルから使えるようになります。プロジェクトで共通の準備はここにまとめるのが定石です。
+
+\`autouse=True\` を付けると、引数に書かなくても自動で適用されます。「全テストで環境変数を退避する」のような、書き忘れると困る前準備に向いています。ただし **どのテストにも見えない前提が増える** ので、使いどころは絞ってください。
+
+- [フィクスチャの使い方（pytest 公式・英語）](https://docs.pytest.org/en/stable/how-to/fixtures.html)
+- [組み込みフィクスチャ一覧（pytest 公式・英語）](https://docs.pytest.org/en/stable/reference/fixtures.html)
 `,
           examples: [
             {
@@ -2082,6 +2157,16 @@ sender.assert_called_once_with("期限切れ: 請求書")
 | \`notify_overdue(tasks)\` | 期限切れのタスクを \`send\` して、その件数を返す |
 
 \`tasks\` は \`{"title": ..., "deadline": datetime}\` の辞書のリストです。
+
+### もっと詳しく
+
+差し替えでいちばん多い失敗が、**差し替える場所を間違える** ことです。\`from reminder import now\` として自分のファイルに取り込んだ名前を差し替えても、\`reminder\` の中の関数が見にいく先は変わりません。「呼ばれている側の名前を差し替える」と覚えてください。公式ドキュメントに Where to patch という節があります。
+
+\`Mock\` の代わりに \`create_autospec\` を使うと、本物と同じ引数でしか呼べないモックが作れます。本物の関数の引数が変わったのに、テストのモックだけ古いまま通ってしまう、という事故を防げます。
+
+- [unittest.mock — どこを patch するか（公式）](https://docs.python.org/ja/3/library/unittest.mock.html#where-to-patch)
+- [unittest.mock（公式）](https://docs.python.org/ja/3/library/unittest.mock.html)
+- [monkeypatch（pytest 公式・英語）](https://docs.pytest.org/en/stable/how-to/monkeypatch.html)
 `,
           examples: [
             {
@@ -2420,6 +2505,15 @@ def notify(tasks, sender=send, clock=now):
 こうしておくと、テストは \`monkeypatch\` を使わずに \`notify(tasks, sender=fake)\` と書けます。差し替えの継ぎ目を**引数として設計に出す**やり方です。
 
 > どちらが良いかは場合によります。引数に出すと呼び出し側が増えて煩雑になることもあるので、まずは \`monkeypatch\` で十分です。大事なのは「継ぎ目がどこにあるか」を意識して書くことです。
+
+### もっと詳しく
+
+ここでやった「計算する部分と、読み書きする部分を分ける」は、**関数型コア／命令型シェル**（functional core, imperative shell）と呼ばれる分け方です。真ん中の計算部分は入力と出力だけで完結するのでテストが速く、外側の薄い層だけが実際のファイルや通信に触ります。
+
+依存を引数で受け取る形は、FastAPI の \`Depends\` のように、フレームワークの機能として用意されていることもあります（「アプリ開発」コース）。呼び出し側が増える代わりに、テストのときだけ差し替えられる場所がはっきりします。
+
+- [よい書き方（pytest 公式・英語）](https://docs.pytest.org/en/stable/explanation/goodpractices.html)
+- [tmp_path — 本物のファイルを使うとき（pytest 公式・英語）](https://docs.pytest.org/en/stable/how-to/tmp_path.html)
 `,
           examples: [
             {
@@ -2791,6 +2885,15 @@ cov.report(file=..., show_missing=True)
 | \`"half"\` | \`price // 2\` |
 | \`"500"\` | \`max(price - 500, 0)\` |
 | それ以外 | \`ValueError\` |
+
+### もっと詳しく
+
+行のカバレッジだけでは、\`if\` の**片側しか通っていない**ことに気づけません。\`--branch\` を付けて分岐カバレッジを測ると、「真のときは通ったが偽のときは一度も通っていない」箇所が出てきます。100% と出ているのに穴がある、という状況の多くはここです。
+
+どうしても通せない行（環境依存の分岐など）は \`# pragma: no cover\` で計測から外せます。数字を上げるためではなく、**残った赤を意味のあるものだけにする** ために使ってください。
+
+- [分岐カバレッジ（coverage.py 公式・英語）](https://coverage.readthedocs.io/en/latest/branch.html)
+- [pytest-cov（公式・英語）](https://pytest-cov.readthedocs.io/en/latest/)
 `,
           examples: [
             {
@@ -3097,6 +3200,15 @@ def split_evenly(total, people):
 - 何を作るか探りながら書いている → 手で動かしてから、固まった時点でテストを足す
 
 と使い分けます。「テストを先に書く」を宗教にせず、**赤を 1 度は見る**ところだけ持ち帰ってください。
+
+### もっと詳しく
+
+「赤を 1 度は見る」は、そのテストが本当に何かを確かめているかの検査でもあります。この考えを機械にやらせるのが **ミューテーションテスト** で、実装をわざと少しずつ壊し、テストが落ちるかどうかを総当たりで調べます（Python では mutmut や cosmic-ray）。このアプリの採点が「壊した実装に当てて落ちるか」を見ているのも、同じ発想です。
+
+仕様が先に決まっているなら、テストを書く前に **入出力の表** を作ってしまうのが近道です。表の 1 行がそのまま 1 ケースになり、\`parametrize\` にも移しやすくなります。
+
+- [よい書き方（pytest 公式・英語）](https://docs.pytest.org/en/stable/explanation/goodpractices.html)
+- [Hypothesis（公式・英語）](https://hypothesis.readthedocs.io/en/latest/)
 `,
           examples: [
             {
@@ -3395,6 +3507,15 @@ def total(items, coupon=0):
 ### 直したついでに周りも守る
 
 同じ関数の「普通のケース」のテストも一緒に足しておきます。修正で別のところを壊していないか、その場で分かります。
+
+### もっと詳しく
+
+再現テストは、**修正と同じコミットに入れる** のが肝心です。別々にすると、あとから履歴を追う人が「このテストは何を守っているのか」を復元できません。コミットメッセージや、テストの名前・docstring に報告の内容を残しておくと、数年後の自分が助かります。
+
+そして、書いたテストは**毎回自動で走らないと意味がありません**。GitHub なら、プッシュのたびに \`pytest\` を回す設定を \`.github/workflows/\` に置くのが標準的なやり方です。落ちたときにマージできないようにしておけば、同じバグは二度と本番に出ません。
+
+- [Python のビルドとテスト（GitHub Actions・日本語）](https://docs.github.com/ja/actions/tutorials/build-and-test-code/python)
+- [継続的インテグレーション（pytest 公式・英語）](https://docs.pytest.org/en/stable/explanation/goodpractices.html)
 `,
           examples: [
             {
