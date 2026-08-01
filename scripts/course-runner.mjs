@@ -105,9 +105,9 @@ def _shown():
  * - CI / BUILD_NUMBER … pytest はこれがあると失敗一覧を省略しない
  *   （学習者のブラウザには無いので、こちらも外して同じ表示にする）
  */
-function childEnv() {
+function childEnv(extra = {}) {
   const { CI, BUILD_NUMBER, ...rest } = process.env;
-  return { ...rest, COLUMNS: "80" };
+  return { ...rest, COLUMNS: "80", ...extra };
 }
 
 const REPORT = `
@@ -200,7 +200,7 @@ export function usedPackages(courses) {
  *   error が入っているときはコード自体が止まったということ。アプリでも
  *   その場合は採点まで進まない。output は print された内容。
  */
-export async function execute({ source, tests = "", helper, files = {} }) {
+export async function execute({ source, tests = "", helper, files = {}, env = {} }) {
   const dir = await mkdtemp(path.join(tmpdir(), "pylabo-case-"));
   /* 実行するスクリプトは作業ディレクトリの外に置く。中に置くと
      `Path(".").iterdir()` を使うコード例の出力に、この仕組みのファイルが
@@ -234,7 +234,7 @@ export async function execute({ source, tests = "", helper, files = {} }) {
       ({ stdout } = await run(python, [file], {
         cwd: workDir,
         timeout: 60_000,
-        env: childEnv(),
+        env: childEnv(env),
       }));
     } catch (e) {
       return { error: e.stderr || e.message, checks: [], output: e.stdout ?? "" };

@@ -236,11 +236,16 @@ async function main() {
               continue;
             }
 
-            // 採点は無い。ここで見たいのは「止まらないか」と「何が出るか」。
+            /* 採点は無い。ここで見たいのは「止まらないか」と「何が出るか」。
+
+               ハッシュの種を固定して動かす。集合や辞書を print する例は
+               並びが実行ごとに変わりうるので、固定しないと記録が毎回ずれる。
+               「並びが変わりうる例」の判別は、下の取り直しで別の種を使って行う。 */
             const args = {
               source: example.code,
               helper,
               files: filesFor(course, lesson, example),
+              env: { PYTHONHASHSEED: "0" },
             };
             const result = await execute(args);
 
@@ -256,13 +261,25 @@ async function main() {
             }
 
             /* 出力の記録。取り直すときは 2 回動かし、実行ごとに変わる例
-               （時刻を使うなど）は記録しない。記録してしまうと、あとから
-               中身の違いではなく実行時刻で赤くなる。 */
+               （時刻を使う、集合の並びが揃わない等）は記録しない。記録して
+               しまうと、あとから中身の違いではなく実行環境で赤くなる。
+               2 回目はハッシュの種を変える。同じ種で 2 回動かしても、
+               集合の並びが変わりうる例を見つけられないため。 */
             const lines = toLines(result.output);
 
             if (updateSnapshot) {
-              const again = await execute(args);
-              recorded[key] = same(lines, toLines(again.output))
+              /* 種を変えて 2 回。集合の要素が 2 つだと、たまたま同じ並びに
+                 なることがあるため、1 回の突き合わせでは足りない。 */
+              const seeds = ["1", "2"];
+              let stable = true;
+              for (const seed of seeds) {
+                const again = await execute({ ...args, env: { PYTHONHASHSEED: seed } });
+                if (!same(lines, toLines(again.output))) {
+                  stable = false;
+                  break;
+                }
+              }
+              recorded[key] = stable
                 ? { caption: example.caption ?? null, output: lines }
                 : { caption: example.caption ?? null, unstable: true };
               continue;
@@ -300,7 +317,10 @@ async function main() {
 
   /* ---------- 出力の記録を書く / 古い記録を指摘する ---------- */
 
-  if (updateSnapshot) {
+  if (updateSnapshot && onlyExercises) {
+    /* コード例を動かしていないので、書けば全件消えてしまう。 */
+    console.log("\n--only-exercises が付いているため、出力の記録は取り直しません。");
+  } else if (updateSnapshot) {
     await mkdir(path.dirname(snapshotPath), { recursive: true });
     await writeFile(snapshotPath, JSON.stringify(recorded, null, 2) + "\n", "utf8");
     const unstable = Object.values(recorded).filter((v) => v.unstable);
